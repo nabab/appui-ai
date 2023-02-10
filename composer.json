@@ -1,0 +1,26 @@
+{
+  "name": "bbn/appui-ai",
+  "description": "Billing system for APPUI",
+  "keywords": ["billing","appui"],
+  "homepage": "https://github.com/nabab/appui-ai",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Quentin Robert",
+      "email": "quentin@bbn.solutions",
+      "homepage": "https://bbn.solutions",
+      "role": "Developer"
+    }, {
+      "name": "Thomas Nabet",
+      "email": "thomas.nabet@gmail.com",
+      "homepage": "https://bbn.solutions",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "php": ">=8.1",
+    "bbn/bbn": "dev-master",
+    "bbn/appui-entity": "dev-master",
+    "openai-php/client": "dev-main"
+  }
+}

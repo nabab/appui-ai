@@ -1,0 +1,167 @@
+{
+  "bbn_ai_prompts": {
+    "keys": {
+        "PRIMARY": {
+            "columns": [
+                "id"
+            ],
+            "ref_table": "bbn_history_uids",
+            "ref_column": "bbn_uid",
+            "update": "RESTRICT",
+            "delete": "RESTRICT",
+            "unique": 1
+        },
+        "id_note": {
+            "columns": [
+                "id_note"
+            ],
+            "ref_table": "bbn_notes",
+            "ref_column": "id",
+            "update": "RESTRICT",
+            "delete": "RESTRICT",
+            "unique": 0
+        }
+    },
+    "cols": {
+        "id": [
+            "PRIMARY"
+        ],
+        "id_note": [
+            "id_note"
+        ]
+    },
+    "fields": {
+        "id": {
+            "position": 1,
+            "type": "binary",
+            "null": 0,
+            "key": "PRI",
+            "maxlength": 16
+        },
+        "id_note": {
+            "position": 2,
+            "type": "binary",
+            "null": 0,
+            "key": "MUL",
+            "maxlength": 16
+        },
+        "output": {
+            "position": 3,
+            "type": "longtext",
+            "null": 1,
+            "default": "NULL",
+            "defaultExpression": true
+        },
+        "creation_date": {
+            "position": 4,
+            "type": "datetime",
+            "null": 0,
+            "default": "current_timestamp()",
+            "defaultExpression": true
+        },
+        "usage_count": {
+            "position": 5,
+            "type": "int",
+            "null": 0,
+            "signed": 1,
+            "default": 0,
+            "defaultExpression": false,
+            "maxlength": 11
+        },
+        "description": {
+            "position": 6,
+            "type": "longtext",
+            "null": 0,
+            "default": "''",
+            "defaultExpression": false
+        }
+    }
+  },
+  "bbn_ai_prompts_items": {
+    "keys": {
+        "PRIMARY": {
+            "columns": [
+                "id"
+            ],
+            "ref_table": "bbn_history_uids",
+            "ref_column": "bbn_uid",
+            "update": "RESTRICT",
+            "delete": "RESTRICT",
+            "unique": 1
+        },
+        "id_prompt": {
+            "columns": [
+                "id_prompt"
+            ],
+            "ref_table": "bbn_ia_prompt",
+            "ref_column": "id",
+            "update": "RESTRICT",
+            "delete": "RESTRICT",
+            "unique": 0
+        },
+        "author": {
+            "columns": [
+                "author"
+            ],
+            "ref_table": "bbn_users",
+            "ref_column": "id",
+            "update": "RESTRICT",
+            "delete": "RESTRICT",
+            "unique": 0
+        }
+    },
+    "cols": {
+        "id": [
+            "PRIMARY"
+        ],
+        "id_prompt": [
+            "id_prompt"
+        ],
+        "author": [
+            "author"
+        ]
+    },
+    "fields": {
+        "id": {
+            "position": 1,
+            "type": "binary",
+            "null": 0,
+            "key": "PRI",
+            "maxlength": 16
+        },
+        "id_prompt": {
+            "position": 2,
+            "type": "binary",
+            "null": 0,
+            "key": "MUL",
+            "maxlength": 16
+        },
+        "text": {
+            "position": 3,
+            "type": "longtext",
+            "null": 0
+        },
+        "author": {
+            "position": 4,
+            "type": "binary",
+            "null": 0,
+            "key": "MUL",
+            "maxlength": 16
+        },
+        "creation_date": {
+            "position": 5,
+            "type": "datetime",
+            "null": 0,
+            "default": "current_timestamp()",
+            "defaultExpression": true
+        },
+        "ai": {
+            "position": 6,
+            "type": "tinyint",
+            "null": 0,
+            "signed": 0,
+            "maxlength": 1
+        }
+    }
+  }
+}
