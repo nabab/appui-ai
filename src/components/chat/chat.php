@@ -55,7 +55,8 @@
                     <div class="bbn-bordered bbn-left-spadding bbn-right-spadding bbn-top-spadding bbn-radius bbn-flex-height"
                          :class="item.ai ? ['flex-end', 'bbn-secondary'] : ['flex-start', 'bbn-primary']"
                          style="min-width: 300px; max-width: 70%">
-                      <span class="bbn-w-100 bbn-bottom-xspadding">{{item.text}}</span>
+                      <!--span class="bbn-w-100 bbn-bottom-xspadding" v-html="item.text"></span-->
+                      <bbn-markdown v-model="item.text"></bbn-markdown>
                       <div class="bbn-flex bbn-w-100"
                            style="margin-top: auto">
                         <span class="bbn-small bbn-grey bbn-w-50 bbn-left">{{item.ai ? 'bbn-ai' : 'you'}}</span>

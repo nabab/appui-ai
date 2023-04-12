@@ -11,7 +11,12 @@ use Orhanerday\OpenAi\OpenAi;
 
 if (isset($model->data['prompt']) && isset($model->data['input'])) {
 
-  $key = "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";
+  if (!file_exists($model->pluginPath('appui-ai') . '/cfg/key.txt')) {
+    die("You must have a key in the file " . '/cfg/key.txt');
+  }
+  
+  $key = file_get_contents($model->pluginPath('appui-ai') . '/cfg/key.txt');
+
   
   $prompt = $model->data['prompt'] . "\n\n" . $model->data['input'];
 
@@ -29,7 +34,8 @@ if (isset($model->data['prompt']) && isset($model->data['input'])) {
   $complete = json_decode($complete, true);
 
   X::log($complete, 'chatgpt');
-
+ 
+	
   if (isset($complete['error'])) {
     return [
       'success' => false,
@@ -37,7 +43,7 @@ if (isset($model->data['prompt']) && isset($model->data['input'])) {
     ];
   }
   
-  $response = preg_replace('/^[\n\r]+/', '', $complete['choices'][0]['text']);
+  $response = $complete['choices'][0]['text'];
   
   if ($model->data['id']) {
     $insert = $model->db->insert('bbn_ai_prompt_items', [
