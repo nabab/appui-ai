@@ -30,7 +30,7 @@
             <bbn-splitter orientation="vertical"
                           :resizable="true"
                           :collapsible="true">
-              <bbn-pane :size="200">
+              <bbn-pane size="25%">
                 <div class="bbn-flex flex-direction-column bbn-spadding bbn-overlay bbn-middle">
                   <div class="bbn-flex-fill bbn-middle">
                     <h3 v-if="currentSelected">
@@ -47,7 +47,15 @@
                                 v-model="prompt"></bbn-textarea>
                 </div>
               </bbn-pane>
-
+              <bbn-pane size="25%">
+                <div class="bbn-flex flex-direction-column bbn-spadding bbn-overlay bbn-middle">
+                  <bbn-textarea class="user-input bbn-bottom-xsmargin bbn-left-xspadding bbn-h-100 bbn-w-100"
+                                :resizable="false"
+                                v-model="input"></bbn-textarea>
+                  <bbn-button class=""
+                              @click="send">send</bbn-button>
+                </div>
+              </bbn-pane>
               <bbn-pane>
                 <div class="bbn-flex bbn-flex-height flex-direction-column conversation-container bbn-top-xsmargin bbn-bottom-xsmargin"
                      style="overflow: auto;">
@@ -64,15 +72,6 @@
                       </div>
                     </div>
                   </div>
-                </div>
-              </bbn-pane>
-              <bbn-pane :size="60">
-                <div class="bbn-flex flex-direction-column bbn-spadding bbn-overlay bbn-middle">
-                  <bbn-textarea class="user-input bbn-bottom-xsmargin bbn-left-xspadding bbn-h-100 bbn-w-100"
-                                :resizable="false"
-                                v-model="input"></bbn-textarea>
-                  <bbn-button class=""
-                              @click="send">send</bbn-button>
                 </div>
               </bbn-pane>
             </bbn-splitter>

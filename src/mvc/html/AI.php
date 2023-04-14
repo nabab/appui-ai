@@ -1,6 +1,4 @@
 <!-- HTML Document -->
 
-<appui-ai-chat :source="source">
-
-</appui-ai-chat>
+<appui-ai-chat :source="source"/>
 
