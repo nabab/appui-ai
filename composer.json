@@ -20,6 +20,7 @@
   "require": {
     "php": ">=8.1",
     "bbn/bbn": "dev-master",
-    "openai-php/client": "dev-main"
+    "openai-php/client": "dev-main",
+    "orhanerday/open-ai": "dev-main"
   }
 }
