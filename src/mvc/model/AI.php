@@ -9,18 +9,12 @@ use bbn\Str;
 use Orhanerday\OpenAi\OpenAi;
 /** @var $model \bbn\Mvc\Model*/
 
-if (isset($model->data['prompt']) && isset($model->data['input'])) {
-
-  if (!file_exists($model->pluginPath('appui-ai') . '/cfg/key.txt')) {
-    die("You must have a key in the file " . '/cfg/key.txt');
-  }
-  
-  $key = file_get_contents($model->pluginPath('appui-ai') . '/cfg/key.txt');
+if ($model->hasData(['prompt', 'input']) && defined('BBN_OPENAI_KEY')) {
 
   
   $prompt = $model->data['prompt'] . "\n\n" . $model->data['input'];
 
-  $open_ai = new OpenAi($key);
+  $open_ai = new OpenAi(BBN_OPENAI_KEY);
 
   $complete = $open_ai->completion([
     'model' => 'text-davinci-003',

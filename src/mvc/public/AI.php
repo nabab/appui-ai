@@ -4,13 +4,13 @@ use bbn\X;
 use bbn\Str;
 /** @var $ctrl \bbn\Mvc\Controller */
 
-if (isset($ctrl->post['prompt']) && isset($ctrl->post['prompt'])) {
-  $ctrl->addData([
-    "prompt" => $ctrl->post['prompt'],
-    "root" => "/ai"
-  ]);
+if (!empty($ctrl->post)) {
   $ctrl->action();
 }
 else {
-  $ctrl->addData(['root' => "/ai"])->combo(_('AI'), true);
+  if (!defined('BBN_OPENAI_KEY')) {
+    $ctrl->addData(['error' => 'No OpenAI key defined']);
+  }
+
+  $ctrl->addData(['root' => $ctrl->pluginUrl('appui-ai')])->combo(_('AI'), true);
 }
