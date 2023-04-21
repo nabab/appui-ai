@@ -9,17 +9,22 @@ use bbn\Str;
 use Orhanerday\OpenAi\OpenAi;
 /** @var $model \bbn\Mvc\Model*/
 
-if ($model->hasData(['prompt', 'input']) && defined('BBN_OPENAI_KEY')) {
+if ($model->hasData(['prompt']) && defined('BBN_OPENAI_KEY')) {
 
+  $prompt =  "";
+  if ($model->hasData('input')) {
+    $prompt = $model->data['prompt'] . "\n\n" . $model->data['input'];
+  } else {
+    $prompt = $model->data['prompt'];
+  }
   
-  $prompt = $model->data['prompt'] . "\n\n" . $model->data['input'];
 
   $open_ai = new OpenAi(BBN_OPENAI_KEY);
 
   $complete = $open_ai->completion([
     'model' => 'text-davinci-003',
     'prompt' => $prompt,
-    'temperature' => 0.9,
+    'temperature' => 0.7,
     'max_tokens' => 2000,
     'frequency_penalty' => 0,
     'presence_penalty' => 0,

@@ -24,13 +24,15 @@
             'value': 'it'
           }
         ],
-        generatePrompt: "I will provide you with a prompt, and your task is to generate an object that describes the prompt. The object should include a title, description, language, and output type. You may choose from three language options: English ('en'), French ('fr'), or Italian ('it'). Please respond with a JSON object that includes the following properties: 'title', 'description', 'language', and 'output'. Each value need to be in same language of the prompt matching language. Your response should be formatted like this: {\"title\": \"\", \"description\": \"\", \"language\": \"\", \"output\": \"\"}. Do not use the prompt in your response. Here is an example prompt that you may use to generate your response:\n\n\n",
+        type: this.source.type,
+        generatePrompt: "Your task is to generate an object that describes a given prompt. The prompt will be provided by me, and you should extract a title, a description, and the language of the prompt. You have to choose one language from English ('en'), French ('fr'), or Italian ('it') to match the language of the prompt. Please respond with a JSON object that includes the following properties: 'title', 'description', and 'language', where each value should be in the same language as the prompt. Do not include the prompt in your response. Your output should be formatted like this: {\"title\": \"\", \"description\": \"\", \"language\": \"\"}. Here's an example prompt that you may use to generate your response:\n\n\n",
         formData: {
           title: "",
           prompt: this.source.prompt ?? "",
           description: "",
           language: "en",
-          output: ""
+          output: this.source.output,
+          input: this.source.input
         },
         isLoading: false
       }

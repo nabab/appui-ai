@@ -19,6 +19,7 @@ $id_note = $note->insert($model->data['title'], $model->data['prompt'], $id_opti
 $insert = $model->db->insert('bbn_ai_prompt', [
   'id_note' => $id_note,
   'output' => $model->data['output'],
+  'input' => $model->data['input'],
   'description' => $model->data['description']
 ]);
 

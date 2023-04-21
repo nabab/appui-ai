@@ -19,9 +19,13 @@
       <span>{{_('Language')}}</span>
       <bbn-dropdown v-model="formData.language"
                     :source="lang"/>
+      <span>{{_('Input type')}}</span>
+      <bbn-dropdown v-model="formData.input"
+                    :source="type"></bbn-dropdown>
       <span>{{_('Output type')}}</span>
-      <bbn-input v-model="formData.output"/>
-            <div class="bbn-grid-full">
+      <bbn-dropdown v-model="formData.output"
+                    :source="type"></bbn-dropdown>
+      <div class="bbn-grid-full">
         <bbn-button class="generate bbn-primary"
                     @click="generate">Ask the AI to generate title and description</bbn-button>
       </div>

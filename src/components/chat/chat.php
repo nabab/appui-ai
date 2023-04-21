@@ -1,7 +1,76 @@
-<!-- HTML Document -->
-
 <div class="bbn-overlay bbn-qr-chat">
-  <bbn-splitter orientation="horizontal"
+  <div v-if="mode === null" class="bbn-100 bbn-flex bbn-middle flex-direction-column">
+    <h2 class="bbn-bottom-lmargin">
+      {{getRandomIntroSentence()}}
+    </h2>
+    <bbn-button class="bbn-bottom-lmargin" @click="() => {mode = 'chat'}">Chat</bbn-button>
+    <bbn-button @click="() => {mode = 'promptEditor'}">Your prompt</bbn-button>
+  </div>
+  <div v-if="mode === 'chat'" class="bbn-100">
+    <div class="bbn-100 bbn-flex flex-direction-column">
+      <bbn-toolbar class="bbn-m bbn-xspadding">
+        <bbn-button icon="nf nf-mdi-home"
+                    class="bbn-left-xsspace"
+                    :text="_('Return to home page')"
+                    :notext="true"
+                    @click="() => {mode = null}"/>
+        <bbn-button icon="nf nf-md-eraser"
+                    class="bbn-left-xsspace"
+                    :text="_('Clear the conversation')"
+                    :notext="true"
+                    @click="clear"/>
+        <bbn-button icon="nf nf-fa-arrow_right"
+                    class="bbn-left-xsspace"
+                    :text="_('Send to prompt editor')"
+                    :notext="true"
+                    @click="() => { mode = 'promptEditor'}"/>
+
+
+      </bbn-toolbar>
+
+      <div class="bbn-w-100 overflow-auto bbn-flex-height" style="height: 80%">
+        <div v-for="item in conversation" class="bbn-xsmargin bbn-flex flex-direction-column " style="height: auto; max-width: 70%; width: 100%" :class="item.ai ? ['flex-end', 'bbn-secondary'] : ['flex-start', 'bbn-primary']">
+          <div class="bbn-flex bbn-middle bbn-xspadding" style="maxWidth: 100%">
+            <component :is="item.ai ? messagePromptType : userPromptType"
+                       class="bbn-w-100"
+                       v-model="item.text"
+                       v-bind="componentOptions(messagePromptType, true)"/>
+          </div>
+
+          <div class="bbn-flex bbn-w-100 bbn-xspadding"
+               style="margin-top: auto">
+            <span class="bbn-small bbn-grey bbn-w-50 bbn-left">{{item.ai ? 'bbn-ai' : 'you'}}</span>
+            <span class="bbn-small bbn-grey bbn-w-50 bbn-right">{{item.creation_date}}</span>
+          </div>
+        </div>
+      </div>
+      <hr style="margin: 0">
+      <div class="bbn-flex-height bbn-middle bbn-xspadding" style="height: 20%">
+
+        <component :is="userPromptType"
+                   v-model="input"
+                   v-bind="componentOptions(userPromptType, false)"
+                   class="overflow-auto bbn-scroll bbn-bottom-xsmargin bbn-w-80"/>
+        <div class="bbn-w-100 bbn-flex" style="justify-content: center">
+          <div class="bbn-s">
+            <span>User chat type</span>
+            <bbn-dropdown v-model="userPromptType"
+                          :source="promptType"></bbn-dropdown>
+          </div>
+          <bbn-button class="bbn-left-lspace"
+                      @click="send">send</bbn-button>
+
+          <div class="bbn-s bbn-left-lspace">
+            <span>AI response type</span>
+            <bbn-dropdown v-model="messagePromptType"
+                          :source="promptType"></bbn-dropdown>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <bbn-splitter v-if="mode === 'promptEditor'" orientation="horizontal"
                 :resizable="true"
                 :collapsible="true">
     <bbn-pane size="20%">
@@ -11,9 +80,13 @@
       </bbn-list>
     </bbn-pane>
     <bbn-pane>
-      <div class="bbn-overlay bbn-flex-height">
-        <bbn-toolbar class="bbn-m"
-                     style="padding-top: 5px">
+      <div class="bbn-100 bbn-flex flex-direction-column">
+        <bbn-toolbar class="bbn-m bbn-xspadding">
+          <bbn-button icon="nf nf-mdi-home"
+                      class="bbn-left-xsspace"
+                      :text="_('Return to home page')"
+                      :notext="true"
+                      @click="() => {mode = null}"/>
           <bbn-button icon="nf nf-fa-save"
                       class="bbn-left-xsspace"
                       :text="_('Save the prompt')"
@@ -24,57 +97,64 @@
                       :text="_('Clear the conversation')"
                       :notext="true"
                       @click="clear"/>
-        </bbn-toolbar>
-        <div class="bbn-flex-fill">
-          <div class="bbn-100">
-            <bbn-splitter orientation="vertical"
-                          :resizable="true"
-                          :collapsible="true">
-              <bbn-pane size="25%">
-                <div class="bbn-flex flex-direction-column bbn-spadding bbn-overlay bbn-middle">
-                  <div class="bbn-flex-fill bbn-middle">
-                    <h3 v-if="currentSelected">
-                      {{currentSelected.title}}
-                      <i class="bbn-left-xsspace nf nf-seti-info" :title="currentSelected.description"/>
-                    </h3>
-                    <h3 v-else>
-                      {{_('Write a prompt for the AI')}}
-                    </h3>
-                  </div>
+          <bbn-button :icon="editMode ? 'nf nf-mdi-pencil_off' : 'nf nf-mdi-pen'"
+                      class="bbn-left-xsspace"
+                      :text="editMode ? _('Close edit mode')  :  _('Edit the current prompt')"
+                      :notext="true"
+                      @click="() => {editMode = !editMode}"/>
 
-                  <bbn-textarea class="user-input bbn-bottom-xsmargin bbn-left-xspadding bbn-h-100 bbn-w-100"
-                                :resizable="false"
-                                v-model="prompt"></bbn-textarea>
-                </div>
-              </bbn-pane>
-              <bbn-pane size="25%">
-                <div class="bbn-flex flex-direction-column bbn-spadding bbn-overlay bbn-middle">
-                  <bbn-textarea class="user-input bbn-bottom-xsmargin bbn-left-xspadding bbn-h-100 bbn-w-100"
-                                :resizable="false"
-                                v-model="input"></bbn-textarea>
-                  <bbn-button class=""
-                              @click="send">send</bbn-button>
-                </div>
-              </bbn-pane>
-              <bbn-pane>
-                <div class="bbn-flex bbn-flex-height flex-direction-column conversation-container bbn-top-xsmargin bbn-bottom-xsmargin"
-                     style="overflow: auto;">
-                  <div v-for="item in conversation" class="bbn-w-90 bbn-flex-height bbn-left-smargin bbn-bottom-smargin">
-                    <div class="bbn-bordered bbn-left-spadding bbn-right-spadding bbn-top-spadding bbn-radius bbn-flex-height"
-                         :class="item.ai ? ['flex-end', 'bbn-secondary'] : ['flex-start', 'bbn-primary']"
-                         style="min-width: 300px; max-width: 70%">
-                      <!--span class="bbn-w-100 bbn-bottom-xspadding" v-html="item.text"></span-->
-                      <bbn-markdown v-model="item.text"></bbn-markdown>
-                      <div class="bbn-flex bbn-w-100"
-                           style="margin-top: auto">
-                        <span class="bbn-small bbn-grey bbn-w-50 bbn-left">{{item.ai ? 'bbn-ai' : 'you'}}</span>
-                        <span class="bbn-small bbn-grey bbn-w-50 bbn-right">{{item.creation_date}}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </bbn-pane>
-            </bbn-splitter>
+
+        </bbn-toolbar>
+        <div v-if="selectedPromptId !== null" class="bbn-flex-height bbn-middle" style="maxHeight: 25%">
+          <h3 v-if="currentSelected">
+            {{currentSelected.title}}
+            <i class="bbn-left-xsspace nf nf-seti-info" :title="currentSelected.description"/>
+          </h3>
+          <h3 v-else>
+            {{_('Write a prompt for the AI')}}
+          </h3>
+          <textarea placeholder="write something..." @input="resize('textarea')" :readonly="!editMode" ref="textarea" v-model="prompt" class="autoGrowTe bbn-w-80" :style="{height: getTextareaSize('textarea')}"></textarea>
+        </div>
+        <hr v-if="selectedPromptId !== null" style="margin: 0">
+        <bbn-toolbar v-if="selectedPromptId === null || editMode" class="bbn-m bbn-xspadding">
+          <div class="bbn-left-lspace bbn-s">
+            <span>User input format</span>
+            <bbn-dropdown v-model="userPromptType"
+                          :source="promptType"></bbn-dropdown>
+          </div>
+          <div class="bbn-left-lspace bbn-s">
+            <span>AI response format</span>
+            <bbn-dropdown v-model="messagePromptType"
+                          :source="promptType"></bbn-dropdown>
+          </div>
+
+
+
+        </bbn-toolbar>
+        <div class="bbn-flex-height bbn-middle bbn-xspadding" style="" :style="{maxHeight: selectedPromptId !== null ? '30%' : '40%'}">
+
+          <component :is="userPromptType"
+                     v-model="input"
+                     v-bind="componentOptions(userPromptType, false)"
+                     class="overflow-auto bbn-scroll bbn-bottom-xsmargin bbn-w-80"/>
+          <bbn-button class="bbn-bottom-lmargin"
+                      @click="send">send</bbn-button>
+        </div>
+        <hr style="margin: 0">
+        <div class="bbn-w-100 overflow-auto bbn-flex-height" style="" :style="{maxHeight: selectedPromptId !== null ? '45%' : '60%'}">
+          <div v-for="item in conversation" class="bbn-xsmargin bbn-flex flex-direction-column " style="height: auto; max-width: 70%; width: 100%" :class="item.ai ? ['flex-end', 'bbn-secondary'] : ['flex-start', 'bbn-primary']">
+            <div class="bbn-flex bbn-middle bbn-xspadding" style="maxWidth: 100%">
+              <component :is="item.ai ? messagePromptType : userPromptType"
+                         class="bbn-w-100"
+                         v-model="item.text"
+                         v-bind="componentOptions(messagePromptType, true)"/>
+            </div>
+
+            <div class="bbn-flex bbn-w-100 bbn-xspadding"
+                 style="margin-top: auto">
+              <span class="bbn-small bbn-grey bbn-w-50 bbn-left">{{item.ai ? 'bbn-ai' : 'you'}}</span>
+              <span class="bbn-small bbn-grey bbn-w-50 bbn-right">{{item.creation_date}}</span>
+            </div>
           </div>
         </div>
       </div>
