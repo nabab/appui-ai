@@ -14,10 +14,10 @@ if ($model->hasData(['prompt']) && defined('BBN_OPENAI_KEY')) {
   $prompt =  "";
   if ($model->hasData('input')) {
     $prompt = $model->data['prompt'] . "\n\n" . $model->data['input'];
-  } else {
+  }
+  else {
     $prompt = $model->data['prompt'];
   }
-  
 
   $open_ai = new OpenAi(BBN_OPENAI_KEY);
 
@@ -32,9 +32,8 @@ if ($model->hasData(['prompt']) && defined('BBN_OPENAI_KEY')) {
 
   $complete = json_decode($complete, true);
 
-  X::log($complete, 'chatgpt');
- 
-	
+  X::log([$prompt, $complete], 'chatgpt');
+
   if (isset($complete['error'])) {
     return [
       'success' => false,
