@@ -3,9 +3,13 @@
   <bbn-scroll ref="scroll">
     <div class="bbn-w-100 overflow-auto bbn-flex-column bbn-vpadding">
       <appui-ai-chat-item v-for="item in conversation"
-                       :source="item"/>
+                       		:source="item"
+                          :outputType="aiFormat"/>
     </div>
     <hr class="bbn-hr">
+    <h4 class="bbn-w-100 bbn-middle">
+      
+    </h4>
     <div class="bbn-w-100 bbn-spadding bbn-flex-width">
       <div class="bbn-flex-fill">
         <bbn-textarea v-model="input"
@@ -21,7 +25,7 @@
                     :text="_('send')"/>
         <span v-text="_('AI response format')"
               class="bbn-s bbn-left-lspace"/>
-        <bbn-dropdown v-model="messagePromptType"
+        <bbn-dropdown v-model="aiFormat"
                       class="bbn-s"
                       :source="promptType"/>
       </div>

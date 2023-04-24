@@ -15,7 +15,8 @@
           input: ""
         },
         editMode: false,
-        mode: null
+        mode: null,
+        conversationChange: false
       }
     },
     computed: {
@@ -48,12 +49,14 @@
       }
     },
     methods: {
-      getConversation() {
+      getPromptConversation() {
+        this.conversationChange = true;
         bbn.fn.post(this.source.root + '/prompt/conversation/get', {
           id: this.selectedPromptId
         }, (d) => {
           if (d.success) {
-            this.conversation.splice(0, this.conversation.length, ...d.data);
+            this.currentPrompt = d.data;
+           	this.conversationChange = false;
           }
         })
       },
@@ -74,24 +77,14 @@
         bbn.fn.log(this.source.prompts[e.value]);
       },
       listSelectItem(item) {
-        if (!this.selectedPromptId) {
-          this.userChat.prompt = this.prompt;
-          this.userChat.input = this.input;
-          bbn.fn.log(this.conversation);
-          this.userChat.conversation = [...this.conversation];
-        }
-
         if (item.value) {
-          this.prompt = this.source.prompts[item.value].content;
-          this.selectedPromptId = this.source.prompts[item.value].id;
-          this.input = "";
-          this.getConversation();
+          bbn.fn.log(item);
+          this.selectedPromptId = this.source.prompts[item.value].id
+          this.getPromptConversation();
         } else {
-          this.selectedPromptId = null;
-          this.prompt = this.userChat.prompt;
-          this.input = this.userChat.input;
-          this.conversation = this.userChat.conversation
+         	this.selectedPromptId = null;
         }
+        this.find('appui-ai-chat').$nextTick(this.find('appui-ai-chat').updateScroll);
       },
       savePrompt() {
         this.getPopup({
@@ -107,16 +100,17 @@
         })
       },
       clear() {
-        if (!this.selectedPromptId) {
-          this.conversation = [];
-        } else {
+        if (this.mode === 'chat') {
+          this.currentChat = [];
+        }
+        if (this.mode === 'prompt') {
           appui.confirm(bbn._('Do you want to delete all the conversation ?'), () => {
             bbn.fn.post(this.source.root + '/prompt/conversation/clear' , {
               id: this.selectedPromptId
             }, (d) => {
               if (d.success) {
                 appui.success(bbn._('Conversation deleted'));
-                this.conversation = [];
+                this.currentPrompt = [];
               } else {
                 appui.error(bbn._('An error occurred during deletion'))
               }

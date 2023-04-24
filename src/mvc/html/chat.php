@@ -16,10 +16,10 @@
                 @click="mode = 'chat'"
                 :text="_('Chat')"
                 :disabled="mode === 'chat'"/>
-    <bbn-button @click="mode = 'promptEditor'"
+    <bbn-button @click="mode = 'prompt'"
                 icon="nf nf-md-chat_alert_outline"
                 :text="_('Prompts')"
-                :disabled="mode === 'promptEditor'"/>
+                :disabled="mode === 'prompt'"/>
     <bbn-button icon="nf nf-md-eraser"
                 slot="right"
                 :disabled="!mode"
@@ -40,18 +40,18 @@
         <?= _("Try our examples in the left menu to get an idea of its capabilities") ?>
       </h3>
     </div>
-    <bbn-splitter v-else-if="mode"
+    <bbn-splitter v-else-if="mode && !isLoading"
                   orientation="horizontal"
                   :resizable="true"
                   :collapsible="true">
-      <bbn-pane size="20%">
+      <bbn-pane size="20%" v-if="mode === 'prompt'">
         <bbn-list v-if="!isLoading"
                   :source="listSource"
                   :alternateBackground="true"
                   @select="listSelectItem"/>
       </bbn-pane>
       <bbn-pane>
-        <bbn-loader v-if="isLoading"/>
+        <bbn-loader v-if="conversationChange"/>
         <appui-ai-chat v-else
                        :source="currentConversation"
                        :mode="mode"/>

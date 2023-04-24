@@ -13,10 +13,13 @@
     <div v-else-if="source.error"
          class="bbn-state-error bbn-m"
          v-text="_('There was an error while getting the response')"/>
-    <div v-else
+    <component v-else
+         :is="outputType"
          class="bbn-xspadding bbn-background bbn-text bbn-w-100 bbn-radius"
          style="maxWidth: 100%; white-space: break-spaces"
-         v-text="source.text.trim()"/>
+         v-bind="componentOptions(outputType, true)"
+         v-model="source.text.trim()">
+    </component>
   </div>
 
   <div class="bbn-flex bbn-w-100 bbn-vxspadding  bbn-hspadding"

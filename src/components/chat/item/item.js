@@ -4,10 +4,18 @@
   return {
     props: {
       source: {
-      	type: Object,
+        type: Object,
         required: true
-	    },
-      cp: null
+      },
+      outputType: {
+        type: String,
+        required: true
+      }
+    },
+    data() {
+      return {
+        cp: null
+      }
     },
     computed: {
       fdate() {
@@ -15,6 +23,15 @@
       }
     },
     methods: {
+      componentOptions(type, readonly) {
+        let res = {
+          readonly: readonly
+        };
+        if (type === 'bbn-code') {
+          res.fill = false;
+        }
+        return res;
+      },
       copy() {
         bbn.fn.copy(this.source.text);
         appui.success(bbn._("Copied"));

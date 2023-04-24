@@ -30,6 +30,10 @@
         type: Array,
         required: true,
       },
+      mode: {
+        type: String,
+        required: true
+      }
     },
     data() {
       return {
@@ -44,11 +48,11 @@
         input: "",
         root: appui.plugins['appui-ai'] + '/',
         prompt: "",
-        conversation: [{
+        conversation: this.mode === 'chat' ? [{
           text: this.getRandomIntroSentence(),
           ai: 1,
           creation_date: (new Date()).getTime()
-        }],
+        }] : this.source,
         userChat: {
           prompt: "",
           conversation: [],
@@ -56,12 +60,15 @@
         },
         editMode: false,
         userPromptType: "bbn-textarea",
-        messagePromptType: "bbn-textarea",
-        mode: null,
+        aiFormat: "bbn-textarea",
         isLoadingResponse: false
       }
     },
+    computed: {
+
+    },
     methods: {
+
       fdate: bbn.fn.fdate,
       getRandomIntroSentence() {
         const randomIndex = Math.floor(Math.random() * introSentences.length);
@@ -100,7 +107,7 @@
           this.conversation = [];
         } else {
           appui.confirm(bbn._('Do you want to delete all the conversation ?'), () => {
-            bbn.fn.post(this.source.root + '/prompt/conversation/clear' , {
+            bbn.fn.post(this.root + 'prompt/conversation/clear' , {
               id: this.selectedPromptId
             }, (d) => {
               if (d.success) {
@@ -114,7 +121,7 @@
         }
       },
       updatePromptsList() {
-        bbn.fn.post(this.source.root + '/prompts' , {}, (d) => {
+        bbn.fn.post(this.root + 'prompts' , {}, (d) => {
           if (d.success) {
             this.source.prompts.splice(0, this.source.prompts.length, ...d.data);
             this.$forceUpdate();
@@ -142,7 +149,7 @@
             request_object.id = id;
           }
 
-          bbn.fn.post(this.source.root + '/AI', request_object, (d) => {
+          bbn.fn.post(this.root + 'chat', request_object, (d) => {
             if (d.success && this.selectedPromptId === id) {
               this.getConversation();
             }
@@ -157,7 +164,7 @@
           this.input = '';
           this.$nextTick(this.updateScroll);
           this.getRef('chatPrompt').focus();
-          bbn.fn.post(this.source.root + '/AI', {prompt: input}, (d) => {
+          bbn.fn.post(this.root + 'chat', {prompt: input}, (d) => {
             let inputDate = (new Date()).getTime();
             this.conversation.at(-1).creation_date = inputDate;
             if (d.success) {
