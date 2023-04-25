@@ -4,7 +4,7 @@
   <bbn-toolbar class="bbn-m bbn-xspadding">
     <bbn-button icon="nf nf-mdi-home"
                 :text="_('Return to home page')"
-                :disabled="!mode"
+                :disabled="!mode || editMode"
                 :notext="true"
                 @click="mode = null"/>
     <!--bbn-button icon="nf nf-fa-arrow_right"
@@ -15,12 +15,35 @@
     <bbn-button icon="nf nf-md-chat_question_outline"
                 @click="mode = 'chat'"
                 :text="_('Chat')"
-                :disabled="mode === 'chat'"/>
+                :disabled="mode === 'chat' || editMode"/>
     <bbn-button @click="mode = 'prompt'"
                 icon="nf nf-md-chat_alert_outline"
                 :text="_('Prompts')"
-                :disabled="mode === 'prompt'"/>
-    <bbn-button icon="nf nf-md-eraser"
+                :disabled="mode === 'prompt' || editMode"/>
+    <bbn-button v-if="mode === 'prompt' && !editMode"
+                icon="nf nf-md-forum_plus"
+                :text="_('New prompt')"
+                @click="create"
+          			class="bbn-left-xsmargin"
+                />
+    <bbn-button v-if="selectedPromptId && !editMode"
+                icon="nf nf-md-comment_edit"
+                :text="_('Edit prompt')"
+                @click="edit"
+                slot="right"/>
+    <bbn-button v-if="editMode"
+                icon=""
+                :text="_('Generate title for me')"
+                slot="right"
+                @click="generate"
+                :disabled="generating"/>
+    <bbn-button v-if="editMode"
+                icon="nf nf-cod-chrome_close"
+                :text="_('Close')"
+                slot="right"
+                @click="() => {editMode = false;}"/>
+    <bbn-button v-if="!editMode"
+                icon="nf nf-md-eraser"
                 slot="right"
                 :disabled="!mode"
                 :text="_('Clear the conversation')"
@@ -44,17 +67,20 @@
                   orientation="horizontal"
                   :resizable="true"
                   :collapsible="true">
-      <bbn-pane size="20%" v-if="mode === 'prompt'">
-        <bbn-list v-if="!isLoading"
+      <bbn-pane size="20%">
+        <bbn-list v-if="!listChange"
                   :source="listSource"
                   :alternateBackground="true"
                   @select="listSelectItem"/>
       </bbn-pane>
       <bbn-pane>
         <bbn-loader v-if="conversationChange"/>
+        <appui-ai-chat-editor v-else-if="editMode"
+                              :source="currentSelected"/>
         <appui-ai-chat v-else
                        :source="currentConversation"
-                       :mode="mode"/>
+                       :mode="mode"
+                       :configuration="currentSelected"/>
       </bbn-pane>
     </bbn-splitter>
   </div>

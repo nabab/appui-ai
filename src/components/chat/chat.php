@@ -1,15 +1,14 @@
 
 <div class="bbn-overlay appui-ai-chat">
-  <bbn-scroll ref="scroll">
+  <bbn-scroll ref="scroll" >
     <div class="bbn-w-100 overflow-auto bbn-flex-column bbn-vpadding">
       <appui-ai-chat-item v-for="item in conversation"
+                          key="id"
                        		:source="item"
                           :outputType="aiFormat"/>
     </div>
     <hr class="bbn-hr">
-    <h4 class="bbn-w-100 bbn-middle">
-      
-    </h4>
+    <h4 v-if="configuration && configuration.title" v-text="configuration.title" class="bbn-w-100"/>
     <div class="bbn-w-100 bbn-spadding bbn-flex-width">
       <div class="bbn-flex-fill">
         <bbn-textarea v-model="input"

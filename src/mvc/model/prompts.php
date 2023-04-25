@@ -17,7 +17,7 @@ $all = $model->db->rselectAll([
     'creation_date',
     'bbn_ai_prompt.id_note',
     'usage_count',
-    'description',
+    'input',
     'content',
     'title',
     'lang'

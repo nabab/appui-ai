@@ -1,6 +1,6 @@
 <!-- HTML Document -->
 
-<div class="appui-chat-item bbn-xsmargin bbn-flex flex-direction-column bbn-radius"
+<div class="appui-chat-item bbn-xsmargin bbn-flex-column bbn-radius"
      style="height: auto; max-width: 70%; width: 100%"
      :class="source.ai ? ['flex-end', 'bbn-secondary'] : ['flex-start', 'bbn-primary']">
   <div class="bbn-w-100 bbn-xspadding"
@@ -13,13 +13,18 @@
     <div v-else-if="source.error"
          class="bbn-state-error bbn-m"
          v-text="_('There was an error while getting the response')"/>
-    <component v-else
-         :is="outputType"
+    <component v-else-if="outputType !== 'div'"
+               :is="outputType"
+               class="bbn-xspadding bbn-background bbn-text bbn-w-100 bbn-radius"
+               style="maxWidth: 100%; white-space: break-spaces"
+               v-bind="componentOptions(outputType, true)"
+               v-model="source.text.trim()">
+    </component>
+    <div v-else
          class="bbn-xspadding bbn-background bbn-text bbn-w-100 bbn-radius"
          style="maxWidth: 100%; white-space: break-spaces"
-         v-bind="componentOptions(outputType, true)"
-         v-model="source.text.trim()">
-    </component>
+         v-text="source.text.trim()"/>
+
   </div>
 
   <div class="bbn-flex bbn-w-100 bbn-vxspadding  bbn-hspadding"

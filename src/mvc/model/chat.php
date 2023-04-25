@@ -34,7 +34,7 @@ if ($model->hasData(['prompt']) && defined('BBN_OPENAI_KEY')) {
 
   X::log([$prompt, $complete], 'chatgpt');
 
-  if (isset($complete['error'])) {
+  if (!$complete || isset($complete['error'])) {
     return [
       'success' => false,
       'error' => $complete
@@ -73,7 +73,7 @@ if ($model->hasData(['prompt']) && defined('BBN_OPENAI_KEY')) {
       'creation_date',
       'bbn_ai_prompt.id_note',
       'usage_count',
-      'description',
+      'input',
       'content',
       'title',
       'lang'

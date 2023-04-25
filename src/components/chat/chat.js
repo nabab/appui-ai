@@ -33,6 +33,10 @@
       mode: {
         type: String,
         required: true
+      },
+      configuration: {
+        type: Object,
+        required: false
       }
     },
     data() {
@@ -40,15 +44,15 @@
         promptType: [
           {value: "bbn-rte", text: bbn._('Rich text editor')},
           {value: "bbn-markdown", text: bbn._('Markdown')},
-          {value: "bbn-textarea", text: bbn._('Text multiline')},
+          {value: "div", text: bbn._('Text multiline')},
           {value: "bbn-code", text: bbn._('Code')},
           {value: "bbn-input", text: bbn._('Text inline')},
           {value: "bbn-json-editor", text: bbn._('Json')}
         ],
         input: "",
         root: appui.plugins['appui-ai'] + '/',
-        prompt: "",
-        conversation: this.mode === 'chat' ? [{
+        prompt: this.configuration.title ?? null,
+        conversation: this.mode === 'chat' || !this.configuration.id ? [{
           text: this.getRandomIntroSentence(),
           ai: 1,
           creation_date: (new Date()).getTime()
@@ -60,9 +64,16 @@
         },
         editMode: false,
         userPromptType: "bbn-textarea",
-        aiFormat: "bbn-textarea",
+        aiFormat: this.configuration.aiFormat ?? "div",
         isLoadingResponse: false
       }
+    },
+    mounted() {
+      setTimeout(() => {
+        bbn.fn.log("TIMEOUT");
+        this.updateScroll();
+
+      }, 300)
     },
     computed: {
 
@@ -102,32 +113,6 @@
           }
         })
       },
-      clear() {
-        if (!this.selectedPromptId) {
-          this.conversation = [];
-        } else {
-          appui.confirm(bbn._('Do you want to delete all the conversation ?'), () => {
-            bbn.fn.post(this.root + 'prompt/conversation/clear' , {
-              id: this.selectedPromptId
-            }, (d) => {
-              if (d.success) {
-                appui.success(bbn._('Conversation deleted'));
-                this.conversation = [];
-              } else {
-                appui.error(bbn._('An error occurred during deletion'))
-              }
-            })
-          })
-        }
-      },
-      updatePromptsList() {
-        bbn.fn.post(this.root + 'prompts' , {}, (d) => {
-          if (d.success) {
-            this.source.prompts.splice(0, this.source.prompts.length, ...d.data);
-            this.$forceUpdate();
-          }
-        })
-      },
       updateScroll() {
         this.$nextTick(() => {
           this.getRef('scroll').onResize(true).then(() => {
@@ -138,28 +123,53 @@
         });
       },
       send() {
-        let request_object = {
-          prompt: this.prompt,
-          input: this.input
-        }
-        if (this.selectedPromptId) {
-          let id = this.selectedPromptId;
+        bbn.fn.log("SEND", this.configuration);
+
+        if (this.configuration.id) {
+          let request_object = {
+            prompt: this.configuration.content,
+            input: this.input
+          }
+          let id = this.configuration.id;
 
           if (id) {
             request_object.id = id;
           }
 
+          let input = this.input;
+          let inputDate = (new Date()).getTime();
+
+          this.conversation.push({text: input, ai: 0, creation_date: inputDate});
+          this.conversation.push({ai: 1, loading: 1, creation_date: inputDate});
+
+          this.isLoadingResponse = true;
+
+          this.input = '';
+
+          this.$nextTick(this.updateScroll);
+          this.getRef('chatPrompt').focus();
+
           bbn.fn.post(this.root + 'chat', request_object, (d) => {
-            if (d.success && this.selectedPromptId === id) {
-              this.getConversation();
+            if (d.success && this.configuration.id === id) {
+              let inputDate = (new Date()).getTime();
+              this.conversation.at(-1).creation_date = inputDate;
+              if (d.success) {
+                this.$set(this.conversation.at(-1), 'text', d.text);
+              }
+              else {
+                this.$set(this.conversation.at(-1), 'error', true);
+              }
+              this.conversation.at(-1).loading = false;
+              this.isLoadingResponse = false;
+              this.$nextTick(this.updateScroll);
             }
           })
         }
         else {
           let input = this.input;
           let inputDate = (new Date()).getTime();
-          this.conversation.push({text: input, ai: 0, creation_date: inputDate});
-          this.conversation.push({ai: 1, loading: 1, creation_date: inputDate});
+          this.conversation.push({text: input, ai: 0, creation_date: inputDate, id: bbn.fn.randomString()});
+          this.conversation.push({ai: 1, loading: 1, creation_date: inputDate, id: bbn.fn.randomString()});
           this.isLoadingResponse = true;
           this.input = '';
           this.$nextTick(this.updateScroll);

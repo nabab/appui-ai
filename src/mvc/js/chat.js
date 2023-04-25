@@ -16,7 +16,9 @@
         },
         editMode: false,
         mode: null,
-        conversationChange: false
+        conversationChange: false,
+        listChange: false,
+        generating: false,
       }
     },
     computed: {
@@ -43,20 +45,32 @@
       },
       currentSelected() {
         if (!this.selectedPromptId) {
-          return null;
+          return {text: "Current Chat", value: null};
         }
         return bbn.fn.getRow(this.source.prompts, {id: this.selectedPromptId});
       }
     },
     methods: {
+      generate() {
+        const editor = this.find('appui-ai-chat-editor');
+        if (editor) {
+          this.generating = true;
+          editor.generateTitle();
+        }
+      },
+      create() {
+        this.editMode = true;
+      },
+      edit() {
+        this.editMode = true;
+      },
       getPromptConversation() {
-        this.conversationChange = true;
         bbn.fn.post(this.source.root + '/prompt/conversation/get', {
           id: this.selectedPromptId
         }, (d) => {
           if (d.success) {
             this.currentPrompt = d.data;
-           	this.conversationChange = false;
+            this.conversationChange = false;
           }
         })
       },
@@ -77,14 +91,21 @@
         bbn.fn.log(this.source.prompts[e.value]);
       },
       listSelectItem(item) {
+        this.conversationChange = true;
+        if (this.editMode) {
+          this.editMode = false;
+        }
         if (item.value) {
           bbn.fn.log(item);
           this.selectedPromptId = this.source.prompts[item.value].id
           this.getPromptConversation();
         } else {
-         	this.selectedPromptId = null;
+          this.selectedPromptId = null;
+          this.currentPrompt = [];
+          setTimeout(() => {
+            this.conversationChange = false;
+          }, 300);
         }
-        this.find('appui-ai-chat').$nextTick(this.find('appui-ai-chat').updateScroll);
       },
       savePrompt() {
         this.getPopup({
@@ -100,10 +121,11 @@
         })
       },
       clear() {
+        bbn.fn.log("CLEAR", this.mode, this.selectedPromptId);
         if (this.mode === 'chat') {
           this.currentChat = [];
         }
-        if (this.mode === 'prompt') {
+        if (this.mode === 'prompt' && this.selectedPromptId) {
           appui.confirm(bbn._('Do you want to delete all the conversation ?'), () => {
             bbn.fn.post(this.source.root + '/prompt/conversation/clear' , {
               id: this.selectedPromptId
@@ -111,18 +133,32 @@
               if (d.success) {
                 appui.success(bbn._('Conversation deleted'));
                 this.currentPrompt = [];
+                this.conversationChange = true;
+                setTimeout(() => {
+                  this.conversationChange = false;
+                }, 200)
               } else {
                 appui.error(bbn._('An error occurred during deletion'))
               }
             })
           })
+        } else {
+          this.currentPrompt = [];
+          this.conversationChange = true;
+          setTimeout(() => {
+            this.conversationChange = false;
+          }, 200)
         }
       },
       updatePromptsList() {
+        this.listChange = true;
         bbn.fn.post(this.source.root + '/prompts' , {}, (d) => {
           if (d.success) {
             this.source.prompts.splice(0, this.source.prompts.length, ...d.data);
-            this.$forceUpdate();
+             
+            setTimeout(() => {
+              this.listChange = false;
+            }, 300)
           }
         })
       }
