@@ -10,6 +10,10 @@
       outputType: {
         type: String,
         required: true
+      },
+      inputType: {
+        type: String,
+        required: true
       }
     },
     data() {

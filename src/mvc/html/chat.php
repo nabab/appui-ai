@@ -7,6 +7,8 @@
                 :disabled="!mode || editMode"
                 :notext="true"
                 @click="mode = null"/>
+    <!--bbn-button text="test"
+                @click="test"/-->
     <!--bbn-button icon="nf nf-fa-arrow_right"
                 class="bbn-left-xsspace"
                 :text="_('Send to prompt editor')"
@@ -32,17 +34,11 @@
                 @click="edit"
                 slot="right"/>
     <bbn-button v-if="editMode"
-                icon=""
-                :text="_('Generate title for me')"
-                slot="right"
-                @click="generate"
-                :disabled="generating"/>
-    <bbn-button v-if="editMode"
                 icon="nf nf-cod-chrome_close"
                 :text="_('Close')"
                 slot="right"
                 @click="() => {editMode = false;}"/>
-    <bbn-button v-if="!editMode"
+    <bbn-button v-if="!editMode && mode !== 'chat'"
                 icon="nf nf-md-eraser"
                 slot="right"
                 :disabled="!mode"
@@ -68,10 +64,16 @@
                   :resizable="true"
                   :collapsible="true">
       <bbn-pane size="20%">
-        <bbn-list v-if="!listChange"
+        <bbn-toolbar v-if="source.years && source.years.length > 1">
+        	<bbn-dropdown :source="conversationYearsSource"
+                        v-model="selectedYear"/>
+        </bbn-toolbar>
+        <bbn-loader v-if="listChange"/>
+        <bbn-list v-else-if="!listChange"
                   :source="listSource"
                   :alternateBackground="true"
                   @select="listSelectItem"/>
+        
       </bbn-pane>
       <bbn-pane>
         <bbn-loader v-if="conversationChange"/>

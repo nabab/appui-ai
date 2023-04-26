@@ -19,6 +19,9 @@
         conversationChange: false,
         listChange: false,
         generating: false,
+        selectedYear: this.source.years && this.source.years.length ? this.source.years[this.source.years.length - 1] : new Date().getFullYear(),
+        conversationList: [],
+        selectedChatPath: null
       }
     },
     computed: {
@@ -32,25 +35,70 @@
         return [];
       },
       listSource() {
-        let res = [
-          {text: "Current Chat", value: null}
-        ];
-        for (let i in this.source.prompts) {
-          res.push({
-            text: this.source.prompts[i].title,
-            value: i
-          })
+        if (this.mode === 'prompt') {
+          let res = [
+            {text: "Current Chat", value: null}
+          ];
+          for (let i in this.source.prompts) {
+            res.push({
+              text: this.source.prompts[i].title,
+              value: i
+            })
+          }
+          return res;
+        } else if (this.mode === 'chat') {
+          return this.conversationList;
         }
-        return res;
+        return [];
       },
       currentSelected() {
-        if (!this.selectedPromptId) {
-          return {text: "Current Chat", value: null};
+        if (this.mode === 'prompt') {
+          if (!this.selectedPromptId) {
+            return {text: "Current Chat", value: null};
+          }
+          return bbn.fn.getRow(this.source.prompts, {id: this.selectedPromptId}) || null;
+        } else if (this.mode === 'chat') {
+          return bbn.fn.getRow(this.conversationList, {value: this.selectedChatPath}) || null;
         }
-        return bbn.fn.getRow(this.source.prompts, {id: this.selectedPromptId});
+        return null;
       }
     },
     methods: {
+      getConversationList() {
+        if (!this.selectedYear)
+          return;
+        let res = [];
+        bbn.fn.post(this.root + 'conversations', {
+          year: this.selectedYear
+        }, (d) => {
+          if(d.success) {
+            for (let i in d.data) {
+              res.push({
+                text: d.data[i].name === 'Current' ? d.data[i].name : bbn.fn.fdate(d.data[i].name),
+                value: d.data[i].path,
+                editable: d.data[i].editable
+              })
+            }
+            this.conversationList = res;
+            if (this.conversationList.length && this.selectedChatPath === null) {
+              this.selectedChatPath = this.conversationList[0].path;
+            }
+          }
+        })
+      },
+      conversationYearsSource() {
+        let res = [];
+        bbn.fn.log(this.source.years);
+        if (this.source.years && this.source.years.length) {
+          for(let i in this.source.years) {
+            res.push({
+              text: this.source.years[i],
+              value: this.source.years[i]
+            })
+          }
+        }
+        return res;
+      },
       generate() {
         const editor = this.find('appui-ai-chat-editor');
         if (editor) {
@@ -59,6 +107,7 @@
         }
       },
       create() {
+        this.selectedPromptId = null;
         this.editMode = true;
       },
       edit() {
@@ -85,26 +134,47 @@
         element.style.height = element.scrollHeight + "px";
       },
       test() {
-        bbn.fn.log(this.source.prompts);
+        bbn.fn.post(this.root + 'conversations', {
+          year: "2023"
+        }, (d) => {
+          bbn.fn.log(d);
+        })
       },
       testClick(e) {
         bbn.fn.log(this.source.prompts[e.value]);
       },
       listSelectItem(item) {
         this.conversationChange = true;
-        if (this.editMode) {
-          this.editMode = false;
-        }
-        if (item.value) {
-          bbn.fn.log(item);
-          this.selectedPromptId = this.source.prompts[item.value].id
-          this.getPromptConversation();
+        if (this.mode === 'prompt') {
+          if (this.editMode) {
+            this.editMode = false;
+          }
+          if (item.value) {
+            bbn.fn.log(item);
+            this.selectedPromptId = this.source.prompts[item.value].id
+            this.getPromptConversation();
+          } else {
+            this.selectedPromptId = null;
+            this.currentPrompt = [];
+            setTimeout(() => {
+              this.conversationChange = false;
+            }, 300);
+          }
         } else {
-          this.selectedPromptId = null;
-          this.currentPrompt = [];
+          if (item.value) {
+            this.selectedChatPath = item.value;
+            bbn.fn.post(this.root + 'conversation', {
+              path: item.value
+            }, (d) => {
+              for (let message of d.conversation) {
+                message.id = message.id || bbn.fn.randomString();
+              }
+              this.currentChat = d.conversation;
+            })
+          }
           setTimeout(() => {
             this.conversationChange = false;
-          }, 300);
+          }, 500);
         }
       },
       savePrompt() {
@@ -155,7 +225,7 @@
         bbn.fn.post(this.source.root + '/prompts' , {}, (d) => {
           if (d.success) {
             this.source.prompts.splice(0, this.source.prompts.length, ...d.data);
-             
+
             setTimeout(() => {
               this.listChange = false;
             }, 300)
@@ -163,12 +233,22 @@
         })
       }
     },
+    mounted() {
+      this.getConversationList();
+    },
     watch: {
       mode() {
         this.isLoading = true;
         setTimeout(() => {
           this.isLoading = false;
         }, 250);
+      },
+      selectedYear() {
+        this.listChange = true;
+        this.getConversationList();
+        setTimeout(() => {
+          this.listChange = false;
+        }, 300)
       }
     }
   }

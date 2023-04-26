@@ -12,32 +12,57 @@
       bbn.fn.log("EDIT", this.source);
       return {
         promptType: [
-          {value: "bbn-rte", text: bbn._('Rich text editor')},
-          {value: "bbn-markdown", text: bbn._('Markdown')},
-          {value: "div", text: bbn._('Text multiline')},
-          {value: "bbn-code", text: bbn._('Code')},
-          {value: "bbn-input", text: bbn._('Text inline')},
-          {value: "bbn-json-editor", text: bbn._('Json')},
+          {
+            value: "bbn-rte",
+            text: "Rich Text Editor",
+            prompt: "Your response needs to be in rich text format"
+          },
+          {
+            value: "bbn-markdown",
+            text: "Markdown",
+            prompt: "Your response needs to be in Markdown format"
+          },
+          {
+            value: "div",
+            text: "Text Multiline",
+            prompt: "Your response needs to be entered as multiple lines of text"
+          },
+          {
+            value: "bbn-code",
+            text: "Code",
+            prompt: "Your response needs to be pure code"
+          },
+          {
+            value: "bbn-input",
+            text: "Single Line",
+            prompt: "Your response needs to be entered as a single line of text"
+          },
+          {
+            value: "bbn-json-editor",
+            text: "JSON",
+            prompt: "Your response needs to be a valid JSON object"
+          }
         ],
         languages: [
-          {value: "fr", text: bbn._('French')},
-          {value: "it", text: bbn._('Italian')},
-          {value: "en", text: bbn._('English')}
+          {text: bbn._('Italian'), value: 'it'},
+          {text: bbn._('French'), value: 'fr'},
+          {text: bbn._('English'), value: 'en'},
         ],
         root: appui.plugins['appui-ai'] + '/',
         formData: {
-          id: this.source.id ?? null,
-          id_note: this.source.id_note ?? null,
-          title: this.source.title ?? "",
-          prompt: this.source.content ?? "",
-          output: this.source.output ?? "div",
-          input: this.source.input ?? "div",
-          lang: this.source.language ?? "en"
+          id: this.source.id || null,
+          id_note: this.source.id_note || null,
+          title: this.source.title || "",
+          prompt: this.source.content || "",
+          output: this.source.output || "div",
+          input: this.source.input || "div",
+          lang: this.source.language || "en"
         },
         input: "",
         response: null,
         loading: false,
-        cp: null
+        cp: null,
+        generating: false
       }
     },
     mounted() {
@@ -54,12 +79,14 @@
       send() {
         this.loading = true;
         bbn.fn.post(this.root + 'chat', {
-          prompt: this.formData.prompt,
+          prompt: this.formData.prompt + '\n' + bbn.fn.getRow(this.promptType, {value: this.formData.output}).prompt + ' and the language must be in ' +  bbn.fn.getRow(this.languages, {value: this.formData.lang}).text,
           input: this.input
         }, (d) => {
           if (d.success) {
-            this.response = d.text
-
+            this.response = this.formData.output === 'bbn-json-editor' ? JSON.parse(d.text) : d.text
+						setTimeout(() => {
+              this.loading = false;
+            }, 300);
           }
         })
         setTimeout(() =>  {
@@ -76,16 +103,18 @@
         return res;
       },
       generateTitle() {
+        this.generating = true;
         bbn.fn.post(this.root + 'chat', {
-          prompt: "Please generate a title for the following prompt:",
-          input: this.formData.title
+          prompt: "Please generate a clear and descriptive title for the following prompt:",
+          input: this.formData.prompt,
+          test: true
         }, (d) => {
           this.isLoading = false;
           if (d.success) {
-            this.formData.title = d.text;
+            this.formData.title = d.text.trim().replace(/^\"(.+)\"$/,"$1");
           }
           setTimeout(() => {
-            this.cp.generating = false;
+            this.generating = false;
           }, 300);
         })
       }

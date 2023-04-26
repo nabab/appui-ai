@@ -3,15 +3,24 @@
   <bbn-scroll ref="scroll" >
     <div class="bbn-w-100 overflow-auto bbn-flex-column bbn-vpadding">
       <appui-ai-chat-item v-for="item in conversation"
-                          key="id"
-                       		:source="item"
-                          :outputType="aiFormat"/>
+                          :key="item.id"
+                          :source="item"
+                          :outputType="aiFormat"
+                          :inputType="userPromptType"/>
     </div>
     <hr class="bbn-hr">
-    <h4 v-if="configuration && configuration.title" v-text="configuration.title" class="bbn-w-100"/>
-    <div class="bbn-w-100 bbn-spadding bbn-flex-width">
+    <h4 v-if="configuration?.title" class="bbn-w-100 bbn-lpadding">{{configuration.content}}</h4>
+    <div v-if="(mode !== 'chat') || configuration === null || configuration?.editable" class="bbn-w-100 bbn-spadding bbn-flex-width">
       <div class="bbn-flex-fill">
-        <bbn-textarea v-model="input"
+        <component v-if="userComponent"
+                   :is="userComponent"
+                   v-bind="userComponentOptions"
+                   v-model="input"
+                   ref="chatPrompt"
+                   style="width: 100%"
+                   v-focused/>
+        <bbn-textarea v-else 
+                      v-model="input"
                       ref="chatPrompt"
                       style="width: 100%"
                       v-focused

@@ -14,7 +14,8 @@ if ($model->data['id']) {
     'fields' => [
       "text",
       "creation_date",
-      "ai"
+      "ai",
+      "id"
     ],
     'where' => [
       'id_prompt' => $model->data['id'],

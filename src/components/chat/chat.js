@@ -42,21 +42,51 @@
     data() {
       return {
         promptType: [
-          {value: "bbn-rte", text: bbn._('Rich text editor')},
-          {value: "bbn-markdown", text: bbn._('Markdown')},
-          {value: "div", text: bbn._('Text multiline')},
-          {value: "bbn-code", text: bbn._('Code')},
-          {value: "bbn-input", text: bbn._('Text inline')},
-          {value: "bbn-json-editor", text: bbn._('Json')}
+          {
+            value: "bbn-rte",
+            text: "Rich Text Editor",
+            prompt: "Your response needs to be in rich text format"
+          },
+          {
+            value: "bbn-markdown",
+            text: "Markdown",
+            prompt: "Your response needs to be in Markdown format"
+          },
+          {
+            value: "bbn-textarea",
+            text: "Text Multiline",
+            prompt: "Your response needs to be entered as multiple lines of text"
+          },
+          {
+            value: "bbn-code",
+            text: "Code",
+            prompt: "Your response needs to be a code snippet"
+          },
+          {
+            value: "bbn-input",
+            text: "Single Line",
+            prompt: "Your response needs to be entered as a single line of text"
+          },
+          {
+            value: "bbn-json-editor",
+            text: "JSON",
+            prompt: "Your response needs to be a valid JSON object"
+          }
+        ],
+        languages: [
+          {text: bbn._('Italian'), value: 'it'},
+          {text: bbn._('French'), value: 'fr'},
+          {text: bbn._('English'), value: 'en'},
         ],
         input: "",
         root: appui.plugins['appui-ai'] + '/',
-        prompt: this.configuration.title ?? null,
-        conversation: this.mode === 'chat' || !this.configuration.id ? [{
+        prompt: this.configuration?.title || null,
+        conversation: this.source?.length ? this.source :  [{
           text: this.getRandomIntroSentence(),
           ai: 1,
+          id: bbn.fn.randomString(),
           creation_date: (new Date()).getTime()
-        }] : this.source,
+        }],
         userChat: {
           prompt: "",
           conversation: [],
@@ -64,7 +94,7 @@
         },
         editMode: false,
         userPromptType: "bbn-textarea",
-        aiFormat: this.configuration.aiFormat ?? "div",
+        aiFormat: this.configuration?.output || "div",
         isLoadingResponse: false
       }
     },
@@ -76,10 +106,30 @@
       }, 300)
     },
     computed: {
-
+			userComponent() {
+        if ((this.mode === 'prompt') && this.configuration) {
+          return this.configuration.input;
+        }
+        return false;
+      },
+      userComponentOptions() {
+        const o = {};
+        if (this.configuration?.input) {
+          switch (this.configuration.input) {
+            case 'bbn-textarea':
+              o.autosize = true;
+              break;
+            case 'bbn-code':
+              o.mode = 'php';
+            
+              
+          }
+        }
+        return o;
+      }
     },
     methods: {
-
+			
       fdate: bbn.fn.fdate,
       getRandomIntroSentence() {
         const randomIndex = Math.floor(Math.random() * introSentences.length);
@@ -114,20 +164,22 @@
         })
       },
       updateScroll() {
-        this.$nextTick(() => {
-          this.getRef('scroll').onResize(true).then(() => {
-            this.$nextTick(() => {
-              this.getRef('scroll').scrollEndY(true);
+        if (this.getRef('scroll')) {
+          this.$nextTick(() => {
+            this.getRef('scroll').onResize(true).then(() => {
+              this.$nextTick(() => {
+                this.getRef('scroll').scrollEndY(true);
+              });
             });
           });
-        });
+        }
       },
       send() {
         bbn.fn.log("SEND", this.configuration);
 
-        if (this.configuration.id) {
+        if (this.configuration?.id) {
           let request_object = {
-            prompt: this.configuration.content,
+            prompt: this.configuration.content + '\n' + bbn.fn.getRow(this.promptType, {value: this.configuration.output}).prompt + ' and the language must be in ' +  bbn.fn.getRow(this.languages, {value: this.configuration.lang}).text,
             input: this.input
           }
           let id = this.configuration.id;
@@ -154,7 +206,7 @@
               let inputDate = (new Date()).getTime();
               this.conversation.at(-1).creation_date = inputDate;
               if (d.success) {
-                this.$set(this.conversation.at(-1), 'text', d.text);
+                this.$set(this.conversation.at(-1), 'text', this.configuration.output === 'bbn-json-editor' ? JSON.parse(d.text) : d.text);
               }
               else {
                 this.$set(this.conversation.at(-1), 'error', true);
@@ -174,9 +226,11 @@
           this.input = '';
           this.$nextTick(this.updateScroll);
           this.getRef('chatPrompt').focus();
-          bbn.fn.post(this.root + 'chat', {prompt: input}, (d) => {
-            let inputDate = (new Date()).getTime();
-            this.conversation.at(-1).creation_date = inputDate;
+          bbn.fn.post(this.root + 'chat', {
+            prompt: input,
+            date: inputDate
+          }, (d) => {
+            this.conversation.at(-1).creation_date = d.date;
             if (d.success) {
               this.$set(this.conversation.at(-1), 'text', d.text);
             }
