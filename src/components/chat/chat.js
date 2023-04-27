@@ -41,36 +41,48 @@
     },
     data() {
       return {
-        promptType: [
+        formats: [
           {
-            value: "bbn-rte",
+            value: "rte",
             text: "Rich Text Editor",
-            prompt: "Your response needs to be in rich text format"
+            prompt: "Your response needs to be in rich text format",
+            component: "bbn-rte"
           },
           {
-            value: "bbn-markdown",
+            value: "markdown",
             text: "Markdown",
-            prompt: "Your response needs to be in Markdown format"
+            prompt: "Your response needs to be in Markdown format",
+            component: "bbn-markdown"
           },
           {
-            value: "bbn-textarea",
+            value: "textarea",
             text: "Text Multiline",
-            prompt: "Your response needs to be entered as multiple lines of text"
+            prompt: "Your response needs to be entered as multiple lines of text",
+            component: "bbn-textarea"
           },
           {
-            value: "bbn-code",
-            text: "Code",
-            prompt: "Your response needs to be a code snippet"
+            value: "code-php",
+            text: "Code PHP",
+            prompt: "Your response needs to be a code snippet",
+            component: "bbn-code"
           },
           {
-            value: "bbn-input",
+            value: "code-js",
+            text: "Code JS",
+            prompt: "Your response needs to be a code snippet",
+            component: "bbn-code"
+          },
+          {
+            value: "single-line",
             text: "Single Line",
-            prompt: "Your response needs to be entered as a single line of text"
+            prompt: "Your response needs to be entered as a single line of text",
+            component: "bbn-input"
           },
           {
-            value: "bbn-json-editor",
+            value: "json-editor",
             text: "JSON",
-            prompt: "Your response needs to be a valid JSON object"
+            prompt: "Your response needs to be a valid JSON object",
+            component: "bbn-json-editor"
           }
         ],
         languages: [
@@ -87,14 +99,9 @@
           id: bbn.fn.randomString(),
           creation_date: (new Date()).getTime()
         }],
-        userChat: {
-          prompt: "",
-          conversation: [],
-          input: ""
-        },
         editMode: false,
-        userPromptType: "bbn-textarea",
-        aiFormat: this.configuration?.output || "div",
+        userFormat: this.configuration?.input || "textarea",
+        aiFormat: this.configuration?.output || "textarea",
         isLoadingResponse: false
       }
     },
@@ -106,62 +113,39 @@
       }, 300)
     },
     computed: {
-			userComponent() {
-        if ((this.mode === 'prompt') && this.configuration) {
-          return this.configuration.input;
-        }
-        return false;
+      aiFormatComponent() {
+        return bbn.fn.getRow(this.formats, {value: this.aiFormat}).component;
+      },
+      userFormatComponent() {
+        return bbn.fn.getRow(this.formats, {value: this.userFormat}).component;
       },
       userComponentOptions() {
         const o = {};
         if (this.configuration?.input) {
           switch (this.configuration.input) {
-            case 'bbn-textarea':
+            case 'textarea':
               o.autosize = true;
               break;
-            case 'bbn-code':
+            case 'code-php':
               o.mode = 'php';
-            
-              
+              o.autosize = true;
+              o.fill = false
+              break;
+            case 'code-js':
+              o.mode = 'js'
+              o.fill = false
+              break;
           }
         }
         return o;
       }
     },
     methods: {
-			
+
       fdate: bbn.fn.fdate,
       getRandomIntroSentence() {
         const randomIndex = Math.floor(Math.random() * introSentences.length);
         return introSentences[randomIndex];
-      },
-      componentOptions(type, readonly) {
-        let res = {
-          readonly: readonly
-        };
-        if (type === 'bbn-code') {
-          res.fill = false;
-        }
-        return res;
-      },
-      test() {
-        bbn.fn.log(this.source.prompts);
-      },
-      testClick(e) {
-        bbn.fn.log(this.source.prompts[e.value]);
-      },
-      savePrompt() {
-        this.getPopup({
-          title: bbn._("Folder name"),
-          component: "appui-ai-form-prompt-save",
-          source: {
-            prompt: this.editMode ? this.prompt : this.input,
-            root: this.root,
-            type: this.promptType,
-            input: this.userPromptType,
-            output: this.messagePromptType
-          }
-        })
       },
       updateScroll() {
         if (this.getRef('scroll')) {
@@ -179,7 +163,7 @@
 
         if (this.configuration?.id) {
           let request_object = {
-            prompt: this.configuration.content + '\n' + bbn.fn.getRow(this.promptType, {value: this.configuration.output}).prompt + ' and the language must be in ' +  bbn.fn.getRow(this.languages, {value: this.configuration.lang}).text,
+            prompt: this.configuration.content + '\n' + bbn.fn.getRow(this.formats, {value: this.configuration.output}).prompt + ' and the language must be in ' +  bbn.fn.getRow(this.languages, {value: this.configuration.lang}).text,
             input: this.input
           }
           let id = this.configuration.id;
@@ -228,7 +212,9 @@
           this.getRef('chatPrompt').focus();
           bbn.fn.post(this.root + 'chat', {
             prompt: input,
-            date: inputDate
+            date: inputDate,
+            aiFormat: this.aiFormat,
+            userFormat: 'textarea'
           }, (d) => {
             this.conversation.at(-1).creation_date = d.date;
             if (d.success) {

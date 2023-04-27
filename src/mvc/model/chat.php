@@ -78,13 +78,15 @@ if ($model->hasData(['prompt']) && defined('BBN_OPENAI_KEY')) {
             "ai" => 0,
             "creation_date" => $model->data['date'],
             "text" => $model->data['prompt'],
-            'id' => bin2hex(random_bytes(10))
+            'id' => bin2hex(random_bytes(10)),
+            'format' => $model->data['userFormat'] ?? 'textarea'
           ];
           $jsonData[] = [
             "ai" => 1,
             "creation_date" => $timestamp,
             "text" => $response,
-            'id' => bin2hex(random_bytes(10))
+            'id' => bin2hex(random_bytes(10)),
+            'format' => $model->data['aiFormat'] ?? 'textarea'
           ];
 
           $updatedJsonString = json_encode($jsonData);
@@ -98,15 +100,15 @@ if ($model->hasData(['prompt']) && defined('BBN_OPENAI_KEY')) {
             "ai" => 0,
             "creation_date" => $model->data['date'],
             "text" => $model->data['prompt'],
-            'id' => bin2hex(random_bytes(10))
-
+            'id' => bin2hex(random_bytes(10)),
+            'format' => $model->data['userFormat'] ?? 'textarea'
           ];
           $jsonData[] = [
             "ai" => 1,
             "creation_date" => $timestamp,
             "text" => $response,
-            'id' => bin2hex(random_bytes(10))
-
+            'id' => bin2hex(random_bytes(10)),
+            'format' => $model->data['aiFormat'] ?? 'textarea'
           ];
           $updatedJsonString = json_encode($jsonData);
 

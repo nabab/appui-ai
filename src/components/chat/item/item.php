@@ -13,19 +13,19 @@
     <div v-else-if="source.error"
          class="bbn-state-error bbn-m"
          v-text="_('There was an error while getting the response')"/>
-    <component v-else-if="source.ai && outputType !== 'div'"
-               :is="outputType"
+    <component v-else-if="source.ai && aiFormatComponent !== 'div'"
+               :is="aiFormatComponent"
                class="bbn-xspadding bbn-background bbn-text bbn-w-100 bbn-radius"
                style="maxWidth: 100%; white-space: break-spaces"
-               v-bind="componentOptions(outputType, true)"
-               v-model="(outputType === 'bbn-json-editor') ? source.text : source.text.trim()">
+               v-bind="componentOptions(aiFormat, true)"
+               v-model="(aiFormat === 'bbn-json-editor') ? source.text : source.text.trim()">
     </component>
-    <component v-else-if="!source.ai && inputType !== 'div'"
-               :is="inputType"
+    <component v-else-if="!source.ai && aiFormatComponent !== 'div'"
+               :is="userFormatComponent"
                class="bbn-xspadding bbn-background bbn-text bbn-w-100 bbn-radius"
                style="maxWidth: 100%; white-space: break-spaces"
-               v-bind="componentOptions(inputType, true)"
-               v-model="(inputType === 'bbn-json-editor') ? source.text : source.text.trim()">
+               v-bind="componentOptions(userFormat, true)"
+               v-model="(userFormat === 'bbn-json-editor') ? source.text : source.text.trim()">
     </component>
     <div v-else
          class="bbn-xspadding bbn-background bbn-text bbn-w-100 bbn-radius"

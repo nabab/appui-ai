@@ -5,21 +5,21 @@
       <appui-ai-chat-item v-for="item in conversation"
                           :key="item.id"
                           :source="item"
-                          :outputType="aiFormat"
-                          :inputType="userPromptType"/>
+                          :aiFormat="mode === 'prompt' ? aiFormat : (item.format || 'textarea')"
+                          :userFormat="mode === 'prompt' ? userFormat : (item.format || 'textarea')"/>
     </div>
     <hr class="bbn-hr">
     <h4 v-if="configuration?.title" class="bbn-w-100 bbn-lpadding">{{configuration.content}}</h4>
     <div v-if="(mode !== 'chat') || configuration === null || configuration?.editable" class="bbn-w-100 bbn-spadding bbn-flex-width">
       <div class="bbn-flex-fill">
-        <component v-if="userComponent"
-                   :is="userComponent"
+        <component v-if="userFormatComponent"
+                   :is="userFormatComponent"
                    v-bind="userComponentOptions"
                    v-model="input"
                    ref="chatPrompt"
                    style="width: 100%"
                    v-focused/>
-        <bbn-textarea v-else 
+        <bbn-textarea v-else
                       v-model="input"
                       ref="chatPrompt"
                       style="width: 100%"
@@ -31,11 +31,13 @@
                     @click="send"
                     :disabled="isLoadingResponse"
                     :text="_('send')"/>
-        <span v-text="_('AI response format')"
+        <span  v-if="mode !== 'prompt'"
+              v-text="_('AI response format')"
               class="bbn-s bbn-left-lspace"/>
-        <bbn-dropdown v-model="aiFormat"
+        <bbn-dropdown v-if="mode !== 'prompt'"
+                      v-model="aiFormat"
                       class="bbn-s"
-                      :source="promptType"/>
+                      :source="formats"/>
       </div>
     </div>
   </bbn-scroll>

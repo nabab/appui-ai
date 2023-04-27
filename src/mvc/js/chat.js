@@ -6,19 +6,15 @@
       return {
         root: appui.plugins['appui-ai'] + '/',
         isLoading: false,
-        currentChat: [],
-        currentPrompt: [],
-        selectedPromptId: null,
-        userChat: {
-          prompt: "",
-          conversation: [],
-          input: ""
-        },
         editMode: false,
         mode: null,
         conversationChange: false,
         listChange: false,
-        generating: false,
+        // prompt mode
+        currentPrompt: [],
+        selectedPromptId: null,
+        // chat mode
+        currentChat: [],
         selectedYear: this.source.years && this.source.years.length ? this.source.years[this.source.years.length - 1] : new Date().getFullYear(),
         conversationList: [],
         selectedChatPath: null
@@ -36,13 +32,11 @@
       },
       listSource() {
         if (this.mode === 'prompt') {
-          let res = [
-            {text: "Current Chat", value: null}
-          ];
+          let res = [];
           for (let i in this.source.prompts) {
             res.push({
               text: this.source.prompts[i].title,
-              value: i
+              value: this.source.prompts[i].id
             })
           }
           return res;
@@ -54,7 +48,14 @@
       currentSelected() {
         if (this.mode === 'prompt') {
           if (!this.selectedPromptId) {
-            return {text: "Current Chat", value: null};
+            if (this.editMode) {
+              return {};
+            }
+            if (this.source?.prompts?.length) {
+              this.selectedPromptId = this.source.prompts[0].id;
+              this.conversationChange = true;
+              this.getPromptConversation();
+            }
           }
           return bbn.fn.getRow(this.source.prompts, {id: this.selectedPromptId}) || null;
         } else if (this.mode === 'chat') {
@@ -64,6 +65,20 @@
       }
     },
     methods: {
+      deletePrompt() {
+        appui.confirm(bbn._('Do you want to delete this prompt ?'), () => {
+          bbn.fn.post(this.root + 'prompt/delete', {
+            id: this.selectedPromptId
+          }, (d) => {
+            if (d.success) {
+              appui.success(bbn._('Success'))
+            } else {
+              appui.success(bbn._('Error'))
+            }
+            this.updatePromptsList();
+          })
+        })
+      },
       getConversationList() {
         if (!this.selectedYear)
           return;
@@ -99,13 +114,6 @@
         }
         return res;
       },
-      generate() {
-        const editor = this.find('appui-ai-chat-editor');
-        if (editor) {
-          this.generating = true;
-          editor.generateTitle();
-        }
-      },
       create() {
         this.selectedPromptId = null;
         this.editMode = true;
@@ -119,46 +127,31 @@
         }, (d) => {
           if (d.success) {
             this.currentPrompt = d.data;
-            this.conversationChange = false;
+            setTimeout(() => {
+              this.conversationChange = false;
+            }, 300);
+
           }
         })
       },
-      getTextareaSize(ref) {
-        let element = this.getRef(ref);
-        return element.scrollHeight + "px";
-      },
-      resize(ref) {
-        let element = this.getRef(ref);
-
-        element.style.height = "18px";
-        element.style.height = element.scrollHeight + "px";
-      },
       test() {
-        bbn.fn.post(this.root + 'conversations', {
-          year: "2023"
-        }, (d) => {
-          bbn.fn.log(d);
-        })
+
       },
       testClick(e) {
         bbn.fn.log(this.source.prompts[e.value]);
       },
       listSelectItem(item) {
+        if (this.editMode)
+          return;
         this.conversationChange = true;
         if (this.mode === 'prompt') {
           if (this.editMode) {
-            this.editMode = false;
+            return;
           }
           if (item.value) {
             bbn.fn.log(item);
-            this.selectedPromptId = this.source.prompts[item.value].id
+            this.selectedPromptId = item.value
             this.getPromptConversation();
-          } else {
-            this.selectedPromptId = null;
-            this.currentPrompt = [];
-            setTimeout(() => {
-              this.conversationChange = false;
-            }, 300);
           }
         } else {
           if (item.value) {
@@ -177,24 +170,8 @@
           }, 500);
         }
       },
-      savePrompt() {
-        this.getPopup({
-          title: bbn._("Folder name"),
-          component: "appui-ai-form-prompt-save",
-          source: {
-            prompt: this.editMode ? this.prompt : this.input,
-            root: this.root,
-            type: this.promptType,
-            input: this.userPromptType,
-            output: this.messagePromptType
-          }
-        })
-      },
       clear() {
         bbn.fn.log("CLEAR", this.mode, this.selectedPromptId);
-        if (this.mode === 'chat') {
-          this.currentChat = [];
-        }
         if (this.mode === 'prompt' && this.selectedPromptId) {
           appui.confirm(bbn._('Do you want to delete all the conversation ?'), () => {
             bbn.fn.post(this.source.root + '/prompt/conversation/clear' , {
@@ -212,12 +189,6 @@
               }
             })
           })
-        } else {
-          this.currentPrompt = [];
-          this.conversationChange = true;
-          setTimeout(() => {
-            this.conversationChange = false;
-          }, 200)
         }
       },
       updatePromptsList() {

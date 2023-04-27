@@ -44,6 +44,12 @@
                 :disabled="!mode"
                 :text="_('Clear the conversation')"
                 @click="clear"/>
+    <bbn-button v-if="!editMode && mode !== 'chat'"
+                icon="nf nf-md-delete"
+                slot="right"
+                :disabled="!mode"
+                :text="_('Delete the prompt')"
+                @click="deletePrompt"/>
   </bbn-toolbar>
   <h1 v-if="source.error"
       v-text="source.error"/>
@@ -72,7 +78,8 @@
         <bbn-list v-else-if="!listChange"
                   :source="listSource"
                   :alternateBackground="true"
-                  @select="listSelectItem"/>
+                  @select="listSelectItem"
+                  :selected="mode === 'prompt' ? [selectedPromptId] : [listSource[0].value]"/>
         
       </bbn-pane>
       <bbn-pane>
