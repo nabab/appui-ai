@@ -9,8 +9,8 @@
                           :userFormat="mode === 'prompt' ? userFormat : (item.format || 'textarea')"/>
     </div>
     <hr class="bbn-hr">
-    <h4 v-if="configuration?.title" class="bbn-w-100 bbn-lpadding">{{configuration.content}}</h4>
-    <div v-if="(mode !== 'chat') || configuration === null || configuration?.editable" class="bbn-w-100 bbn-spadding bbn-flex-width">
+    <h4 v-if="configuration?.title" class="bbn-w-100 bbn-padding">{{configuration.content}}</h4>
+    <div v-if="(mode !== 'chat') || configuration === null || configuration?.editable" class="bbn-w-100 bbn-padding bbn-flex-width">
       <div class="bbn-flex-fill">
         <component v-if="userFormatComponent"
                    :is="userFormatComponent"

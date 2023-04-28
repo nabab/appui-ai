@@ -93,7 +93,7 @@
         input: "",
         root: appui.plugins['appui-ai'] + '/',
         prompt: this.configuration?.title || null,
-        conversation: this.source?.length ? this.source :  [{
+        conversation: (this.source?.length || this.mode === 'prompt') ? this.source :  [{
           text: this.getRandomIntroSentence(),
           ai: 1,
           id: bbn.fn.randomString(),
@@ -110,7 +110,7 @@
         bbn.fn.log("TIMEOUT");
         this.updateScroll();
 
-      }, 300)
+      }, 500)
     },
     computed: {
       aiFormatComponent() {
