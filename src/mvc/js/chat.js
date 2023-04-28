@@ -17,7 +17,7 @@
         currentChat: [],
         selectedYear: this.source.years && this.source.years.length ? this.source.years[this.source.years.length - 1] : new Date().getFullYear(),
         conversationList: [],
-        selectedChatPath: null
+        selectedChatPath: this.listSource?.length ? this.listSource[0].value : null
       }
     },
     computed: {
@@ -68,7 +68,11 @@
           return [this.selectedPromptId];
         }
         else if (this.mode === 'chat') {
-          return [this.selectedChatPath || this.listSource[0].value];
+          if (!this.selectedChatPath && this.listSource?.length) {
+          	this.listSelectItem(this.listSource[0]);
+            return [this.listSource[0].value];
+          }
+          return [this.selectedChatPath];
         }
       }
     },

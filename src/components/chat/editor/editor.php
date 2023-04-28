@@ -45,7 +45,7 @@
         </div>
 
       </div>
-      <div class="bbn-margin bbn-spadding bbn-radius bbn-bordered bbn-dotted">
+      <div class="bbn-margin bbn-spadding bbn-radius bbn-bordered bbn-dotted bbn-flex-height">
         <h3 class="bbn-c">
           <?= _("Try it") ?>
         </h3>
@@ -54,16 +54,20 @@
                      v-model="input"
                      v-bind="userComponentOptions"
                      class="overflow-auto bbn-scroll bbn-bottom-xsmargin bbn-w-80"/>
-          <component v-if="!loading"
+          <br><br>
+          <bbn-button class="bbn-bottom-xsmargin"
+                      :disabled="loading"
+                      @click="send"><?= _("Test") ?></bbn-button>
+          <br><br>
+          <component v-if="response && !loading"
                      :is="aiFormatComponent"
                      v-model="response"
-                     v-bind="componentOptions(aiFormatComponent, false)"
+                     v-bind="componentOptions(aiFormatComponent, true)"
                      class="overflow-auto bbn-scroll bbn-bottom-xsmargin bbn-w-80">
             {{formData.output === 'div' ? response :  ''}}
           </component>
-          <br><br>
-          <bbn-button class="bbn-bottom-lmargin"
-                      @click="send"><?= _("Test") ?></bbn-button>
+          <span v-else-if="loading" class="bbn-anim-dots"
+            v-text="_('Artificially thinking')"/>
         </div>
       </div>
     </bbn-form>

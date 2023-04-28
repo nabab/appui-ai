@@ -16,6 +16,10 @@ $path = $model->userDataPath($model->inc->user->getId(), 'appui-ai') . $model->d
 
 $result = [];
 
+if (!$fs->exists($path)) {
+  $fs->createPath($path);
+}
+
 if ($fs->exists($path) && $fs->isDir($path)) {
   $files = $fs->getFiles($path);
   $sortedFiles = [];

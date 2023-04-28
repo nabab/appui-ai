@@ -145,7 +145,7 @@
       },
       send() {
         this.loading = true;
-        this.response = "";
+        this.response = null;
         bbn.fn.post(this.root + 'chat', {
           prompt: this.formData.prompt + '\n' + bbn.fn.getRow(this.formats, {value: this.formData.output}).prompt + ' and the language must be in ' +  bbn.fn.getRow(this.languages, {value: this.formData.lang}).text,
           input: this.input,
@@ -153,11 +153,15 @@
         }, (d) => {
           if (d.success) {
             this.response = this.formData.output === 'bbn-json-editor' ? JSON.parse(d.text) : d.text
+            setTimeout(() =>  {
+              this.loading = false;
+            }, 300);
+          } else {
+            setTimeout(() =>  {
+              this.loading = false;
+            }, 300);
           }
         })
-        setTimeout(() =>  {
-          this.loading = false;
-        }, 300);
       },
       componentOptions(type, readonly) {
         let res = {
