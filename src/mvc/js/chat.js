@@ -62,6 +62,14 @@
           return bbn.fn.getRow(this.conversationList, {value: this.selectedChatPath}) || null;
         }
         return null;
+      },
+      selectedListItem() {
+        if (this.mode === 'prompt') {
+          return [this.selectedPromptId];
+        }
+        else if (this.mode === 'chat') {
+          return [this.selectedChatPath || this.listSource[0].value];
+        }
       }
     },
     methods: {

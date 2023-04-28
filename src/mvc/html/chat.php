@@ -79,7 +79,7 @@
                   :source="listSource"
                   :alternateBackground="true"
                   @select="listSelectItem"
-                  :selected="mode === 'prompt' ? [selectedPromptId] : [listSource[0].value]"/>
+                  :selected="selectedListItem"/>
         
       </bbn-pane>
       <bbn-pane>

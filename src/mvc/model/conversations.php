@@ -1,8 +1,8 @@
 <?php
 /**
-       * What is my purpose?
-       *
-       **/
+         * What is my purpose?
+         *
+         **/
 
 use bbn\X;
 use bbn\Str;
@@ -18,8 +18,16 @@ $result = [];
 
 if ($fs->exists($path) && $fs->isDir($path)) {
   $files = $fs->getFiles($path);
-
   $sortedFiles = [];
+  if (!$fs->exists($path . '/' . date('m-d') . '.json')) {
+    $fs->putContents($path . '/' . date('m-d') . '.json', "[]");
+    array_unshift($sortedFiles, array(
+      'name' => 'Current',
+      'path' => $path . '/' . date('m-d') . '.json',
+      'editable' => true
+    ));
+  }
+
   foreach ($files as $file) {
     $dateStr = basename($file, '.json');
     $year = $model->data['year'];
