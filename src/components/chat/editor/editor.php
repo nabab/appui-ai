@@ -7,7 +7,8 @@
               :submitText="source.id ? 'save' : 'create'"
               :prefilled="true"
               :validation="isValid"
-              @success="success">
+              @success="success"
+              class="bbn-padding">
 
       <div class="bbn-grid-fields">
         <label><?= _("Initial prompt") ?></label>
