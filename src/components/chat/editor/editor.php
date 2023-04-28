@@ -47,8 +47,11 @@
       </div>
       <div class="bbn-margin bbn-spadding bbn-radius bbn-bordered bbn-dotted bbn-flex-height">
         <h3 class="bbn-c">
-          <?= _("Try it") ?>
+          <?= _("Test your prompt") ?>
         </h3>
+        <div class="bbn-lpadding bbn-bottom-xsmargin bbn-background bbn-text bbn-w-100 bbn-radius"
+         style="maxWidth: 100%; white-space: break-spaces"
+         >{{formData.prompt}}</div>
         <div>
           <component :is="userFormatComponent"
                      v-model="input"
