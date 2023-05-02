@@ -163,7 +163,7 @@
 
         if (this.configuration?.id) {
           let request_object = {
-            prompt: this.configuration.content + '\n' + bbn.fn.getRow(this.formats, {value: this.configuration.output}).prompt + ' and the language must be in ' +  bbn.fn.getRow(this.languages, {value: this.configuration.lang}).text,
+            id_prompt: this.configuration.id,
             input: this.input
           }
           let id = this.configuration.id;
