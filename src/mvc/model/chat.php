@@ -1,8 +1,8 @@
 <?php
 /**
-             * What is my purpose?
-             *
-             **/
+               * What is my purpose?
+               *
+               **/
 
 use bbn\X;
 use bbn\Str;
@@ -11,90 +11,80 @@ use bbn\File\System;
 use bbn\Appui\Ai;
 /** @var $model \bbn\Mvc\Model*/
 
-if ($model->hasData(['id_prompt'])) {
-  
+if ($model->hasData(['id_prompt']) || $model->hasData('prompt')) {
+
   $ai = new Ai($model->db);
 
-  X::ddump($ai->getPromptResponse($model->data['id_prompt'], $model->data['input']));
-  
+  $complete;
 
-  $response = $complete['choices'][0]['text'];
+  if ($model->data['id_prompt']) {
+    $complete = $ai->getPromptResponse($model->data['id_prompt'], $model->data['input']);
+  } else {
+    $complete = $ai->request($model->data['prompt']);
+  }
 
-  if (!$model->data['test']) {
-    if ($model->data['id']) {
-      $insert = $model->db->insert('bbn_ai_prompt_items', [
-        'id_prompt' => $model->data['id'],
-        'text' => $model->data['input'],
-        'author' => $model->inc->user->getId(),
-        'ai' => 0
-      ]);
+  $response = $complete['result'];
 
-      $insert = $model->db->insert('bbn_ai_prompt_items', [
-        'id_prompt' => $model->data['id'],
-        'text' => $response,
-        'author' => $model->inc->user->getId(),
-        'ai' => 1,
-      ]);
-    } else {
-      $fs = new System();
-      $path = $model->userDataPath($model->inc->user->getId(), 'appui-ai') . date("Y");
-      if (!$fs->isDir($path)) {
-        X::makeStoragePath($model->userDataPath($model->inc->user->getId(), 'appui-ai'), 'Y');
-      }
+  if (!$model->data['id_prompt']) {
+    $fs = new System();
+    $path = $model->userDataPath($model->inc->user->getId(), 'appui-ai') . date("Y");
+    if (!$fs->isDir($path)) {
+      X::makeStoragePath($model->userDataPath($model->inc->user->getId(), 'appui-ai'), 'Y');
+    }
 
-      if ($fs->exists($path) && $fs->isDir($path)) {
-        $file = $path . '/' . date('m-d') . '.json';
+    if ($fs->exists($path) && $fs->isDir($path)) {
+      $file = $path . '/' . date('m-d') . '.json';
 
-        if ($fs->isFile($file)) {
-          $jsonString = $fs->getContents($file);
-          $jsonData = json_decode($jsonString, true);
-          $jsonData[] = [
-            "ai" => 0,
-            "creation_date" => $model->data['date'],
-            "text" => $model->data['prompt'],
-            'id' => bin2hex(random_bytes(10)),
-            'format' => $model->data['userFormat'] ?? 'textarea'
-          ];
-          $jsonData[] = [
-            "ai" => 1,
-            "creation_date" => $timestamp,
-            "text" => $response,
-            'id' => bin2hex(random_bytes(10)),
-            'format' => $model->data['aiFormat'] ?? 'textarea'
-          ];
+      if ($fs->isFile($file)) {
+        $jsonString = $fs->getContents($file);
+        $jsonData = json_decode($jsonString, true);
+        $jsonData[] = [
+          "ai" => 0,
+          "creation_date" => $model->data['date'],
+          "text" => $model->data['prompt'],
+          'id' => bin2hex(random_bytes(10)),
+          'format' => $model->data['userFormat'] ?? 'textarea'
+        ];
+        $jsonData[] = [
+          "ai" => 1,
+          "creation_date" => $timestamp,
+          "text" => $response,
+          'id' => bin2hex(random_bytes(10)),
+          'format' => $model->data['aiFormat'] ?? 'textarea'
+        ];
 
-          $updatedJsonString = json_encode($jsonData);
+        $updatedJsonString = json_encode($jsonData);
 
-          // Save the updated JSON string back to the file
-          file_put_contents($file, $updatedJsonString);
+        // Save the updated JSON string back to the file
+        file_put_contents($file, $updatedJsonString);
 
-        } else {
-          $jsonData = [];
-          $jsonData[] = [
-            "ai" => 0,
-            "creation_date" => $model->data['date'],
-            "text" => $model->data['prompt'],
-            'id' => bin2hex(random_bytes(10)),
-            'format' => $model->data['userFormat'] ?? 'textarea'
-          ];
-          $jsonData[] = [
-            "ai" => 1,
-            "creation_date" => $timestamp,
-            "text" => $response,
-            'id' => bin2hex(random_bytes(10)),
-            'format' => $model->data['aiFormat'] ?? 'textarea'
-          ];
-          $updatedJsonString = json_encode($jsonData);
+      } else {
+        $jsonData = [];
+        $jsonData[] = [
+          "ai" => 0,
+          "creation_date" => $model->data['date'],
+          "text" => $model->data['prompt'],
+          'id' => bin2hex(random_bytes(10)),
+          'format' => $model->data['userFormat'] ?? 'textarea'
+        ];
+        $jsonData[] = [
+          "ai" => 1,
+          "creation_date" => $timestamp,
+          "text" => $response,
+          'id' => bin2hex(random_bytes(10)),
+          'format' => $model->data['aiFormat'] ?? 'textarea'
+        ];
+        $updatedJsonString = json_encode($jsonData);
 
-          // Save the updated JSON string back to the file
-          file_put_contents($file, $updatedJsonString);
-        }
-
+        // Save the updated JSON string back to the file
+        file_put_contents($file, $updatedJsonString);
       }
 
     }
 
   }
+
+
 
   return [
     'success' => true,

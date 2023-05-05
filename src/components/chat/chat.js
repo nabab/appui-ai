@@ -166,11 +166,6 @@
             id_prompt: this.configuration.id,
             input: this.input
           }
-          let id = this.configuration.id;
-
-          if (id) {
-            request_object.id = id;
-          }
 
           let input = this.input;
           let inputDate = (new Date()).getTime();
@@ -186,7 +181,7 @@
           this.getRef('chatPrompt').focus();
 
           bbn.fn.post(this.root + 'chat', request_object, (d) => {
-            if (d.success && this.configuration.id === id) {
+            if (d.success && this.configuration.id === request_object.id_prompt) {
               let inputDate = (new Date()).getTime();
               this.conversation.at(-1).creation_date = inputDate;
               if (d.success) {
