@@ -16,7 +16,7 @@ $id_option = $model->inc->options->fromCode('prompt', 'types' ,'note', 'appui');
 
 
 
-if ($model->data['id']) {
+if ($model->hasData('id', true)) {
   $note->update($model->data['id_note'], $model->data['title'], $model->data['prompt']);
   
 	$insert = $model->db->update('bbn_ai_prompt', [

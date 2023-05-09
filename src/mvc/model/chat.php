@@ -11,19 +11,23 @@ use bbn\File\System;
 use bbn\Appui\Ai;
 /** @var $model \bbn\Mvc\Model*/
 
-if ($model->hasData(['id_prompt']) || $model->hasData('prompt')) {
+if ($model->hasData(['id_prompt'], true) || $model->hasData('input', true)) {
 
   $ai = new Ai($model->db);
 
   $complete;
 
-  if ($model->data['id_prompt']) {
+  if ($model->hasData('id_prompt', true)) {
     $complete = $ai->getPromptResponse($model->data['id_prompt'], $model->data['input']);
   } else {
-    $complete = $ai->request($model->data['prompt']);
+    if ($model->hasData('prompt')) {
+    	$complete = $ai->request($model->data['prompt'], $model->data['input']);
+    } else {
+      $complete = $ai->request(null, $model->data['input']);
+    }
   }
 
-  $response = $complete['result'];
+  $response = $complete['result']['content'];
 
   if (!$model->data['id_prompt']) {
     $fs = new System();
