@@ -11,9 +11,9 @@ use bbn\File\System;
 use bbn\Appui\Ai;
 /** @var $model \bbn\Mvc\Model*/
 
-if ($model->hasData(['id_prompt'], true) || $model->hasData('input', true)) {
+$ai = new Ai($model->db);
 
-  $ai = new Ai($model->db);
+if ($model->hasData(['id_prompt'], true) || $model->hasData('input', true)) {
 
   $complete;
 
@@ -99,47 +99,8 @@ if ($model->hasData(['id_prompt'], true) || $model->hasData('input', true)) {
   ];
 } else {
 
-  $all = $model->db->rselectAll([
-    'tables' => ['bbn_ai_prompt'],
-    'fields' => [
-      'bbn_ai_prompt.id',
-      'output',
-      'creation_date',
-      'bbn_ai_prompt.id_note',
-      'usage_count',
-      'input',
-      'content',
-      'title',
-      'lang'
-    ],
-    'join' => [
-      [
-        'table' => 'bbn_notes_versions',
-        'on' => [
-          [
-            'field' => 'bbn_ai_prompt.id_note',
-            'exp' => 'bbn_notes_versions.id_note'
-          ]
-        ]
-      ],
-      [
-        'table' => 'bbn_notes',
-        'on' => [
-          [
-            'field' => 'bbn_ai_prompt.id_note',
-            'exp' => 'bbn_notes.id'
-          ]
-        ]
-      ]
-    ],
-    'where' => [
-      'latest' => 1
-    ],
-    'order' => [[
-      'field' => 'creation_date',
-      'dir' => 'DESC'
-    ]]
-  ]);
+ 	$prompts = $ai->getPrompts();
+  
 
   $path = $model->userDataPath($model->inc->user->getId(), 'appui-ai');
 
@@ -159,7 +120,7 @@ if ($model->hasData(['id_prompt'], true) || $model->hasData('input', true)) {
 
   return [
     "root" => $model->data['root'],
-    "prompts" => $all,
+    "prompts" => $prompts,
     "years" => $years
   ];
 }

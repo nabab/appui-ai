@@ -7,30 +7,19 @@
 use bbn\X;
 use bbn\Str;
 use bbn\Appui\Note;
+use bbn\Appui\Ai;
 /** @var $model \bbn\Mvc\Model*/
 
-$note = new Note($model->db);
-
-$id_option = $model->inc->options->fromCode('prompt', 'types' ,'note', 'appui');
-
-
-
+$ai = new Ai($model->db);
 
 if ($model->hasData('id', true)) {
-  $note->update($model->data['id_note'], $model->data['title'], $model->data['prompt']);
-  
-	$insert = $model->db->update('bbn_ai_prompt', [
-    'output' => $model->data['output'],
-    'input' => $model->data['input'],
-  ], ['id' => $model->data['id']]);
+  return [
+    'success' => $ai->updatePrompt($model->data['id'], $model->data['title'], $model->data['prompt'], $model->data['input'], $model->data['output'])
+  ];
 } else {
-  $id_note = $note->insert($model->data['title'], $model->data['prompt'], $id_option, false, false, NULL, NULL, 'text/plain', $model->data['language']);
-  
-  $insert = $model->db->insert('bbn_ai_prompt', [
-    'id_note' => $id_note,
-    'output' => $model->data['output'],
-    'input' => $model->data['input'],
-  ]);
+  return [
+    'success' => $ai->insertPrompt($model->data['title'], $model->data['prompt'], $model->data['language'], $model->data['input'], $model->data['output'])
+  ];
 }
 
 return [
