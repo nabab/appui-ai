@@ -6,20 +6,12 @@
 
 use bbn\X;
 use bbn\Str;
+use bbn\Appui\Ai;
 /** @var $model \bbn\Mvc\Model*/
 
-if ($model->data['id']) {
-  $all = $model->db->delete([
-    'tables' => ['bbn_ai_prompt_items'],
-    'where' => [
-      'id_prompt' => $model->data['id'],
-      'author' => $model->inc->user->getId()
-    ],
-  ]);
-
-  return [
-    'success' => $all > 0
-  ];
+if ($model->hasData('id', true) {
+  $ai = new Ai($model->db);
+  $ai->clearConversation($model->data['id']);
 }
 
 return [

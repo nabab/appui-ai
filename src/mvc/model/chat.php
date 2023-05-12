@@ -13,17 +13,17 @@ use bbn\Appui\Ai;
 
 $ai = new Ai($model->db);
 
-if ($model->hasData(['id_prompt'], true) || $model->hasData('input', true)) {
+if ($model->hasData(['id_prompt'], true) || $model->hasData('prompt', true)) {
 
   $complete;
 
   if ($model->hasData('id_prompt', true)) {
     $complete = $ai->getPromptResponse($model->data['id_prompt'], $model->data['input']);
   } else {
-    if ($model->hasData('prompt')) {
+    if ($model->hasData('input')) {
     	$complete = $ai->request($model->data['prompt'], $model->data['input']);
     } else {
-      $complete = $ai->request(null, $model->data['input']);
+      $complete = $ai->request(null, $model->data['prompt']);
     }
   }
 
@@ -39,50 +39,9 @@ if ($model->hasData(['id_prompt'], true) || $model->hasData('input', true)) {
     if ($fs->exists($path) && $fs->isDir($path)) {
       $file = $path . '/' . date('m-d') . '.json';
 
-      if ($fs->isFile($file)) {
-        $jsonString = $fs->getContents($file);
-        $jsonData = json_decode($jsonString, true);
-        $jsonData[] = [
-          "ai" => 0,
-          "creation_date" => $model->data['date'],
-          "text" => $model->data['prompt'],
-          'id' => bin2hex(random_bytes(10)),
-          'format' => $model->data['userFormat'] ?? 'textarea'
-        ];
-        $jsonData[] = [
-          "ai" => 1,
-          "creation_date" => $timestamp,
-          "text" => $response,
-          'id' => bin2hex(random_bytes(10)),
-          'format' => $model->data['aiFormat'] ?? 'textarea'
-        ];
-
-        $updatedJsonString = json_encode($jsonData);
-
-        // Save the updated JSON string back to the file
-        file_put_contents($file, $updatedJsonString);
-
-      } else {
-        $jsonData = [];
-        $jsonData[] = [
-          "ai" => 0,
-          "creation_date" => $model->data['date'],
-          "text" => $model->data['prompt'],
-          'id' => bin2hex(random_bytes(10)),
-          'format' => $model->data['userFormat'] ?? 'textarea'
-        ];
-        $jsonData[] = [
-          "ai" => 1,
-          "creation_date" => $timestamp,
-          "text" => $response,
-          'id' => bin2hex(random_bytes(10)),
-          'format' => $model->data['aiFormat'] ?? 'textarea'
-        ];
-        $updatedJsonString = json_encode($jsonData);
-
-        // Save the updated JSON string back to the file
-        file_put_contents($file, $updatedJsonString);
-      }
+      $timestamp = time();
+      
+      $ai->saveConversation($file, $model->data['date'], $model->data['userformat'], $model->data['aiFormat'], $model->data['prompt'], $response);
 
     }
 
