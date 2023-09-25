@@ -54,8 +54,8 @@
   <h1 v-if="source.error"
       v-text="source.error"/>
   <div class="bbn-flex-fill bbn-qr-chat">
-    <div v-if="mode === null"
-         class="bbn-100 bbn-flex-column">
+    <div v-if="!mode"
+         class="bbn-padding bbn-flex-column">
       <h2 class="bbn-bottom-lmargin">
         <?= _("Here you can simply chat with an AI and keep a daily record of all your discussions") ?></h2>
       <h3>
@@ -65,33 +65,37 @@
         <?= _("Try our examples in the left menu to get an idea of its capabilities") ?>
       </h3>
     </div>
-    <bbn-splitter v-else-if="mode && !isLoading"
-                  orientation="horizontal"
-                  :resizable="true"
-                  :collapsible="true">
-      <bbn-pane size="20%">
-        <bbn-toolbar v-if="source.years && source.years.length > 1">
-        	<bbn-dropdown :source="conversationYearsSource"
-                        v-model="selectedYear"/>
-        </bbn-toolbar>
-        <bbn-loader v-if="listChange"/>
-        <bbn-list v-else-if="!listChange"
-                  :source="listSource"
-                  :alternateBackground="true"
-                  @select="listSelectItem"
-                  :selected="selectedListItem"/>
-        
-      </bbn-pane>
-      <bbn-pane>
-        <bbn-loader v-if="conversationChange"/>
-        <appui-ai-chat-editor v-else-if="editMode"
-                              :source="currentSelected"/>
-        <appui-ai-chat v-else
-                       :source="currentConversation"
-                       :mode="mode"
-                       :configuration="currentSelected"/>
-      </bbn-pane>
-    </bbn-splitter>
+    <div class="bbn-100" v-else-if="mode && !isLoading">
+      <bbn-splitter orientation="horizontal"
+                    :resizable="true"
+                    :collapsible="true">
+        <bbn-pane :size="250">
+          <bbn-toolbar v-if="source.years && source.years.length > 1">
+            <bbn-dropdown :source="conversationYearsSource"
+                          v-model="selectedYear"/>
+          </bbn-toolbar>
+          <bbn-loader v-if="listChange"/>
+          <bbn-list v-else-if="listSource.length"
+                    :source="listSource"
+                    :alternateBackground="true"
+                    @select="listSelectItem"
+                    :selected="selectedListItem"/>
+          <h3 v-else class="bbn-padding">
+            <?= _("You will see the list of your conversations here") ?>
+          </h3>
+          
+        </bbn-pane>
+        <bbn-pane>
+          <bbn-loader v-if="conversationChange"/>
+          <appui-ai-chat-editor v-else-if="editMode"
+                                :source="currentSelected"/>
+          <appui-ai-chat v-else
+                        :source="currentConversation"
+                        :mode="mode"
+                        :configuration="currentSelected"/>
+        </bbn-pane>
+      </bbn-splitter>
+    </div>
   </div>
 
 </div>

@@ -5,8 +5,8 @@
       <appui-ai-chat-item v-for="item in conversation"
                           :key="item.id"
                           :source="item"
-                          :aiFormat="mode === 'prompt' ? aiFormat : (item.format || 'textarea')"
-                          :userFormat="mode === 'prompt' ? userFormat : (item.format || 'textarea')"/>
+                          :ai-format="mode === 'prompt' ? aiFormat : (item.format || 'textarea')"
+                          :user-format="mode === 'prompt' ? userFormat : (item.format || 'textarea')"/>
     </div>
     <hr class="bbn-hr">
     <div v-if="configuration?.title"
