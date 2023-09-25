@@ -21,6 +21,7 @@
     "php": ">=8.1",
     "bbn/bbn": "dev-master",
     "openai-php/client": "dev-main",
-    "orhanerday/open-ai": "dev-main"
+    "orhanerday/open-ai": "dev-main",
+    "gioni06/gpt3-tokenizer": "dev-main"
   }
 }
