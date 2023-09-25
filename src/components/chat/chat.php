@@ -20,8 +20,8 @@
                    v-bind="userComponentOptions"
                    v-model="input"
                    ref="chatPrompt"
-                   style="width: 100%"
-                   v-focused/>
+                   v-focused
+                   style="width: 100%"/>
         <bbn-textarea v-else
                       v-model="input"
                       ref="chatPrompt"

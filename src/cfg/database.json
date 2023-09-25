@@ -1,5 +1,5 @@
 {
-  "bbn_ai_prompts": {
+  "bbn_ai_prompt": {
     "keys": {
         "PRIMARY": {
             "columns": [
@@ -77,7 +77,7 @@
         }
     }
   },
-  "bbn_ai_prompts_items": {
+  "bbn_ai_prompt_items": {
     "keys": {
         "PRIMARY": {
             "columns": [
