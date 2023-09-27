@@ -1,8 +1,7 @@
 <!-- HTML Document -->
 
-<div class="appui-chat-item bbn-xsmargin bbn-flex-column bbn-radius"
-     style="height: auto; max-width: 70%; width: 100%"
-     :class="source.ai ? ['flex-end', 'bbn-secondary'] : ['flex-start', 'bbn-primary']">
+<div style="height: auto; max-width: 70%; width: 100%"
+     :class="'appui-chat-item bbn-xsmargin bbn-flex-column bbn-radius bbn-bottom-smargin ' + (source.ai ? 'flex-end bbn-secondary' : 'flex-start bbn-primary')">
   <div class="bbn-w-100 bbn-xspadding"
        style="maxWidth: 100%">
     <div v-if="source.loading"

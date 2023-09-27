@@ -151,12 +151,11 @@
         return this.constructor.introSentences[randomIndex];
       },
       updateScroll() {
-        if (this.getRef('scroll')) {
-          this.$nextTick(() => {
-            this.getRef('scroll').onResize(true).then(() => {
-              this.$nextTick(() => {
-                this.getRef('scroll').scrollEndY(true);
-              });
+        const scroll = this.getRef('scroll');
+        if (scroll?.onResize) {
+          scroll.onResize(true).then(() => {
+            this.$nextTick(() => {
+              scroll.scrollEndY(true);
             });
           });
         }
@@ -196,6 +195,7 @@
               this.conversation.at(-1).loading = false;
               this.isLoadingResponse = false;
               this.$nextTick(this.updateScroll);
+              this.input = '';
             }
           })
         }

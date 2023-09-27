@@ -1,102 +1,163 @@
 <!-- HTML Document -->
 
-<div class="bbn-overlay bbn-flex-height">
-  <bbn-toolbar class="bbn-m bbn-xspadding">
-    <bbn-button icon="nf nf-mdi-home"
-                :text="_('Return to home page')"
-                :disabled="!mode || editMode"
-                :notext="true"
-                @click="mode = null"/>
-    <!--bbn-button text="test"
-                @click="test"/-->
-    <!--bbn-button icon="nf nf-fa-arrow_right"
-                class="bbn-left-xsspace"
-                :text="_('Send to prompt editor')"
-                :notext="true"
-                @click="mode = 'promptEditor'"/-->
-    <bbn-button icon="nf nf-md-chat_question_outline"
-                @click="mode = 'chat'"
-                :text="_('Chat')"
-                :disabled="mode === 'chat' || editMode"/>
-    <bbn-button @click="mode = 'prompt'"
-                icon="nf nf-md-chat_alert_outline"
-                :text="_('Prompts')"
-                :disabled="mode === 'prompt' || editMode"/>
-    <bbn-button v-if="mode === 'prompt' && !editMode"
-                icon="nf nf-md-forum_plus"
-                :text="_('New prompt')"
-                @click="create"
-          			class="bbn-left-xsmargin"
-                />
-    <bbn-button v-if="selectedPromptId && !editMode"
-                icon="nf nf-md-comment_edit"
-                :text="_('Edit prompt')"
-                @click="edit"
-                slot="right"/>
-    <bbn-button v-if="editMode"
-                icon="nf nf-cod-chrome_close"
-                :text="_('Close')"
-                slot="right"
-                @click="() => {editMode = false;}"/>
-    <bbn-button v-if="!editMode && mode !== 'chat'"
-                icon="nf nf-md-eraser"
-                slot="right"
-                :disabled="!mode"
-                :text="_('Clear the conversation')"
-                @click="clear"/>
-    <bbn-button v-if="!editMode && mode !== 'chat'"
-                icon="nf nf-md-delete"
-                slot="right"
-                :disabled="!mode"
-                :text="_('Delete the prompt')"
-                @click="deletePrompt"/>
-  </bbn-toolbar>
-  <h1 v-if="source.error"
-      v-text="source.error"/>
-  <div class="bbn-flex-fill bbn-qr-chat">
-    <div v-if="!mode"
-         class="bbn-padding bbn-flex-column">
-      <h2 class="bbn-bottom-lmargin">
-        <?= _("Here you can simply chat with an AI and keep a daily record of all your discussions") ?></h2>
-      <h3>
-        <?= _("You can create semi automated prompts, where the first part of the prompt and the return format are predefined in a way so that you just need to enter a single parameter to get a sharp response.") ?>
-      </h3>
-      <h3>
-        <?= _("Try our examples in the left menu to get an idea of its capabilities") ?>
-      </h3>
-    </div>
-    <div class="bbn-100" v-else-if="mode && !isLoading">
+<div class="bbn-overlay appui-ai-chat-page">
+  <bbn-router :url-navigation="false"
+              :autoload="false"
+              :nav="true">
+    <bbn-container url="home"
+                   :notext="true"
+                   icon="nf nf-fa-home"
+                   :static="true"
+                   :title="_('Home')"
+                   :scrollable="true">
+      <div class="bbn-padding">
+        <h2 class="bbn-bottom-lmargin">
+          <?= _("Here you can simply chat with an AI and keep a daily record of all your discussions") ?></h2>
+        <h3>
+          <?= _("You can create semi automated prompts, where the first part of the prompt and the return format are predefined in a way so that you just need to enter a single parameter to get a sharp response.") ?>
+        </h3>
+        <h3>
+          <?= _("Try our examples in the left menu to get an idea of its capabilities") ?>
+        </h3>
+      </div>
+    </bbn-container>
+
+    <bbn-container url="dialogs"
+                   :static="true"
+                   :title="_('Chats')"
+                   :scrollable="false">
       <bbn-splitter orientation="horizontal"
                     :resizable="true"
                     :collapsible="true">
-        <bbn-pane :size="250">
-          <bbn-toolbar v-if="source.years && source.years.length > 1">
-            <bbn-dropdown :source="conversationYearsSource"
-                          v-model="selectedYear"/>
-          </bbn-toolbar>
-          <bbn-loader v-if="listChange"/>
-          <bbn-list v-else-if="listSource.length"
-                    :source="listSource"
-                    :alternateBackground="true"
-                    @select="listSelectItem"
-                    :selected="selectedListItem"/>
-          <h3 v-else class="bbn-padding">
-            <?= _("You will see the list of your conversations here") ?>
-          </h3>
-          
+        <bbn-pane :size="250"
+                  :scrollable="false">
+          <div class="bbn-flex-height">
+            <bbn-toolbar v-if="source.years && source.years.length > 1">
+              <bbn-dropdown :source="conversationYearsSource"
+                            v-model="selectedYear"/>
+            </bbn-toolbar>
+            <bbn-loader v-if="listChange"/>
+            <div v-else-if="conversationList.length"
+                 class="bbn-flex-fill">
+              <bbn-scroll>
+                <div class="bbn-padding">
+                  <bbn-list :source="conversationList"
+                            :alternateBackground="true"
+                            class="appui-ai-chat-list-items"
+                            ref="chatList"
+                            @select="chatSelectItem"
+                            :selected="selectedListItem"/>
+                </div>
+              </bbn-scroll>
+            </div>
+            <h3 v-else class="bbn-padding">
+              <?= _("You will see the list of your conversations here") ?>
+            </h3>
+          </div>
         </bbn-pane>
-        <bbn-pane>
-          <bbn-loader v-if="conversationChange"/>
-          <appui-ai-chat-editor v-else-if="editMode"
-                                :source="currentSelected"/>
-          <appui-ai-chat v-else
-                        :source="currentConversation"
-                        :mode="mode"
-                        :configuration="currentSelected"/>
+        <bbn-pane :scrollable="true">
+          <div class="bbn-overlay bbn-flex-height">
+            <bbn-toolbar>
+              <bbn-button icon="nf nf-md-forum_plus"
+                          :text="_('New chat')"
+                          @click="createChat"
+                          class="bbn-left-xsmargin"/>
+              <bbn-button icon="nf nf-md-eraser"
+                          slot="right"
+                          :disabled="!mode"
+                          :text="_('Clear the conversation')"
+                          @click="clear"/>
+              <bbn-button icon="nf nf-md-delete"
+                          slot="right"
+                          :disabled="!mode"
+                          :text="_('Delete the conversation')"
+                          @click="deleteChat"/>
+
+            </bbn-toolbar>
+            <div class="bbn-flex-fill">
+              <bbn-loader v-if="conversationChange"/>
+              <appui-ai-chat v-else
+                            :source="currentChat"
+                            mode="chat"
+                            :configuration="chatSelected"/>
+            </div>
+          </div>
         </bbn-pane>
       </bbn-splitter>
-    </div>
-  </div>
+    </bbn-container>
+    <bbn-container url="prompts"
+                   :static="true"
+                   :title="_('Prompts')"
+                   :scrollable="false">
+      <bbn-splitter orientation="horizontal"
+                    :resizable="true"
+                    :collapsible="true">
+        <bbn-pane :size="250"
+                  :scrollable="false">
+          <div class="bbn-flex-height">
+            <bbn-toolbar v-if="source.years && source.years.length > 1">
+              <bbn-dropdown :source="conversationYearsSource"
+                            v-model="selectedYear"/>
+            </bbn-toolbar>
+            <bbn-loader v-if="listChange"/>
+            <div v-else-if="promptList.length"
+                 class="bbn-flex-fill">
+              <bbn-scroll>
+                <div class="bbn-padding">
+                  <bbn-list :source="promptList"
+                            class="appui-ai-chat-list-items"
+                            ref="promptList"
+                            :alternateBackground="true"
+                            @select="promptSelectItem"
+                            :selected="selectedListItem"/>
+                </div>
+              </bbn-scroll>
 
+            </div>
+            <h3 v-else class="bbn-padding">
+              <?= _("You will see the list of your conversations here") ?>
+            </h3>
+          </div>
+        </bbn-pane>
+        <bbn-pane :scrollable="false">
+          <div class="bbn-overlay bbn-flex-height">
+            <bbn-toolbar>
+              <bbn-button :disabled="!selectedPromptId"
+                          icon="nf nf-md-forum_plus"
+                          :text="_('New prompt')"
+                          @click="createPrompt"
+                          class="bbn-left-xsmargin"/>
+              <bbn-button :disabled="editPrompt"
+                          icon="nf nf-md-comment_edit"
+                          :text="_('Edit prompt')"
+                          @click="editPrompt = true"/>
+              <bbn-button :disabled="!editPrompt"
+                          icon="nf nf-cod-chrome_close"
+                          :text="_('Exit')"
+                          @click="editPrompt = false"/>
+              <bbn-button :disabled="editPrompt"
+                          icon="nf nf-md-eraser"
+                          :text="_('Clear the conversation')"
+                          @click="clear"/>
+              <bbn-button :disabled="editPrompt"
+                          icon="nf nf-md-delete"
+                          :text="_('Delete the prompt')"
+                          @click="deletePrompt"/>
+
+            </bbn-toolbar>
+            <div class="bbn-flex-fill">
+              <bbn-loader v-if="conversationChange"/>
+              <appui-ai-chat-editor v-else-if="editPrompt"
+                                    :source="promptSelected"
+                                    @success="onPromptEditSuccess"/>
+              <appui-ai-chat v-else
+                             :source="currentPrompt"
+                             mode="prompt"
+                             :configuration="promptSelected"/>
+            </div>
+          </div>
+        </bbn-pane>
+      </bbn-splitter>
+    </bbn-container>
+  </bbn-router>
 </div>
-

@@ -13,8 +13,9 @@
          class="bbn-lpadding bbn-bottom-xsmargin bbn-background bbn-text bbn-w-100 bbn-radius"
          style="maxWidth: 100%; white-space: break-spaces"
          >{{configuration.content}}</div>
-    <div v-if="(mode !== 'chat') || configuration === null || configuration?.editable" class="bbn-w-100 bbn-padding bbn-flex-width">
-      <div class="bbn-flex-fill">
+    <div v-if="(mode !== 'chat') || configuration === null || configuration?.editable"
+         class="bbn-w-100 bbn-padding">
+      <div class="bbn-w-100">
         <component v-if="userFormatComponent"
                    :is="userFormatComponent"
                    v-bind="userComponentOptions"
@@ -27,20 +28,19 @@
                       ref="chatPrompt"
                       style="width: 100%"
                       v-focused
+                      :resizable="false"
                       :autosize="true"/>
       </div>
-      <div class="bbn-block bbn-left-lspace bbn-nowrap">
-        <bbn-button class=""
-                    @click="send"
+      <div class="bbn-w-100 bbn-vmiddle bbn-vspadding">
+        <span v-text="_('AI response format')"
+              class="bbn-s"/>
+        <bbn-dropdown v-model="aiFormat"
+                      :source="formats"
+                      class="bbn-left-space bbn-s"/>
+        <bbn-button @click="send"
                     :disabled="isLoadingResponse"
-                    :text="_('send')"/>
-        <span  v-if="mode !== 'prompt'"
-              v-text="_('AI response format')"
-              class="bbn-s bbn-left-lspace"/>
-        <bbn-dropdown v-if="mode !== 'prompt'"
-                      v-model="aiFormat"
-                      class="bbn-s"
-                      :source="formats"/>
+                    :text="_('send')"
+                    class="bbn-left-space"/>
       </div>
     </div>
   </bbn-scroll>

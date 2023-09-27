@@ -89,11 +89,13 @@
               break;
             case 'code-php':
               o.autosize = true;
+              o.theme = 'dracula';
               o.mode = 'php';
               o.fill = false
               break;
             case 'code-js':
               o.autosize = true;
+              o.theme = 'dracula';
               o.mode = 'js'
               o.fill = false
               break;

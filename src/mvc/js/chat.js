@@ -6,7 +6,8 @@
       return {
         root: appui.plugins['appui-ai'] + '/',
         isLoading: false,
-        editMode: false,
+        editPrompt: false,
+        editChat: false,
         mode: null,
         conversationChange: false,
         listChange: false,
@@ -21,47 +22,25 @@
       }
     },
     computed: {
-      currentConversation() {
-        if (this.mode === 'chat') {
-          return this.currentChat;
+      promptList() {
+        let res = [];
+        for (let i in this.source.prompts) {
+          res.push({
+            text: this.source.prompts[i].title,
+            value: this.source.prompts[i].id
+          })
         }
-        if (this.mode === 'prompt') {
-          return this.currentPrompt;
-        }
-        return [];
+        return res;
       },
-      listSource() {
-        if (this.mode === 'prompt') {
-          let res = [];
-          for (let i in this.source.prompts) {
-            res.push({
-              text: this.source.prompts[i].title,
-              value: this.source.prompts[i].id
-            })
-          }
-          return res;
-        } else if (this.mode === 'chat') {
-          return this.conversationList;
-        }
-        return [];
+      chatSelected() {
+        return bbn.fn.getRow(this.conversationList, {value: this.selectedChatPath}) || null;
       },
-      currentSelected() {
-        if (this.mode === 'prompt') {
-          if (!this.selectedPromptId) {
-            if (this.editMode) {
-              return {};
-            }
-            if (this.source?.prompts?.length) {
-              this.selectedPromptId = this.source.prompts[0].id;
-              this.conversationChange = true;
-              this.getPromptConversation();
-            }
-          }
+      promptSelected() {
+        if (this.selectedPromptId) {
           return bbn.fn.getRow(this.source.prompts, {id: this.selectedPromptId}) || null;
-        } else if (this.mode === 'chat') {
-          return bbn.fn.getRow(this.conversationList, {value: this.selectedChatPath}) || null;
         }
-        return null;
+
+        return {};
       },
       selectedListItem() {
         if (this.mode === 'prompt') {
@@ -92,8 +71,10 @@
         })
       },
       getConversationList() {
-        if (!this.selectedYear)
+        if (!this.selectedYear) {
           return;
+        }
+
         let res = [];
         bbn.fn.post(this.root + 'conversations', {
           year: this.selectedYear
@@ -101,14 +82,17 @@
           if(d.success) {
             for (let i in d.data) {
               res.push({
+                date: d.data[i].name === 'Current' ? '99999999999999' : bbn.fn.fdate(d.data[i].name),
                 text: d.data[i].name === 'Current' ? d.data[i].name : bbn.fn.fdate(d.data[i].name),
                 value: d.data[i].path,
                 editable: d.data[i].editable
               })
             }
-            this.conversationList = res;
+            this.conversationList = bbn.fn.order(res, [{field: 'date', dir: 'desc'}]);
             if (this.conversationList.length && this.selectedChatPath === null) {
-              this.selectedChatPath = this.conversationList[0].path;
+              this.$nextTick(() => {
+                this.chatSelectItem(this.conversationList[0]);
+              });
             }
           }
         })
@@ -126,12 +110,13 @@
         }
         return res;
       },
-      create() {
+      createPrompt() {
+        this.conversationChange = true;
         this.selectedPromptId = null;
-        this.editMode = true;
-      },
-      edit() {
-        this.editMode = true;
+        this.getPromptConversation();
+        setTimeout(() => {
+          this.conversationChange = false;
+        }, 500);
       },
       getPromptConversation() {
         bbn.fn.post(this.source.root + '/prompt/conversation/get', {
@@ -152,35 +137,35 @@
       testClick(e) {
         bbn.fn.log(this.source.prompts[e.value]);
       },
-      listSelectItem(item) {
-        if (this.editMode)
-          return;
-        this.conversationChange = true;
-        if (this.mode === 'prompt') {
-          if (this.editMode) {
-            return;
-          }
-          if (item.value) {
-            bbn.fn.log(item);
-            this.selectedPromptId = item.value
-            this.getPromptConversation();
-          }
-        } else {
-          if (item.value) {
-            this.selectedChatPath = item.value;
-            bbn.fn.post(this.root + 'conversation', {
-              path: item.value
-            }, (d) => {
-              for (let message of d.conversation) {
-                message.id = message.id || bbn.fn.randomString();
-              }
-              this.currentChat = d.conversation;
-            })
-          }
+      chatSelectItem(item) {
+        if (item.value) {
+          this.conversationChange = true;
+          this.selectedChatPath = item.value;
+          bbn.fn.post(this.root + 'conversation', {
+            path: item.value
+          }, (d) => {
+            for (let message of d.conversation) {
+              message.id = message.id || bbn.fn.randomString();
+            }
+            this.currentChat = d.conversation;
+          })
           setTimeout(() => {
             this.conversationChange = false;
           }, 500);
         }
+
+      },
+      promptSelectItem(item) {
+        if (item.value) {
+          this.conversationChange = true;
+          bbn.fn.log(item);
+          this.selectedPromptId = item.value
+          this.getPromptConversation();
+          setTimeout(() => {
+            this.conversationChange = false;
+          }, 500);
+        }
+
       },
       clear() {
         bbn.fn.log("CLEAR", this.mode, this.selectedPromptId);
@@ -203,6 +188,10 @@
           })
         }
       },
+      onPromptEditSuccess() {
+        this.updatePromptsList();
+        this.editPrompt = false;
+      },
       updatePromptsList() {
         this.listChange = true;
         bbn.fn.post(this.source.root + '/prompts' , {}, (d) => {
@@ -220,12 +209,6 @@
       this.getConversationList();
     },
     watch: {
-      mode() {
-        this.isLoading = true;
-        setTimeout(() => {
-          this.isLoading = false;
-        }, 250);
-      },
       selectedYear() {
         this.listChange = true;
         this.getConversationList();

@@ -14,11 +14,11 @@ $ai = new Ai($model->db);
 
 if ($model->hasData('id', true)) {
   return [
-    'success' => $ai->updatePrompt($model->data['id'], $model->data['title'], $model->data['prompt'], $model->data['input'], $model->data['output'])
+    'success' => $ai->updatePrompt($model->data['id'], $model->data['title'], $model->data['prompt'], $model->data['input'], $model->data['output'], $model->data['shortcode'])
   ];
 } else {
   return [
-    'success' => $ai->insertPrompt($model->data['title'], $model->data['prompt'], $model->data['language'], $model->data['input'], $model->data['output'])
+    'success' => $ai->insertPrompt($model->data['title'], $model->data['prompt'], $model->data['language'], $model->data['input'], $model->data['output'], $model->data['shortcode'])
   ];
 }
 

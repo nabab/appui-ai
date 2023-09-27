@@ -9,7 +9,6 @@
       }
     },
     data() {
-      bbn.fn.log("EDIT", this.source);
       return {
         formats: [
           {
@@ -62,19 +61,21 @@
         ],
         root: appui.plugins['appui-ai'] + '/',
         formData: {
-          id: this.source.id || null,
-          id_note: this.source.id_note || null,
-          title: this.source.title || "",
-          prompt: this.source.content || "",
-          output: this.source.output || "textarea",
-          input: this.source.input || "textarea",
-          lang: this.source.language || "en"
+          id: this.source?.id || null,
+          id_note: this.source?.id_note || null,
+          title: this.source?.title || "",
+          prompt: this.source?.content || "",
+          output: this.source?.output || "textarea",
+          input: this.source?.input || "textarea",
+          lang: this.source?.language || "en",
+          shortcode: this.source?.shortcode || null
         },
         input: "",
         response: null,
         loading: false,
         cp: null,
-        generating: false
+        generating: false,
+        isValid: false
       }
     },
     computed: {
@@ -97,11 +98,12 @@
               break;
             case 'code-php':
               o.mode = 'php';
+              o.theme = 'dracula';
               o.autosize = true;
-              o.fill = false
               break;
             case 'code-js':
               o.mode = 'js'
+              o.theme = 'dracula';
               o.fill = false
               break;
           }
@@ -113,6 +115,9 @@
       this.cp = this.closest('bbn-container').getComponent();
     },
     methods: {
+      checkValid() {
+        return this.getRef('form').isValid()
+      },
       componentOptions(type, readonly) {
         const o = {
           readonly: readonly
@@ -137,11 +142,7 @@
         return o;
       },
       success() {
-        this.cp.updatePromptsList();
-        this.cp.editMode = false;
-      },
-      isValid() {
-        return true;
+        this.$emit('success')
       },
       send() {
         this.loading = true;
@@ -187,6 +188,14 @@
             this.generating = false;
           }, 300);
         })
+      }
+    },
+    watch: {
+      formData: {
+        deep: true,
+        handler() {
+          this.isValid = this.checkValid();
+        }
       }
     }
   }

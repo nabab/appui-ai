@@ -68,12 +68,13 @@
             "defaultExpression": false,
             "maxlength": 11
         },
-        "description": {
+        "shortcode": {
             "position": 6,
-            "type": "longtext",
-            "null": 0,
-            "default": "''",
-            "defaultExpression": false
+            "type": "varchar",
+            "null": 1,
+            "maxlength": 35,
+            "default": "NULL",
+            "defaultExpression": true
         }
     }
   },
