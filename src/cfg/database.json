@@ -45,22 +45,29 @@
             "key": "MUL",
             "maxlength": 16
         },
-        "output": {
+        "input": {
             "position": 3,
             "type": "longtext",
             "null": 1,
             "default": "NULL",
             "defaultExpression": true
         },
-        "creation_date": {
+        "output": {
             "position": 4,
+            "type": "longtext",
+            "null": 1,
+            "default": "NULL",
+            "defaultExpression": true
+        },
+        "creation_date": {
+            "position": 5,
             "type": "datetime",
             "null": 0,
             "default": "current_timestamp()",
             "defaultExpression": true
         },
         "usage_count": {
-            "position": 5,
+            "position": 6,
             "type": "int",
             "null": 0,
             "signed": 1,
@@ -69,7 +76,7 @@
             "maxlength": 11
         },
         "shortcode": {
-            "position": 6,
+            "position": 7,
             "type": "varchar",
             "null": 1,
             "maxlength": 35,
