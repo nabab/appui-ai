@@ -7,7 +7,7 @@
     <bbn-container url="home"
                    :notext="true"
                    icon="nf nf-fa-home"
-                   :static="true"
+                   :fixed="true"
                    :title="_('Home')"
                    :scrollable="true">
       <div class="bbn-padding">
@@ -23,7 +23,7 @@
     </bbn-container>
 
     <bbn-container url="dialogs"
-                   :static="true"
+                   :fixed="true"
                    :title="_('Chats')"
                    :scrollable="false">
       <bbn-splitter orientation="horizontal"
@@ -86,7 +86,7 @@
       </bbn-splitter>
     </bbn-container>
     <bbn-container url="prompts"
-                   :static="true"
+                   :fixed="true"
                    :title="_('Prompts')"
                    :scrollable="false">
       <bbn-splitter orientation="horizontal"
