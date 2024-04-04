@@ -1,1 +1,5 @@
 src/cfg/key.txt
+composer.phar
+/vendor/
+.history
+.vscode
