@@ -3,7 +3,7 @@
 <div style="height: auto; max-width: 70%; width: 100%"
      :class="'appui-chat-item bbn-xsmargin bbn-flex-column bbn-radius bbn-bottom-smargin ' + (source.ai ? 'flex-end bbn-secondary' : 'flex-start bbn-primary')">
   <div class="bbn-w-100 bbn-xspadding"
-       style="maxWidth: 100%">
+       style="max-width: 100%">
     <div v-if="source.loading"
          class="bbn-xspadding bbn-background bbn-text bbn-w-100 bbn-radius">
       <span class="bbn-anim-dots"
@@ -15,21 +15,21 @@
     <component v-else-if="source.ai && aiFormatComponent !== 'div'"
                :is="aiFormatComponent"
                class="bbn-xspadding bbn-background bbn-text bbn-w-100 bbn-radius"
-               style="maxWidth: 100%; white-space: break-spaces"
+               style="max-width: 100%; white-space: break-spaces"
                v-bind="componentOptions(aiFormat, true)"
-               v-model="(aiFormat === 'bbn-json-editor') ? source.text : source.text.trim()">
+               v-model="source.text">
     </component>
     <component v-else-if="!source.ai && aiFormatComponent !== 'div'"
                :is="userFormatComponent"
                class="bbn-xspadding bbn-background bbn-text bbn-w-100 bbn-radius"
-               style="maxWidth: 100%; white-space: break-spaces"
+               style="max-width: 100%; white-space: break-spaces"
                v-bind="componentOptions(userFormat, true)"
-               v-model="(userFormat === 'bbn-json-editor') ? source.text : source.text.trim()">
+               v-model="source.text">
     </component>
     <div v-else
          class="bbn-xspadding bbn-background bbn-text bbn-w-100 bbn-radius"
-         style="maxWidth: 100%; white-space: break-spaces"
-         >{{source.text.trim()}}</div>
+         style="max-width: 100%; white-space: break-spaces"
+         >{{source.text}}</div>
 
   </div>
 
