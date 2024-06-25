@@ -112,11 +112,12 @@
       },
       createPrompt() {
         this.conversationChange = true;
-        this.selectedPromptId = null;
-        this.getPromptConversation();
+        this.promptList.push({text: 'New Prompt', value: bbn.fn.randomString()});
+        this.selectedPromptId = this.promptList[this.promptList.length - 1].value;
+        this.editPrompt = true;
         setTimeout(() => {
           this.conversationChange = false;
-        }, 500);
+        }, 250);
       },
       getPromptConversation() {
         bbn.fn.post(this.source.root + '/prompt/conversation/get', {

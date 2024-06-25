@@ -67,7 +67,7 @@
           prompt: this.source?.content || "",
           output: this.source?.output || "textarea",
           input: this.source?.input || "textarea",
-          lang: this.source?.language || "en",
+          lang: this.source?.language || null,
           shortcode: this.source?.shortcode || null
         },
         input: "",

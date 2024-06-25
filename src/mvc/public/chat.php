@@ -13,6 +13,8 @@ else {
     $ctrl->addData(['error' => 'No OpenAI key defined']);
   }
 
-  $ctrl->addData(['root' => $ctrl->pluginUrl('appui-ai')])->combo(_('AI'), true);
+  $ctrl->addData(['root' => $ctrl->pluginUrl('appui-ai')])
+    ->setUrl($ctrl->pluginUrl('appui-ai') . '/chat')
+    ->combo(_('AI'), true);
 }
 

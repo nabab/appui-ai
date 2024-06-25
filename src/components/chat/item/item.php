@@ -19,7 +19,7 @@
                v-bind="componentOptions(aiFormat, true)"
                v-model="source.text">
     </component>
-    <component v-else-if="!source.ai && aiFormatComponent !== 'div'"
+    <component v-else-if="!source.ai && userFormatComponent !== 'div'"
                :is="userFormatComponent"
                class="bbn-xspadding bbn-background bbn-text bbn-w-100 bbn-radius"
                style="max-width: 100%; white-space: break-spaces"
@@ -28,8 +28,7 @@
     </component>
     <div v-else
          class="bbn-xspadding bbn-background bbn-text bbn-w-100 bbn-radius"
-         style="max-width: 100%; white-space: break-spaces"
-         >{{source.text}}</div>
+         style="max-width: 100%; white-space: break-spaces" bbn-html="source.text"/>
 
   </div>
 

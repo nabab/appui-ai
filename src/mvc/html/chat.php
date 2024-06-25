@@ -1,7 +1,7 @@
 <!-- HTML Document -->
 
 <div class="bbn-overlay appui-ai-chat-page">
-  <bbn-router :url-navigation="false"
+  <bbn-router :url-navigation="true"
               :autoload="false"
               :nav="true">
     <bbn-container url="home"
@@ -122,8 +122,7 @@
         <bbn-pane :scrollable="false">
           <div class="bbn-overlay bbn-flex-height">
             <bbn-toolbar>
-              <bbn-button :disabled="!selectedPromptId"
-                          icon="nf nf-md-forum_plus"
+              <bbn-button icon="nf nf-md-forum_plus"
                           :text="_('New prompt')"
                           @click="createPrompt"
                           class="bbn-left-xsmargin"/>

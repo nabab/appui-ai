@@ -173,7 +173,8 @@
           let inputDate = (new Date()).getTime();
 
           this.conversation.push({text: input, ai: 0, creation_date: inputDate});
-          this.conversation.push({ai: 1, loading: 1, creation_date: inputDate});
+          const lastDialog = {ai: 1, loading: 1, creation_date: inputDate, text: ''};
+          this.conversation.push();
 
           this.isLoadingResponse = true;
 
@@ -183,19 +184,17 @@
           this.getRef('chatPrompt').focus();
 
           bbn.fn.post(this.root + 'chat', request_object, (d) => {
-            if (d.success && this.configuration.id === request_object.id_prompt) {
+            if (d.success) {
               let inputDate = (new Date()).getTime();
-              this.conversation.at(-1).creation_date = inputDate;
-              if (d.success) {
-                this.$set(this.conversation.at(-1), 'text', this.configuration.output === 'bbn-json-editor' ? JSON.parse(d.text) : d.text);
-              }
-              else {
-                this.$set(this.conversation.at(-1), 'error', true);
-              }
-              this.conversation.at(-1).loading = false;
+              lastDialog.creation_date = inputDate;
+              //lastDialog.text = this.configuration.output === 'bbn-json-editor' ? JSON.parse(d.text) : d.text);
+              lastDialog.text = d.text;
+              lastDialog.loading = false;
               this.isLoadingResponse = false;
               this.$nextTick(this.updateScroll);
-              this.input = '';
+            }
+            else {
+              this.$set(this.conversation.at(-1), 'error', true);
             }
           })
         }

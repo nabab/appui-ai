@@ -46,7 +46,7 @@
             <bbn-dropdown
                           v-model="formData.lang"
                           :source="languages"
-                          :required="true"/>
+                          :required="false"/>
           </div>
 
           <label><?= _("Shortcode") ?></label>
