@@ -9,7 +9,7 @@ use bbn\Str;
 use Orhanerday\OpenAi\OpenAi;
 use bbn\File\System;
 use bbn\Appui\Ai;
-/** @var $model \bbn\Mvc\Model*/
+/** @var bbn\Mvc\Model $model */
 
 $ai = new Ai($model->db);
 

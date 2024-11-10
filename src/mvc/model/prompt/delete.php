@@ -8,7 +8,7 @@ use bbn\X;
 use bbn\Str;
 use bbn\Appui\Note;
 use bbn\Appui\Ai;
-/** @var $model \bbn\Mvc\Model*/
+/** @var bbn\Mvc\Model $model */
 
 
 if ($model->hasData('id', true)) {
