@@ -2,7 +2,7 @@
 
 <div class="appui-ai-chat-editor bbn-overlay">
   <bbn-scroll class="bbn-overlay">
-    <div class="bbn-margin bbn-spadding bbn-radius bbn-bordered bbn-dotted">
+    <div class="bbn-margin bbn-spadding bbn-radius bbn-border bbn-dotted">
       <bbn-form :action="root + 'prompt/save'"
                 :source="formData"
                 ref="form"
@@ -58,7 +58,7 @@
         </div>
       </bbn-form>
     </div>
-    <div class="bbn-margin bbn-spadding bbn-radius bbn-bordered bbn-dotted"
+    <div class="bbn-margin bbn-spadding bbn-radius bbn-border bbn-dotted"
          v-if="formData.prompt.length > 5">
       <h3 class="bbn-c">
         <?= _("Test your prompt") ?>
