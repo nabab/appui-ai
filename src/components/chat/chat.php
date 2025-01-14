@@ -39,7 +39,7 @@
                       class="bbn-left-space bbn-s"/>
         <bbn-button @click="send"
                     :disabled="isLoadingResponse"
-                    :text="_('send')"
+                    :label="_('send')"
                     class="bbn-left-space"/>
       </div>
     </div>

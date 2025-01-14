@@ -22,7 +22,7 @@
             <bbn-input class="bbn-m bbn-w-90"
                       v-model="formData.title"
                       :required="true"/>
-            <bbn-button :text="_('Generate title for me')"
+            <bbn-button :label="_('Generate title for me')"
                         @click="generateTitle"
                         class="bbn-left-lmargin"
                         :disabled="generating"/>

@@ -8,7 +8,7 @@
                    :notext="true"
                    icon="nf nf-fa-home"
                    :fixed="true"
-                   :title="_('Home')"
+                   :label="_('Home')"
                    :scrollable="true">
       <div class="bbn-padding">
         <h2 class="bbn-bottom-lmargin">
@@ -24,7 +24,7 @@
 
     <bbn-container url="dialogs"
                    :fixed="true"
-                   :title="_('Chats')"
+                   :label="_('Chats')"
                    :scrollable="false">
       <bbn-splitter orientation="horizontal"
                     :resizable="true"
@@ -59,18 +59,18 @@
           <div class="bbn-overlay bbn-flex-height">
             <bbn-toolbar>
               <bbn-button icon="nf nf-md-forum_plus"
-                          :text="_('New chat')"
+                          :label="_('New chat')"
                           @click="createChat"
                           class="bbn-left-xsmargin"/>
               <bbn-button icon="nf nf-md-eraser"
                           slot="right"
                           :disabled="!mode"
-                          :text="_('Clear the conversation')"
+                          :label="_('Clear the conversation')"
                           @click="clear"/>
               <bbn-button icon="nf nf-md-delete"
                           slot="right"
                           :disabled="!mode"
-                          :text="_('Delete the conversation')"
+                          :label="_('Delete the conversation')"
                           @click="deleteChat"/>
 
             </bbn-toolbar>
@@ -87,7 +87,7 @@
     </bbn-container>
     <bbn-container url="prompts"
                    :fixed="true"
-                   :title="_('Prompts')"
+                   :label="_('Prompts')"
                    :scrollable="false">
       <bbn-splitter orientation="horizontal"
                     :resizable="true"
@@ -123,24 +123,24 @@
           <div class="bbn-overlay bbn-flex-height">
             <bbn-toolbar>
               <bbn-button icon="nf nf-md-forum_plus"
-                          :text="_('New prompt')"
+                          :label="_('New prompt')"
                           @click="createPrompt"
                           class="bbn-left-xsmargin"/>
               <bbn-button :disabled="editPrompt"
                           icon="nf nf-md-comment_edit"
-                          :text="_('Edit prompt')"
+                          :label="_('Edit prompt')"
                           @click="editPrompt = true"/>
               <bbn-button :disabled="!editPrompt"
                           icon="nf nf-cod-chrome_close"
-                          :text="_('Exit')"
+                          :label="_('Exit')"
                           @click="editPrompt = false"/>
               <bbn-button :disabled="editPrompt"
                           icon="nf nf-md-eraser"
-                          :text="_('Clear the conversation')"
+                          :label="_('Clear the conversation')"
                           @click="clear"/>
               <bbn-button :disabled="editPrompt"
                           icon="nf nf-md-delete"
-                          :text="_('Delete the prompt')"
+                          :label="_('Delete the prompt')"
                           @click="deletePrompt"/>
 
             </bbn-toolbar>
