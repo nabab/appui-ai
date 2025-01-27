@@ -9,7 +9,7 @@ use bbn\Str;
 use bbn\Appui\Ai;
 /** @var bbn\Mvc\Model $model */
 
-if ($model->hasData('id', true) {
+if ($model->hasData('id', true)) {
   $ai = new Ai($model->db);
   $ai->clearConversation($model->data['id']);
 }
