@@ -10,7 +10,7 @@
     data() {
       return {
         root: this.source.root ?? "",
-        lang: [
+        languages: [
           {
             'text': bbn._('French'),
             'value': 'fr'

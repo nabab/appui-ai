@@ -18,7 +18,7 @@
       <bbn-textarea v-model="formData.description"/>
       <span>{{_('Language')}}</span>
       <bbn-dropdown v-model="formData.language"
-                    :source="lang"/>
+                    :source="languages"/>
       <span>{{_('Input type')}}</span>
       <bbn-dropdown v-model="formData.input"
                     :source="type"></bbn-dropdown>

@@ -9,11 +9,15 @@ use bbn\Str;
 use Orhanerday\OpenAi\OpenAi;
 use bbn\File\System;
 use bbn\Appui\Ai;
+use bbn\Appui\Dashboard;
 /** @var bbn\Mvc\Model $model */
 
 $ai = new Ai($model->db);
 
-if ($model->hasData(['id_prompt'], true) || $model->hasData('prompt', true)) {
+if ($model->hasData(['endpoint', 'model'], true) 
+    && ($model->hasData(['id_prompt'], true) || $model->hasData('prompt', true))
+) {
+  $ai->setEndpoint($model->data['endpoint']);
 
   $complete;
 
@@ -21,9 +25,9 @@ if ($model->hasData(['id_prompt'], true) || $model->hasData('prompt', true)) {
     $complete = $ai->getPromptResponse($model->data['id_prompt'], $model->data['input']);
   } else {
     if ($model->hasData('input')) {
-    	$complete = $ai->request($model->data['prompt'], $model->data['input']);
+    	$complete = $ai->request($model->data['prompt'], $model->data['input'], $model->data['model']);
     } else {
-      $complete = $ai->request(null, $model->data['prompt']);
+      $complete = $ai->request(null, $model->data['prompt'], $model->data['model']);
     }
   }
 
@@ -56,17 +60,12 @@ if ($model->hasData(['id_prompt'], true) || $model->hasData('prompt', true)) {
     'input' => $prompt,
     'request' => $complete
   ];
-} else {
-
- 	$prompts = $ai->getPrompts();
-  
-
+}
+else {
+  $prompts = $ai->getPrompts();
   $path = $model->userDataPath($model->inc->user->getId(), 'appui-ai');
-
   $years = [];
-
   $fs = new System();
-
   if ($fs->exists($path) && $fs->isDir($path)) {
     $dirs = $fs->getDirs($path);
 
@@ -77,9 +76,18 @@ if ($model->hasData(['id_prompt'], true) || $model->hasData('prompt', true)) {
     }
   }
 
+  $dashboard = new Dashboard($model->pluginName());
+  $widgets = $dashboard->getUserWidgetsCode($model->pluginUrl('appui-dashboard').'/data/');
+
   return [
+    "dashboard" => [
+      'widgets' => $widgets,
+      'order' => $dashboard->getOrder($widgets)
+    ],
     "root" => $model->data['root'],
     "prompts" => $prompts,
+    "models" => $ai->getOptions('models'),
+    "endpoints" => $ai->getOptions('endpoints'),
     "years" => $years
   ];
 }

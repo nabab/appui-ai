@@ -40,6 +40,14 @@
       configuration: {
         type: Object,
         required: false
+      },
+      model: {
+        type: String,
+        required: true
+      },
+      endpoint: {
+        type: String,
+        required: true
       }
     },
     data() {
@@ -166,7 +174,9 @@
         if (this.configuration?.id) {
           let request_object = {
             id_prompt: this.configuration.id,
-            input: this.input
+            input: this.input,
+            model: this.model,
+            endpoint: this.endpoint
           }
 
           let input = this.input;
@@ -211,7 +221,9 @@
             prompt: input,
             date: inputDate,
             aiFormat: this.aiFormat,
-            userFormat: 'textarea'
+            userFormat: 'textarea',
+            model: this.model,
+            endpoint: this.endpoint
           }, (d) => {
             this.conversation.at(-1).creation_date = d.date;
             if (d.success) {

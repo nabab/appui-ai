@@ -6,6 +6,14 @@
       source: {
         type: Object,
         required: false
+      },
+      model: {
+        type: String,
+        required: true
+      },
+      endpoint: {
+        type: String,
+        required: true
       }
     },
     data() {
@@ -115,9 +123,6 @@
       this.cp = this.closest('bbn-container').getComponent();
     },
     methods: {
-      checkValid() {
-        return this.getRef('form').isValid()
-      },
       componentOptions(type, readonly) {
         const o = {
           readonly: readonly
@@ -150,7 +155,9 @@
         bbn.fn.post(this.root + 'chat', {
           prompt: this.formData.prompt + '\n' + bbn.fn.getRow(this.formats, {value: this.formData.output}).prompt + ' and the language must be in ' +  bbn.fn.getRow(this.languages, {value: this.formData.lang}).text,
           input: this.input,
-          test: true
+          test: true,
+          model: this.model,
+          endpoint: this.endpoint
         }, (d) => {
           if (d.success) {
             this.response = this.formData.output === 'bbn-json-editor' ? JSON.parse(d.text) : d.text
@@ -176,9 +183,11 @@
       generateTitle() {
         this.generating = true;
         bbn.fn.post(this.root + 'chat', {
-          prompt: "Please generate a clear and descriptive title for the following prompt:",
+          prompt: "The given text is a prompt for which you need to provide (only) a short clear and descriptive title for this prompt.",
           input: this.formData.prompt,
-          test: true
+          test: true,
+          model: this.model,
+          endpoint: this.endpoint
         }, (d) => {
           this.isLoading = false;
           if (d.success) {
@@ -190,13 +199,5 @@
         })
       }
     },
-    watch: {
-      formData: {
-        deep: true,
-        handler() {
-          this.isValid = this.checkValid();
-        }
-      }
-    }
   }
 })();

@@ -5,6 +5,8 @@
     data() {
       return {
         root: appui.plugins['appui-ai'] + '/',
+        currentModel: this.source.models[0].code,
+        currentEndpoint: this.source.endpoints[0].code,
         isLoading: false,
         editPrompt: false,
         editChat: false,
@@ -37,7 +39,7 @@
       },
       promptSelected() {
         if (this.selectedPromptId) {
-          return bbn.fn.getRow(this.source.prompts, {id: this.selectedPromptId}) || null;
+          return bbn.fn.getRow(this.source.prompts || [], {id: this.selectedPromptId}) || null;
         }
 
         return {};
