@@ -117,7 +117,10 @@ if (curl_errno($ch)) {
       curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode([
         "model" => "TheBloke/Mistral-7B-Instruct-v0.2-GGUF",
         "messages" => [
-          ["role" => "user", "content" => $transcription]
+          [
+            "role" => "user",
+            "content" => $transcription
+          ]
         ],
         "temperature" => 0.7,
         "max_tokens" => -1

@@ -7,13 +7,14 @@
     <div class="bbn-border-bottom"
          slot="tabs">
       <div class="bbn-middle-right bbn-nowrap">
-        <bbn-dropdown bbn-model="currentEndpoint"
+        <bbn-dropdown bbn-model="currentEndpointId"
                       :source="source.endpoints"
                       :source-url="false"
-                      source-value="code"/>
-        <bbn-dropdown bbn-model="currentModel"
-                      :source="source.models"
-                      source-value="code"/>
+                      source-value="id"/>
+        <bbn-dropdown :disabled="!currentEndpoint"
+                      bbn-model="currentModelId"
+                      :source="currentEndpoint ? currentEndpoint.models : []"
+                      source-value="id"/>
       </div>
     </div>
     <bbn-container url="home"
@@ -21,22 +22,68 @@
                    icon="nf nf-fa-home"
                    :fixed="true"
                    :label="_('Home')"
-                   :scrollable="false">
-      <div class="bbn-overlay bbn-flex-height">
-        <div class="bbn-w-100 bbn-padding">
-          <h2 class="bbn-bottom-lmargin">
-            <?= _("Here you can simply chat with an AI and keep a daily record of all your discussions") ?></h2>
-          <h3>
-            <?= _("You can create semi automated prompts, where the first part of the prompt and the return format are predefined in a way so that you just need to enter a single parameter to get a sharp response.") ?>
-          </h3>
-          <h3>
-            <?= _("Try our examples in the left menu to get an idea of its capabilities") ?>
-          </h3>
+                   :scrollable="true">
+      <div class="bbn-w-100 bbn-padding">
+        <div class="bbn-section">
+          <h2 class="bbn-top-nomargin bbn-c">
+            <?= _("Welcome to the appui-ai plugin") ?>
+          </h2>
+          <h3 class="bbn-top-nomargin bbn-c">
+            <?= _("From this page you can") ?>:
+          </h2>
+          <h4 class="bbn-top-nomargin bbn-flex-vcentered">
+            <ul class="bbn-list">
+              <li><?= _("Set up any AI service, including local LLM") ?></li>
+              <li><?= _("Keep a record of all your conversations with AI") ?></li>
+              <li><?= _("Prepare and test your AI prompts") ?></li>
+              <li><?= _("Create documents directly out of answers") ?></li>
+              <li><?= _("Automatize processes with your saved prompts") ?></li>
+            </ul>
+          </h4>
         </div>
-        <div class="bbn-flex-fill">
-          <bbn-dashboard :source="source.dashboard?.widgets"
-                         :scrollable="true"/>
-        </div>
+      </div>
+      <div class="bbn-w-100">
+        <bbn-dashboard :scrollable="false">
+          <bbns-widget :closable="false"
+                       item-component="appui-ai-endpoint-widget"
+                       :items="source.endpoints"
+                       label="<?= _("API endpoints") ?>"
+                       :no-data-component="$options.components.newEndpoint"
+                       :buttons-right="[{
+                          action: addEndpoint,
+                          icon: 'nf nf-fa-plus',
+                          title: '<?= _('New endpoint') ?>'
+                       }]"/>
+          <bbns-widget :closable="false"
+                       item-component="appui-ai-model-widget"
+                       :items="lastModelsUsed"
+                       label="<?= _("Last models used") ?>"
+                       :buttons-right="[{
+                          action: addEndpoint,
+                          icon: 'nf nf-fa-plus',
+                          title: '<?= _('New endpoint') ?>'
+                       }]"/>
+          <bbns-widget :closable="false"
+                       item-component="appui-ai-promp-widget"
+                       :items="source.prompts"
+                       label="<?= _("My prompts") ?>"
+                       :no-data-component="$options.components.newPrompt"
+                       :buttons-right="[{
+                          action: addEndpoint,
+                          icon: 'nf nf-fa-plus',
+                          title: '<?= _('New endpoint') ?>'
+                       }]"/>
+          <bbns-widget :closable="false"
+                       item-component="appui-ai-chat-widget"
+                       :items="lastChats"
+                       label="<?= _("Last chats") ?>"
+                       :no-data-component="$options.components.newChat"
+                       :buttons-right="[{
+                          action: addEndpoint,
+                          icon: 'nf nf-fa-plus',
+                          title: '<?= _('New chat') ?>'
+                       }]"/>
+        </bbn-dashboard>
       </div>
     </bbn-container>
 
@@ -98,6 +145,8 @@
               <appui-ai-chat v-else
                             :source="currentChat"
                             mode="chat"
+                            :model="currentModelId"
+                            :endpoint="currentEndpointId"
                             :configuration="chatSelected"/>
             </div>
           </div>
@@ -116,8 +165,6 @@
           <div class="bbn-flex-height">
             <bbn-toolbar v-if="source.years && source.years.length > 1"
                          class="bbn-spadding">
-              <bbn-dropdown :source="conversationYearsSource"
-                            v-model="selectedYear"/>
             </bbn-toolbar>
             <bbn-loader v-if="listChange"/>
             <div v-else-if="promptList.length"
@@ -127,15 +174,14 @@
                   <bbn-list :source="promptList"
                             class="appui-ai-chat-list-items"
                             ref="promptList"
-                            :alternateBackground="true"
+                            :alternate-background="true"
                             @select="promptSelectItem"
                             :selected="selectedListItem"/>
                 </div>
               </bbn-scroll>
-
             </div>
             <h3 v-else class="bbn-padding">
-              <?= _("You will see the list of your conversations here") ?>
+              <?= _("You will see the list of your prompts here") ?>
             </h3>
           </div>
         </bbn-pane>
@@ -167,19 +213,24 @@
                           class="bbn-right-xsmargin"
                           @click="deletePrompt"/>
             </bbn-toolbar>
-            <div class="bbn-flex-fill">
+            <div class="bbn-flex-fill"
+                 bbn-if="currentModelId && promptSelected">
               <bbn-loader v-if="conversationChange"/>
               <appui-ai-chat-editor v-else-if="editPrompt"
                                     :source="promptSelected"
-                                    :model="currentModel"
-                                    :endpoint="currentEndpoint"
+                                    :model="currentModelId"
+                                    :endpoint="currentEndpointId"
                                     @success="onPromptEditSuccess"/>
               <appui-ai-chat v-else
                              :source="currentPrompt"
                              mode="prompt"
-                             :model="currentModel"
-                             :endpoint="currentEndpoint"
+                             :model="currentModelId"
+                             :endpoint="currentEndpointId"
                              :configuration="promptSelected"/>
+            </div>
+            <div class="bbn-flex-fill"
+                 bbn-else>
+              <?= _("Select first an endpoint and a model") ?>
             </div>
           </div>
         </bbn-pane>

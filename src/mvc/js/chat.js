@@ -2,19 +2,26 @@
 
 (() => {
   return {
+    mixins: [
+      bbn.cp.mixins.basic,
+      bbn.cp.mixins.localStorage
+    ],
     data() {
       return {
         root: appui.plugins['appui-ai'] + '/',
-        currentModel: this.source.models[0].code,
-        currentEndpoint: this.source.endpoints[0].code,
         isLoading: false,
+        currentEndpointId: this.source.endpoints?.length ? this.source.endpoints[0].id : null,
+        currentModelId: this.source.endpoints?.length ? this.source.endpoints[0].models[0].id : null,
+        currentPromptId: null,
+        currentChatId: null,
+
         editPrompt: false,
         editChat: false,
         mode: null,
         conversationChange: false,
         listChange: false,
         // prompt mode
-        currentPrompt: [],
+        currentPrompt: null,
         selectedPromptId: null,
         // chat mode
         currentChat: [],
@@ -24,6 +31,33 @@
       }
     },
     computed: {
+      currentEndpoint() {
+        if (this.currentEndpointId) {
+          return bbn.fn.getRow(this.source.endpoints, {id: this.currentEndpointId})
+        }
+
+        return null;
+      },
+      currentModel() {
+        if (this.currentEndpoint && this.currentModelId) {
+          return bbn.fn.getRow(this.currentEndpoint.models, {id: this.currentModelId});
+        }
+
+        return null;
+      },
+      currentPrompt() {
+        
+      },
+      lastModelsUsed() {
+        if (this.currentEndpoint) {
+          return bbn.fn.order(this.currentEndpoint.models.filter(a => !!a.lastUsed), 'lastUsed', 'DESC');
+        }
+
+        return [];
+      },
+      lastChats() {
+        return [];
+      },
       promptList() {
         let res = [];
         for (let i in this.source.prompts) {
@@ -42,7 +76,7 @@
           return bbn.fn.getRow(this.source.prompts || [], {id: this.selectedPromptId}) || null;
         }
 
-        return {};
+        return null;
       },
       selectedListItem() {
         if (this.mode === 'prompt') {
@@ -58,6 +92,17 @@
       }
     },
     methods: {
+      addEndpoint() {
+        this.getPopup({
+          title: false,
+          component: 'appui-ai-endpoint-form',
+          source: {
+            text: '',
+            url: '',
+            pass: ''
+          }
+        })
+      },
       deletePrompt() {
         appui.confirm(bbn._('Do you want to delete this prompt ?'), () => {
           bbn.fn.post(this.root + 'prompt/delete', {
@@ -73,6 +118,7 @@
         })
       },
       getConversationList() {
+        return;
         if (!this.selectedYear) {
           return;
         }
@@ -100,17 +146,7 @@
         })
       },
       conversationYearsSource() {
-        let res = [];
-        bbn.fn.log(this.source.years);
-        if (this.source.years && this.source.years.length) {
-          for(let i in this.source.years) {
-            res.push({
-              text: this.source.years[i],
-              value: this.source.years[i]
-            })
-          }
-        }
-        return res;
+        return this.source.years ? this.source.years.map(a => {return {text: a, value: a}}) : [];
       },
       createPrompt() {
         this.conversationChange = true;
@@ -122,6 +158,7 @@
         }, 250);
       },
       getPromptConversation() {
+        return;
         bbn.fn.post(this.source.root + '/prompt/conversation/get', {
           id: this.selectedPromptId
         }, (d) => {
@@ -196,6 +233,7 @@
         this.editPrompt = false;
       },
       updatePromptsList() {
+        return;
         this.listChange = true;
         bbn.fn.post(this.source.root + '/prompts' , {}, (d) => {
           if (d.success) {
@@ -218,6 +256,50 @@
         setTimeout(() => {
           this.listChange = false;
         }, 300)
+      }
+    },
+    components: {
+      newEndpoint: {
+        template: `
+<div class="bbn-c bbn-w-100 bbn-padding">
+  <bbn-button @click="addEndpoint"
+              :label="_('Add a new API endpoint')"
+              icon="nf nf-fa-plus"/>
+</div>
+        `,
+        methods: {
+          addEndpoint() {
+            bbn.fn.log("CREATE")
+          }
+        }
+      },
+      newPrompt: {
+        template: `
+<div class="bbn-c bbn-w-100 bbn-padding">
+  <bbn-button @click="createPrompt"
+              :label="_('Create a new prompt')"
+              icon="nf nf-fa-plus"/>
+</div>
+        `,
+        methods: {
+          createPrompt() {
+            bbn.fn.log("CREATE")
+          }
+        }
+      },
+      newChat: {
+        template: `
+<div class="bbn-c bbn-w-100 bbn-padding">
+  <bbn-button @click="haveChat"
+              :label="_('Have a new chat')"
+              icon="nf nf-fa-plus"/>
+</div>
+        `,
+        methods: {
+          haveChat() {
+            bbn.fn.log("CREATE")
+          }
+        }
       }
     }
   }
