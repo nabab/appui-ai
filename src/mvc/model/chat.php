@@ -8,7 +8,6 @@ use bbn\X;
 use bbn\Str;
 use Orhanerday\OpenAi\OpenAi;
 use bbn\File\System;
-use bbn\Appui\Dashboard;
 /** @var bbn\Mvc\Model $model */
 
 $ai =& $model->inc->ai;
@@ -61,7 +60,7 @@ if ($model->hasData(['endpoint', 'model'], true)
   return $res;
 }
 else {
-  $endpoints = $ai->getEndpoints();
+  $endpoints = $ai->getEndpoints() ?: [];
   foreach ($endpoints as &$e) {
     $endpoint = $ai->getEndpoint($e['id']);
     $e['models'] = $endpoint['models'];
@@ -80,9 +79,6 @@ else {
       $years[] = $year;
     }
   }
-
-  $dashboard = new Dashboard($model->pluginName());
-  $widgets = $dashboard->getUserWidgetsCode($model->pluginUrl('appui-dashboard').'/data/');
 
   return [
     "root" => $model->data['root'],

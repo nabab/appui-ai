@@ -142,7 +142,7 @@
             </bbn-toolbar>
             <div class="bbn-flex-fill">
               <bbn-loader v-if="conversationChange"/>
-              <appui-ai-chat v-else
+              <appui-ai-chat v-elseif="currentModelId"
                             :source="currentChat"
                             mode="chat"
                             :model="currentModelId"

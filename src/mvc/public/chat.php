@@ -8,10 +8,6 @@ if (!empty($ctrl->post)) {
   $ctrl->action();
 }
 else {
-  if (!defined('BBN_OPENAI_KEY')) {
-    $ctrl->addData(['error' => 'No OpenAI key defined']);
-  }
-
   $ctrl->addData(['root' => $ctrl->pluginUrl('appui-ai')])
     ->setIcon('nf nf-fae-brain')
     ->setUrl($ctrl->pluginUrl('appui-ai') . '/chat')
