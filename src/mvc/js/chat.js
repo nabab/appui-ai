@@ -12,22 +12,20 @@
         isLoading: false,
         currentEndpointId: this.source.endpoints?.length ? this.source.endpoints[0].id : null,
         currentModelId: this.source.endpoints?.length ? this.source.endpoints[0].models[0].id : null,
-        currentPromptId: null,
+        selectedPromptId: null,
         currentChatId: null,
-
-        editPrompt: false,
         editChat: false,
         mode: null,
         conversationChange: false,
         listChange: false,
         // prompt mode
         currentPrompt: null,
-        selectedPromptId: null,
         // chat mode
         currentChat: [],
         selectedYear: this.source.years && this.source.years.length ? this.source.years[this.source.years.length - 1] : new Date().getFullYear(),
         conversationList: [],
-        selectedChatPath: this.listSource?.length ? this.listSource[0].value : null
+        selectedChatPath: this.listSource?.length ? this.listSource[0].value : null,
+          
       }
     },
     computed: {
@@ -44,9 +42,6 @@
         }
 
         return null;
-      },
-      currentPrompt() {
-        
       },
       lastModelsUsed() {
         if (this.currentEndpoint) {
@@ -150,9 +145,7 @@
       },
       createPrompt() {
         this.conversationChange = true;
-        this.promptList.push({text: 'New Prompt', value: bbn.fn.randomString()});
-        this.selectedPromptId = this.promptList[this.promptList.length - 1].value;
-        this.editPrompt = true;
+        this.selectedPromptId = null;
         setTimeout(() => {
           this.conversationChange = false;
         }, 250);
@@ -228,12 +221,14 @@
           })
         }
       },
-      onPromptEditSuccess() {
-        this.updatePromptsList();
-        this.editPrompt = false;
+      onPromptEditSuccess(o) {
+        if (o.id) {
+          bbn.fn.log('onPromptEditSuccess', arguments);
+          this.updatePromptsList();
+          this.selectedPromptId = o.id;
+        }
       },
       updatePromptsList() {
-        return;
         this.listChange = true;
         bbn.fn.post(this.source.root + '/prompts' , {}, (d) => {
           if (d.success) {
@@ -241,6 +236,7 @@
 
             setTimeout(() => {
               this.listChange = false;
+              this.editPrompt = true;
             }, 300)
           }
         })
@@ -248,6 +244,9 @@
     },
     mounted() {
       this.getConversationList();
+      if (this.source.prompts.length) {
+        this.currentPrompt = this.promptList[0];
+      }
     },
     watch: {
       selectedYear() {

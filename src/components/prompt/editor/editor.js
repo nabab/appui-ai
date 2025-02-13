@@ -147,8 +147,9 @@
         return o;
       },
       success(d) {
-        bbn.fn.log("ON SUUUCESS EDITOR", arguments)
-        this.$emit('success', this.source)
+        if (d.success) {
+          this.$emit('success', {id: d.success})
+        }
       },
       send() {
         this.loading = true;

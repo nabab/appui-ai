@@ -48,7 +48,7 @@ if ($model->hasData(['endpoint', 'model'], true)
     
           $timestamp = time();
           
-          $ai->saveConversation($file, $model->data['date'], $model->data['userFormat'], $model->data['aiFormat'], $model->data['prompt'], $res['text']);
+          $ai->saveConversation($file, $res['date'], $model->data['userFormat'] ?? 'text', $model->data['aiFormat'] ?? 'text', $model->data['prompt'], $res['text']);
         }
       }
     }

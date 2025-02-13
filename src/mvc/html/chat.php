@@ -4,6 +4,7 @@
   <bbn-router :url-navigation="true"
               :autoload="false"
               :nav="true">
+    <!-- DROPDOWNS IN TABS BAR -->
     <div class="bbn-border-bottom"
          slot="tabs">
       <div class="bbn-middle-right bbn-nowrap">
@@ -17,6 +18,7 @@
                       source-value="id"/>
       </div>
     </div>
+    <!-- HOME -->
     <bbn-container url="home"
                    :notext="true"
                    icon="nf nf-fa-home"
@@ -64,7 +66,7 @@
                           title: '<?= _('New endpoint') ?>'
                        }]"/>
           <bbns-widget :closable="false"
-                       item-component="appui-ai-promp-widget"
+                       item-component="appui-ai-prompt-widget"
                        :items="source.prompts"
                        label="<?= _("My prompts") ?>"
                        :no-data-component="$options.components.newPrompt"
@@ -87,6 +89,7 @@
       </div>
     </bbn-container>
 
+    <!-- CHAT -->
     <bbn-container url="dialogs"
                    :fixed="true"
                    :label="_('Chats')"
@@ -153,6 +156,8 @@
         </bbn-pane>
       </bbn-splitter>
     </bbn-container>
+
+    <!-- PROMPTS -->
     <bbn-container url="prompts"
                    :fixed="true"
                    :label="_('Prompts')"
@@ -163,8 +168,11 @@
         <bbn-pane :size="250"
                   :scrollable="false">
           <div class="bbn-flex-height">
-            <bbn-toolbar v-if="source.years && source.years.length > 1"
-                         class="bbn-spadding">
+            <bbn-toolbar class="bbn-spadding">
+              <bbn-button icon="nf nf-md-forum_plus"
+                          :label="_('New prompt')"
+                          @click="createPrompt"
+                          class="bbn-right-xsmargin"/>
             </bbn-toolbar>
             <bbn-loader v-if="listChange"/>
             <div v-else-if="promptList.length"
@@ -186,23 +194,8 @@
           </div>
         </bbn-pane>
         <bbn-pane :scrollable="false">
-          <div class="bbn-overlay bbn-flex-height">
-            <bbn-toolbar class="bbn-spadding">
-              <bbn-button icon="nf nf-md-forum_plus"
-                          :label="_('New prompt')"
-                          @click="createPrompt"
-                          class="bbn-right-xsmargin"/>
-              <bbn-button :disabled="editPrompt"
-                          icon="nf nf-md-comment_edit"
-                          :label="_('Edit prompt')"
-                          class="bbn-right-xsmargin"
-                          @click="editPrompt = true"/>
-              <bbn-button :disabled="!editPrompt"
-                          icon="nf nf-cod-chrome_close"
-                          :label="_('Exit')"
-                          class="bbn-right-xsmargin"
-                          @click="editPrompt = false"/>
-              <bbn-button :disabled="editPrompt"
+            <!--bbn-toolbar class="bbn-spadding">
+              <bbn-button bbn-if="conversa"
                           icon="nf nf-md-eraser"
                           :label="_('Clear the conversation')"
                           class="bbn-right-xsmargin"
@@ -212,26 +205,19 @@
                           :label="_('Delete the prompt')"
                           class="bbn-right-xsmargin"
                           @click="deletePrompt"/>
-            </bbn-toolbar>
-            <div class="bbn-flex-fill"
-                 bbn-if="currentModelId && promptSelected">
-              <bbn-loader v-if="conversationChange"/>
-              <appui-ai-chat-editor v-else-if="editPrompt"
+            </bbn-toolbar-->
+          <div class="bbn-overlay"
+               bbn-if="currentModelId">
+            <bbn-loader v-if="conversationChange"/>
+            <appui-ai-prompt-editor bbn-else
                                     :source="promptSelected"
                                     :model="currentModelId"
                                     :endpoint="currentEndpointId"
                                     @success="onPromptEditSuccess"/>
-              <appui-ai-chat v-else
-                             :source="currentPrompt"
-                             mode="prompt"
-                             :model="currentModelId"
-                             :endpoint="currentEndpointId"
-                             :configuration="promptSelected"/>
-            </div>
-            <div class="bbn-flex-fill"
-                 bbn-else>
-              <?= _("Select first an endpoint and a model") ?>
-            </div>
+          </div>
+          <div class="bbn-overlay bbn-middle bbn-lg"
+               bbn-else>
+            <?= _("Select first an endpoint and a model") ?>
           </div>
         </bbn-pane>
       </bbn-splitter>
