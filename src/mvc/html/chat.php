@@ -11,11 +11,15 @@
         <bbn-dropdown bbn-model="currentEndpointId"
                       :source="source.endpoints"
                       :source-url="false"
-                      source-value="id"/>
+                      source-value="id"
+                      :storage="true"
+                      storage-full-name="appui-ai-dropdown-endpoint"/>
         <bbn-dropdown :disabled="!currentEndpoint"
                       bbn-model="currentModelId"
                       :source="currentEndpoint ? currentEndpoint.models : []"
-                      source-value="id"/>
+                      source-value="id"
+                      :storage="true"
+                      storage-full-name="appui-ai-dropdown-model"/>
       </div>
     </div>
     <!-- HOME -->

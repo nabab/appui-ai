@@ -23,6 +23,7 @@ if ($model->hasData(['endpoint', 'model'], true)
     }
     elseif ($model->hasData('input')) {
       $result = $ai->request($model->data['prompt'], $model->data['input'], $model->data['model']);
+      $result['kkkkk'] = 'llll';
     }
     else {
       $result = $ai->request(null, $model->data['prompt'], $model->data['model']);

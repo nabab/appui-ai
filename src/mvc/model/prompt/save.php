@@ -12,15 +12,15 @@ use bbn\Appui\Ai;
 
 if ($model->hasData(['prompt', 'title', 'output', 'input'])) {
   $ai = new Ai($model->db);
-  
+  $model->data['content'] = $model->data['prompt'];
   if ($model->hasData('id', true)) {
     return [
-      'success' => $ai->updatePrompt($model->data['id'], $model->data['title'], $model->data['prompt'], $model->data['input'], $model->data['output'], $model->data['shortcode'])
+      'success' => $ai->updatePrompt($model->data['id'], $model->data)
     ];
   }
   else {
     return [
-      'success' => $ai->insertPrompt($model->data['title'], $model->data['prompt'], $model->data['lang'], $model->data['input'], $model->data['output'], $model->data['shortcode'])
+      'success' => $ai->insertPrompt($model->data)
     ];
   }
 }

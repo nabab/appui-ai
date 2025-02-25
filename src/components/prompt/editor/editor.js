@@ -63,6 +63,7 @@
           }
         ],
         languages: [
+          {text: bbn._('Same as input'), value: null},
           {text: bbn._('Italian'), value: 'it'},
           {text: bbn._('French'), value: 'fr'},
           {text: bbn._('English'), value: 'en'},
@@ -75,7 +76,7 @@
           prompt: this.source?.content || "",
           output: this.source?.output || "textarea",
           input: this.source?.input || "textarea",
-          lang: this.source?.language || null,
+          lang: this.source?.lang || null,
           shortcode: this.source?.shortcode || null
         },
         input: "",

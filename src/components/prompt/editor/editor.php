@@ -41,8 +41,8 @@
                           :source="formats"
                           :required="true"/>
           </div>
-          <label  v-if="!formData.id"><?= _("Language") ?></label>
-          <div  v-if="!formData.id">
+          <label><?= _("Language") ?></label>
+          <div>
             <bbn-dropdown
                           v-model="formData.lang"
                           :source="languages"
