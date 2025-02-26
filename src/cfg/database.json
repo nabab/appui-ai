@@ -72,7 +72,7 @@
             "null": 0,
             "signed": 1,
             "default": 0,
-            "defaultExpression": false,
+            "defaultExpression": 1,
             "maxlength": 11
         },
         "shortcode": {
