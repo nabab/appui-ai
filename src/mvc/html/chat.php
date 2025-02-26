@@ -5,22 +5,22 @@
               :autoload="false"
               :nav="true">
     <!-- DROPDOWNS IN TABS BAR -->
-    <div class="bbn-border-bottom"
+    <div class="bbn-flex-fill bbn-flex-width bbn-border-bottom"
          slot="tabs">
-      <div class="bbn-middle-right bbn-nowrap">
-        <bbn-dropdown bbn-model="currentEndpointId"
-                      :source="source.endpoints"
-                      :source-url="false"
-                      source-value="id"
-                      :storage="true"
-                      storage-full-name="appui-ai-dropdown-endpoint"/>
-        <bbn-dropdown :disabled="!currentEndpoint"
-                      bbn-model="currentModelId"
-                      :source="currentEndpoint ? currentEndpoint.models : []"
-                      source-value="id"
-                      :storage="true"
-                      storage-full-name="appui-ai-dropdown-model"/>
-      </div>
+      <bbn-dropdown class="bbn-flex-fill bbn-left-margin"
+                    bbn-model="currentEndpointId"
+                    :source="source.endpoints"
+                    :source-url="false"
+                    source-value="id"
+                    :storage="true"
+                    storage-full-name="appui-ai-dropdown-endpoint"/>
+      <bbn-dropdown class="bbn-flex-fill bbn-left-margin"
+                    :disabled="!currentEndpoint"
+                    bbn-model="currentModelId"
+                    :source="currentEndpoint ? currentEndpoint.models : []"
+                    source-value="id"
+                    :storage="true"
+                    storage-full-name="appui-ai-dropdown-model"/>
     </div>
     <!-- HOME -->
     <bbn-container url="home"
