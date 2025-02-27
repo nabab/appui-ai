@@ -1,0 +1,26 @@
+[
+    {
+        "cfg": {
+            "show_code": 1,
+            "allow_children": 1,
+            "schema": [
+                {
+                    "title": "URL",
+                    "field": "url",
+                    "type": "url",
+                    "editable": true,
+                    "required": true
+                }
+            ]
+        },
+        "text": "Endpoints",
+        "code": "endpoints"
+    }, {
+        "cfg": {
+            "show_code": 1,
+            "allow_children": 1
+        },
+        "text": "Models",
+        "code": "models"
+    }
+]
