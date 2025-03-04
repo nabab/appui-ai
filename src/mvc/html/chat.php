@@ -5,7 +5,7 @@
               :autoload="false"
               :nav="true">
     <!-- DROPDOWNS IN TABS BAR -->
-    <div class="bbn-flex-fill bbn-flex-width bbn-border-bottom"
+    <div class="bbn-block bbn-nowrap bbn-border-bottom"
          slot="tabs">
       <bbn-dropdown class="bbn-flex-fill bbn-left-margin"
                     bbn-model="currentEndpointId"
