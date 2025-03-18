@@ -8,7 +8,7 @@ use bbn\X;
 use bbn\Str;
 use bbn\Appui\Ai;
 use bbn\Appui\Passwords;
-/** @var $model \bbn\Mvc\Model*/
+/** @var $model bbn\Mvc\Model */
 
 if ($model->hasData('id', true)) {
   $res = ['success' => false];
