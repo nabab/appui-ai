@@ -22,5 +22,59 @@
         },
         "text": "Models",
         "code": "models"
+    }, {
+        "cfg": {
+            "show_code": 1,
+            "schema": [
+                {
+                    "title": "",
+                    "field": "preprompt",
+                    "type": "textarea",
+                    "label": "Prompt text",
+                    "editable": true,
+                    "required": true
+                }
+            ]
+        },
+        "text": "Outputs",
+        "code": "outputs",
+        "items": [
+            {
+                "text": "Javascript code",
+                "code": "code-js",
+                "preprompt": "Your response needs to be pure Javascript code, it shouldn't have anything else than code, and it shouldn't be surrounded by markdown quotes."
+            },
+            {
+                "text": "JSON",
+                "code": "json-editor",
+                "preprompt": "Your response needs to use this grammar : root   ::= object\n\nobject ::= \"{\" ws ( string \":\" ws value (\",\" ws string \":\" ws value)* )? \"}\"\n\nvalue  ::= object | array | string | number | (\"true\" | \"false\" | \"null\") ws\n\narray  ::= \"[\" ws ( value (\",\" ws value)* )? \"]\" ws\n\nstring ::= \"\\\"\" ( [a-zA-Z0-9] )* \"\\\"\" ws\n\nnumber ::= (\"-\"? ([0-9] | [1-9] [0-9]*)) (\".\" [0-9]+)? ([eE] [-+]? [0-9]+)? ws\n\nws ::= ([ \\t\\n] ws)?"
+            },
+            {
+                "text": "Markdown",
+                "code": "markdown",
+                "preprompt": "Your response needs to be in Markdown format"
+            },
+            {
+                "text": "Multilines text",
+                "code": "textarea",
+                "preprompt": "Your response needs to be in simple text (not markdown formatted) with the possibility to use new lines."
+            },
+            {
+                "text": "PHP code",
+                "code": "code-php",
+                "preprompt": "Your response needs to be pure PHP code, it shouldn't have anything else than code, and it shouldn't be surrounded by markdown quotes."
+            },
+            {
+                "text": "Rich text",
+                "code": "rte",
+                "desc": "Your response needs to a be a HTML string, without any markdown quotes",
+                "preprompt": "Your response needs to a be a HTML string, without any markdown quotes"
+            },
+            {
+                "text": "Single line text",
+                "code": "single-line",
+                "preprompt": "Your response must be brief and hold on a single line of text"
+            }
+        ]
     }
 ]

@@ -154,7 +154,7 @@
       },
       send() {
         this.loading = true;
-        this.response = null;
+        this.response = '';
         bbn.fn.post(this.root + 'chat', {
           prompt: this.formData.prompt + '\n' + bbn.fn.getRow(this.formats, {value: this.formData.output}).prompt + ' and the language must be in ' +  bbn.fn.getRow(this.languages, {value: this.formData.lang}).text,
           input: this.input,

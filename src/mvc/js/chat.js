@@ -151,7 +151,6 @@
         }, 250);
       },
       getPromptConversation() {
-        return;
         bbn.fn.post(this.source.root + '/prompt/conversation/get', {
           id: this.selectedPromptId
         }, (d) => {
