@@ -9,6 +9,7 @@
     data() {
       return {
         root: appui.plugins['appui-ai'] + '/',
+        options: this.source.options,
         isLoading: false,
         currentEndpointId: this.source.endpoints?.length ? this.source.endpoints[0].id : null,
         currentModelId: this.source.endpoints?.length ? this.source.endpoints[0].models[0].id : null,
@@ -113,7 +114,6 @@
         })
       },
       getConversationList() {
-        return;
         if (!this.selectedYear) {
           return;
         }

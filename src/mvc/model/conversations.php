@@ -23,7 +23,7 @@ if (!$fs->exists($path)) {
 if ($fs->exists($path) && $fs->isDir($path)) {
   $files = $fs->getFiles($path);
   $sortedFiles = [];
-  if (!$fs->exists($path . '/' . date('m-d') . '.json')) {
+  if (($model->data['year'] === date('Y')) && !$fs->exists($path . '/' . date('m-d') . '.json')) {
     $fs->putContents($path . '/' . date('m-d') . '.json', "[]");
     array_unshift($sortedFiles, array(
       'name' => 'Current',
@@ -32,7 +32,7 @@ if ($fs->exists($path) && $fs->isDir($path)) {
     ));
   }
 
-  foreach ($files as $file) {
+  foreach (array_reverse($files) as $file) {
     $dateStr = basename($file, '.json');
     $year = $model->data['year'];
     if (strtotime("$year-$dateStr") === strtotime(date('Y-m-d'))) {

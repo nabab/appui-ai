@@ -85,7 +85,8 @@ else {
     "root" => $model->data['root'],
     "prompts" => $prompts,
     "endpoints" => $endpoints,
-    "years" => $years
+    "years" => $years,
+    "outputs" => $model->inc->options->fullOptions('outputs', 'ai', 'appui')
   ];
 }
 

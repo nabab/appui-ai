@@ -25,6 +25,23 @@
     }, {
         "cfg": {
             "show_code": 1,
+            "allow_children": 1,
+            "schema": [
+                {
+                    "title": "",
+                    "field": "helper",
+                    "type": "textarea",
+                    "label": "Helper text",
+                    "editable": true,
+                    "required": true
+                }
+            ]
+        },
+        "text": "Helpers",
+        "code": "helpers"
+    }, {
+        "cfg": {
+            "show_code": 1,
             "schema": [
                 {
                     "title": "",
@@ -76,5 +93,7 @@
                 "preprompt": "Your response must be brief and hold on a single line of text"
             }
         ]
+    }, {
+
     }
 ]

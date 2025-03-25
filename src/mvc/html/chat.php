@@ -28,6 +28,8 @@
                    icon="nf nf-fa-home"
                    :fixed="true"
                    :label="_('Home')"
+                   :bcolor="$origin.bcolor"
+                   :fcolor="$origin.fcolor"
                    :scrollable="true">
       <div class="bbn-w-100 bbn-padding">
         <div class="bbn-section">
@@ -97,6 +99,8 @@
     <bbn-container url="dialogs"
                    :fixed="true"
                    :label="_('Chats')"
+                   :bcolor="$origin.bcolor"
+                   :fcolor="$origin.fcolor"
                    :scrollable="false">
       <bbn-splitter orientation="horizontal"
                     :resizable="true"
@@ -165,6 +169,8 @@
     <bbn-container url="prompts"
                    :fixed="true"
                    :label="_('Prompts')"
+                   :bcolor="$origin.bcolor"
+                   :fcolor="$origin.fcolor"
                    :scrollable="false">
       <bbn-splitter orientation="horizontal"
                     :resizable="true"
