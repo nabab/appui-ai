@@ -1,13 +1,11 @@
 {
   "text": "A-I",
-  "num": 21,
   "icon": "nf nf-md-brain",
   "items": [
     {
-      "text": "prompts",
-      "num": 1,
+      "text": "AI Home",
       "icon": "nf nf-fae-brain",
-      "link": "page"
+      "link": "chat"
     }
   ]
 }
