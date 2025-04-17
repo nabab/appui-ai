@@ -35,12 +35,18 @@
   <div class="bbn-flex bbn-w-100 bbn-vxspadding  bbn-hspadding"
        style="margin-top: auto">
     <span class="bbn-small bbn-grey bbn-w-50 bbn-left">
+      <span bbn-if="source.cfg"
+            class="bbn-right-smargin bbn-p"
+            @click="seeRequest">
+        <i class="nf nf-fa-cog"
+           :title="_('See whole request and reply')"/>
+      </span>
       <span class="bbn-right-smargin bbn-p"
             @click="copy">
         <i class="nf nf-fa-copy"
            :title="_('Copy to clipboard')"/>
       </span>
-      {{source.ai ? 'bbn-ai' : _('you')}}
+      {{source.ai ? (source.model ? source.model : 'bbn-ai') : _('you')}}
     </span>
     <span class="bbn-small bbn-grey bbn-w-50 bbn-right">{{fdate}}</span>
   </div>

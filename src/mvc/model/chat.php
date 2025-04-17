@@ -47,10 +47,8 @@ if ($model->hasData(['endpoint', 'model'], true)
     
         if ($fs->exists($path) && $fs->isDir($path)) {
           $file = $path . '/' . date('m-d') . '.json';
-    
           $timestamp = time();
-          
-          $ai->saveConversation($file, $res['date'], $model->data['userFormat'] ?? 'text', $model->data['aiFormat'] ?? 'text', $model->data['prompt'], $res['text']);
+          $res['data'] = $ai->saveConversation($file, $res['date'], $model->data['userFormat'] ?? 'text', $model->data['aiFormat'] ?? 'text', $model->data['prompt'], $res['text'], $modelBit['text'], $result);
         }
       }
     }

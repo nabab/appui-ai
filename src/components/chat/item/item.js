@@ -84,6 +84,14 @@
       }
     },
     methods: {
+      seeRequest() {
+        if (this.source.cfg) {
+          this.closest('bbn-container').getPopup({
+            label: false,
+            content: '<pre class="bbn-padding">' + JSON.stringify(this.source.cfg, null, 2) + '</pre>'
+          })
+        }
+      },
       componentOptions(type, readonly) {
         const o = {
           readonly: readonly
