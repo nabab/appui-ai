@@ -33,6 +33,7 @@ if ($model->hasData(['endpoint', 'model'], true)
       $time = time();
       $model->inc->pref->updateBit($modelBit['id'], ['lastUsed' => $time]);
       $res['success'] = true;
+      $res['res'] = $result;
       $res['text'] = $result['result']['content'];
       $res['date'] = $time;
       $res['input'] = $model->data['prompt'];

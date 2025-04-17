@@ -12,7 +12,7 @@
         options: this.source.options,
         isLoading: false,
         currentEndpointId: this.source.endpoints?.length ? this.source.endpoints[0].id : null,
-        currentModelId: this.source.endpoints?.length ? this.source.endpoints[0].models[0].id : null,
+        currentModelId: this.source.endpoints?.length ? this.source.endpoints[0].models?.[0]?.id : null,
         selectedPromptId: null,
         currentChatId: null,
         editChat: false,

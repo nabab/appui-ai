@@ -57,6 +57,12 @@
             component: "bbn-input"
           },
           {
+            value: "text",
+            text: "Simple text format",
+            prompt: "Your response needs to be entered as simple text format",
+            component: "div"
+          },
+          {
             value: "json-editor",
             text: "JSON",
             prompt: "Your response needs to be a valid JSON object",
