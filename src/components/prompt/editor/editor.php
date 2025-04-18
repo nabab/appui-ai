@@ -76,13 +76,15 @@
                     @click="send"><?= _("Test") ?></bbn-button>
       </div>
       <div>
-        <component v-if="response && !loading"
+        <!--component v-if="response && !loading"
                     :is="aiFormatComponent"
                     v-model="response"
                     v-bind="componentOptions(aiFormatComponent, true)"
                     class="overflow-auto bbn-scroll bbn-bottom-xsmargin bbn-w-80">
           {{formData.output === 'div' ? response :  ''}}
-        </component>
+      </component-->
+        <div bbn-if="response"
+             bbn-text="response"/>
         <span v-else-if="loading" class="bbn-anim-dots"
           v-text="_('Artificially thinking')"/>
       </div>

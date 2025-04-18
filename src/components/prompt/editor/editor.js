@@ -38,6 +38,12 @@
             component: "bbn-textarea"
           },
           {
+            value: "text",
+            text: "Text Multiline",
+            prompt: "Your response needs to be entered as multiple lines of text",
+            component: "bbn-textarea"
+          },
+          {
             value: "code-php",
             text: "Code PHP",
             prompt: "Your response needs to be a code snippet",
