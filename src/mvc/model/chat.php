@@ -36,7 +36,7 @@ if ($model->hasData(['endpoint', 'model'], true)
       $res['res'] = $result;
       $res['text'] = $result['result']['content'];
       $res['date'] = $time;
-      $res['input'] = $model->data['prompt'];
+      $res['input'] = $model->data['prompt'] . ($model->hasData('input', true) ? PHP_EOL . PHP_EOL . $model->data['input'] : '');
       $res['request'] = $result;
       if (!$model->hasData('id_prompt')) {
         $fs = new System();
@@ -48,7 +48,7 @@ if ($model->hasData(['endpoint', 'model'], true)
         if ($fs->exists($path) && $fs->isDir($path)) {
           $file = $path . '/' . date('m-d') . '.json';
           $timestamp = time();
-          $res['data'] = $ai->saveConversation($file, $res['date'], $model->data['userFormat'] ?? 'text', $model->data['aiFormat'] ?? 'text', $model->data['prompt'], $res['text'], $modelBit['text'], $result);
+          $res['data'] = $ai->saveConversation($file, $res['date'], $model->data['userFormat'] ?? 'text', $model->data['aiFormat'] ?? 'text', $res['input'], $res['text'], $modelBit['text'], $result);
         }
       }
     }
