@@ -83,14 +83,19 @@
           output: this.source?.output || "textarea",
           input: this.source?.input || "textarea",
           lang: this.source?.lang || null,
-          shortcode: this.source?.shortcode || null
+          shortcode: this.source?.shortcode || null,
+          temperature: this.source?.shortcode || 0.7,
+          presence: this.source?.presence || 0.1,
+          frequency: this.source?.frequency || 0.1,
+          top_p: this.source?.top_p || 0.95,
         },
         input: "",
         response: null,
         loading: false,
         cp: null,
         generating: false,
-        isValid: false
+        isValid: false,
+        ready: false
       }
     },
     computed: {
@@ -128,6 +133,7 @@
     },
     mounted() {
       this.cp = this.closest('bbn-container').getComponent();
+      this.ready = true;
     },
     methods: {
       componentOptions(type, readonly) {
@@ -166,7 +172,13 @@
           input: this.input,
           test: true,
           model: this.model,
-          endpoint: this.endpoint
+          endpoint: this.endpoint,
+          cfg: {
+            temperature: this.formData.temperature,
+            top_p: this.formData.top_p,
+            frequency_penalty: this.formData.frequency_penalty,
+            presence_penalty: this.formData.presence_penalty,
+          }
         }, (d) => {
           if (d.success) {
             this.response = this.formData.output === 'bbn-json-editor' ? JSON.parse(d.text) : d.text

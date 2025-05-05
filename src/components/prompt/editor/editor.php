@@ -55,6 +55,62 @@
                       :nullable="true"/>
           </div>
 
+          <label>
+            <?= _("Temperature") ?> 
+            <bbn-tooltip icon="nf nf-oct-info"
+                         :source="getRef('infoTemperature')?.innerHTML"
+                         bbn-if="ready"/>
+          </label>
+          <div>
+            <bbn-numeric bbn-model="formData.temperature"
+                     :min="0"
+                     :max="2"
+                     :decimals="2"
+                     :step="0.01"/>
+          </div>
+
+          <label>
+            <?= _("Top_P (Nucleus Sampling") ?> 
+            <bbn-tooltip icon="nf nf-oct-info"
+                         :source="getRef('infoTopP')?.innerHTML"
+                         bbn-if="ready"/>
+          </label>
+          <div>
+            <bbn-numeric bbn-model="formData.top_p"
+                     :min="0"
+                     :max="1"
+                     :decimals="2"
+                     :step="0.01"/>
+          </div>
+
+          <label>
+            <?= _("Frequency penalty") ?> 
+            <bbn-tooltip icon="nf nf-oct-info"
+                         :source="getRef('infoFrequency')?.innerHTML"
+                         bbn-if="ready"/>
+          </label>
+          <div>
+            <bbn-numeric bbn-model="formData.frequency"
+                     :min="0"
+                     :max="1"
+                     :decimals="2"
+                     :step="0.01"/>
+          </div>
+
+          <label>
+            <?= _("Presence penalty") ?> 
+            <bbn-tooltip icon="nf nf-oct-info"
+                         :source="getRef('infoPresence')?.innerHTML"
+                         bbn-if="ready"/>
+          </label>
+          <div>
+            <bbn-numeric bbn-model="formData.presence"
+                     :min="0"
+                     :max="1"
+                     :decimals="2"
+                     :step="0.01"/>
+          </div>
+
         </div>
       </bbn-form>
     </div>
@@ -90,5 +146,130 @@
       </div>
     </div>
   </bbn-scroll>
+  <div class="bbn-hidden"
+       ref="infoTemperature">
+    <div class="bbn-padding">
+      <ul>
+        <li>
+          <strong><?= _("What it does") ?>:</strong> 
+          <?= _("Controls the randomness of the generated text.") ?>
+        </li>
+        <li>
+          <strong><?= _("How It Works") ?>:</strong> 
+          <?= _("Adjusts the probability distribution of the next word in the text.") ?>
+        </li>
+        <li>
+          <strong><?= _("Benefits") ?>:</strong> 
+          <?= _("Higher temperature makes the text more creative and varied, while lower temperature makes it more predictable and focused.") ?>
+        </li>
+        <li>
+          <strong><?= _("Control") ?>:</strong> 
+          <?= _("Adjust the temperature value to balance between creativity and coherence.") ?>
+        </li>
+        <li>
+          <strong><?= _("Use Cases") ?>:</strong> 
+          <?= _("Useful for creative writing, brainstorming, and generating diverse content.") ?>
+        </li>
+      </ul>
+      <p>
+        <?= _("In short, temperature helps AI models generate text that is either more creative or more focused, depending on the setting.") ?>
+      </p>
+    </div>
+  </div>
+
+  <div class="bbn-hidden"
+       ref="infoTopP">
+    <div class="bbn-padding">
+      <h3><?= _("") ?>
+      <ul>
+        <li>
+          <strong><?= _("What it does") ?>:</strong> 
+          <?= _("Controls the randomness of the generated text.") ?>
+        </li>
+        <li>
+          <strong><?= _("How It Works") ?>:</strong> 
+          <?= _("Adjusts the probability distribution of the next word in the text.") ?>
+        </li>
+        <li>
+          <strong><?= _("Benefits") ?>:</strong> 
+          <?= _("Higher temperature makes the text more creative and varied, while lower temperature makes it more predictable and focused.") ?>
+        </li>
+        <li>
+          <strong><?= _("Control") ?>:</strong> 
+          <?= _("Adjust the temperature value to balance between creativity and coherence.") ?>
+        </li>
+        <li>
+          <strong><?= _("Use Cases") ?>:</strong> 
+          <?= _("Useful for creative writing, brainstorming, and generating diverse content.") ?>
+        </li>
+      </ul>
+      <p>
+        <?= _("In short, temperature helps AI models generate text that is either more creative or more focused, depending on the setting.") ?>
+      </p>
+    </div>
+  </div>
+
+  <div class="bbn-hidden"
+       ref="infoFrequency">
+    <div class="bbn-padding">
+      <ul>
+        <li>
+          <strong><?= _("What it does") ?>:</strong> 
+          <?= _("Controls the randomness of the generated text.") ?>
+        </li>
+        <li>
+          <strong><?= _("How It Works") ?>:</strong> 
+          <?= _("Adjusts the probability distribution of the next word in the text.") ?>
+        </li>
+        <li>
+          <strong><?= _("Benefits") ?>:</strong> 
+          <?= _("Higher temperature makes the text more creative and varied, while lower temperature makes it more predictable and focused.") ?>
+        </li>
+        <li>
+          <strong><?= _("Control") ?>:</strong> 
+          <?= _("Adjust the temperature value to balance between creativity and coherence.") ?>
+        </li>
+        <li>
+          <strong><?= _("Use Cases") ?>:</strong> 
+          <?= _("Useful for creative writing, brainstorming, and generating diverse content.") ?>
+        </li>
+      </ul>
+      <p>
+        <?= _("In short, temperature helps AI models generate text that is either more creative or more focused, depending on the setting.") ?>
+      </p>
+    </div>
+  </div>
+
+  <div class="bbn-hidden"
+       ref="infoPresence">
+    <div class="bbn-padding">
+      <ul>
+        <li>
+          <strong><?= _("What it does") ?>:</strong> 
+          <?= _("Controls the randomness of the generated text.") ?>
+        </li>
+        <li>
+          <strong><?= _("How It Works") ?>:</strong> 
+          <?= _("Adjusts the probability distribution of the next word in the text.") ?>
+        </li>
+        <li>
+          <strong><?= _("Benefits") ?>:</strong> 
+          <?= _("Higher temperature makes the text more creative and varied, while lower temperature makes it more predictable and focused.") ?>
+        </li>
+        <li>
+          <strong><?= _("Control") ?>:</strong> 
+          <?= _("Adjust the temperature value to balance between creativity and coherence.") ?>
+        </li>
+        <li>
+          <strong><?= _("Use Cases") ?>:</strong> 
+          <?= _("Useful for creative writing, brainstorming, and generating diverse content.") ?>
+        </li>
+      </ul>
+      <p>
+        <?= _("In short, temperature helps AI models generate text that is either more creative or more focused, depending on the setting.") ?>
+      </p>
+    </div>
+  </div>
+  
 
 </div>

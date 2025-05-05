@@ -22,11 +22,10 @@ if ($model->hasData(['endpoint', 'model'], true)
       $result = $ai->getPromptResponse($model->data['id_prompt'], $model->data['input']);
     }
     elseif ($model->hasData('input')) {
-      $result = $ai->request($model->data['prompt'], $model->data['input'], $model->data['model']);
-      $result['kkkkk'] = 'llll';
+      $result = $ai->request($model->data['prompt'], $model->data['input'], $model->data['cfg']);
     }
     else {
-      $result = $ai->request(null, $model->data['prompt'], $model->data['model']);
+      $result = $ai->request(null, $model->data['prompt'], $model->data['cfg']);
     }
   
     if ($result['success']) {
