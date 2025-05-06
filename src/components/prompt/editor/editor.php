@@ -90,7 +90,7 @@
                          bbn-if="ready"/>
           </label>
           <div>
-            <bbn-numeric bbn-model="formData.frequency"
+            <bbn-numeric bbn-model="formData.frequency_penalty"
                      :min="0"
                      :max="1"
                      :decimals="2"
@@ -104,7 +104,7 @@
                          bbn-if="ready"/>
           </label>
           <div>
-            <bbn-numeric bbn-model="formData.presence"
+            <bbn-numeric bbn-model="formData.presence_penalty"
                      :min="0"
                      :max="1"
                      :decimals="2"
