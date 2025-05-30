@@ -7,20 +7,6 @@
     <!-- DROPDOWNS IN TABS BAR -->
     <div class="bbn-block bbn-nowrap bbn-border-bottom"
          slot="tabs">
-      <bbn-dropdown class="bbn-flex-fill bbn-left-margin"
-                    bbn-model="currentEndpointId"
-                    :source="source.endpoints"
-                    :source-url="false"
-                    source-value="id"
-                    :storage="true"
-                    storage-full-name="appui-ai-dropdown-endpoint"/>
-      <bbn-dropdown class="bbn-flex-fill bbn-left-margin"
-                    :disabled="!currentEndpoint"
-                    bbn-model="currentModelId"
-                    :source="currentEndpoint ? currentEndpoint.models : []"
-                    source-value="id"
-                    :storage="true"
-                    storage-full-name="appui-ai-dropdown-model"/>
     </div>
     <!-- HOME -->
     <bbn-container url="home"
@@ -105,62 +91,40 @@
       <bbn-splitter orientation="horizontal"
                     :resizable="true"
                     :collapsible="true">
-        <bbn-pane :size="250"
-                  :scrollable="false">
+        <bbn-pane :size="250">
           <div class="bbn-flex-height">
-            <bbn-toolbar v-if="source.years && source.years.length > 1"
-                         class="bbn-spadding">
-              <bbn-dropdown :source="conversationYearsSource"
-                            v-model="selectedYear"/>
-            </bbn-toolbar>
-            <bbn-loader v-if="listChange"/>
-            <div v-else-if="conversationList.length"
-                 class="bbn-flex-fill">
-              <bbn-scroll>
-                <div class="bbn-padding">
-                  <bbn-list :source="conversationList"
-                            :alternateBackground="true"
-                            class="appui-ai-chat-list-items"
-                            ref="chatList"
-                            @select="chatSelectItem"
-                            :selected="selectedListItem"/>
-                </div>
-              </bbn-scroll>
-            </div>
-            <h3 v-else class="bbn-padding">
-              <?= _("You will see the list of your conversations here") ?>
-            </h3>
-          </div>
-        </bbn-pane>
-        <bbn-pane :scrollable="true">
-          <div class="bbn-overlay bbn-flex-height">
             <bbn-toolbar class="bbn-spadding">
               <bbn-button icon="nf nf-md-forum_plus"
                           :label="_('New chat')"
                           @click="createChat"
                           class="bbn-left-xsmargin"/>
-              <div slot="right"
-                   class="bbn-nowrap">
-                <bbn-button icon="nf nf-md-eraser"
-                            :disabled="!mode"
-                            :label="_('Clear the conversation')"
-                            @click="clear"/>
-                <bbn-button icon="nf nf-md-delete"
-                            :disabled="!mode"
-                            :label="_('Delete the conversation')"
-                            @click="deleteChat"/>
-              </div>
             </bbn-toolbar>
-            <div class="bbn-flex-fill">
-              <bbn-loader v-if="conversationChange"/>
-              <appui-ai-chat v-elseif="currentModelId"
-                            :source="currentChat"
-                            mode="chat"
-                            :model="currentModelId"
-                            :endpoint="currentEndpointId"
-                            :configuration="chatSelected"/>
+            <div class="bbn-flex-fill bbn-padding">
+              <bbn-tree :source="root + 'conversations'"
+                        class="appui-ai-chat-list-items"
+                        :alternateBackground="true"
+                        source-text="title"
+                        source-value="file"
+                        ref="chatList"
+                        @select="chatSelectItem"
+                        :menu="chatMenu"
+                        :selected="selectedListItem"
+                        no-data="<?= _("You will see the list of your conversations here") ?>"/>
             </div>
           </div>
+        </bbn-pane>
+        <bbn-pane :scrollable="true">
+          <appui-ai-chat :source="currentChat"
+                         mode="chat"
+                         ref="chatui"
+                         :model="currentModelId"
+                         :endpoint="currentEndpointId"
+                         :endpoints="source.endpoints"
+                         :formats="source.formats"
+                         :intro="source.intro"
+                         :configuration="chatSelected"
+                         :storage="true"
+                         storage-full-name="appui-ai-chat-model"/>
         </bbn-pane>
       </bbn-splitter>
     </bbn-container>
@@ -184,8 +148,8 @@
                           @click="createPrompt"
                           class="bbn-right-xsmargin"/>
             </bbn-toolbar>
-            <bbn-loader v-if="listChange"/>
-            <div v-else-if="promptList.length"
+            <bbn-loader bbn-if="listChange"/>
+            <div bbn-else-if="promptList.length"
                  class="bbn-flex-fill">
               <bbn-scroll>
                 <div class="bbn-padding">
@@ -198,7 +162,7 @@
                 </div>
               </bbn-scroll>
             </div>
-            <h3 v-else class="bbn-padding">
+            <h3 bbn-else class="bbn-padding">
               <?= _("You will see the list of your prompts here") ?>
             </h3>
           </div>
@@ -218,7 +182,7 @@
             </bbn-toolbar-->
           <div class="bbn-overlay"
                bbn-if="currentModelId">
-            <bbn-loader v-if="conversationChange"/>
+            <bbn-loader bbn-if="conversationChange"/>
             <appui-ai-prompt-editor bbn-else
                                     :source="promptSelected"
                                     :model="currentModelId"

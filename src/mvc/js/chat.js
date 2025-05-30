@@ -23,27 +23,11 @@
         currentPrompt: null,
         // chat mode
         currentChat: [],
-        selectedYear: this.source.years && this.source.years.length ? this.source.years[this.source.years.length - 1] : new Date().getFullYear(),
-        conversationList: [],
         selectedChatPath: this.listSource?.length ? this.listSource[0].value : null,
           
       }
     },
     computed: {
-      currentEndpoint() {
-        if (this.currentEndpointId) {
-          return bbn.fn.getRow(this.source.endpoints, {id: this.currentEndpointId})
-        }
-
-        return null;
-      },
-      currentModel() {
-        if (this.currentEndpoint && this.currentModelId) {
-          return bbn.fn.getRow(this.currentEndpoint.models, {id: this.currentModelId});
-        }
-
-        return null;
-      },
       lastModelsUsed() {
         if (this.currentEndpoint) {
           return bbn.fn.order(this.currentEndpoint.models.filter(a => !!a.lastUsed), 'lastUsed', 'DESC');
@@ -65,7 +49,13 @@
         return res;
       },
       chatSelected() {
-        return bbn.fn.getRow(this.conversationList, {value: this.selectedChatPath}) || null;
+        bbn.fn.log('chatSelected', arguments);
+        const chats = this.getRef('chatList');
+        if (chats) {
+          return chats.currentData[chat.currentSelected[0]];
+        }
+
+        return undefined;
       },
       promptSelected() {
         if (this.selectedPromptId) {
@@ -88,6 +78,65 @@
       }
     },
     methods: {
+      createChat() {
+        this.addNewChat();
+        setTimeout(() => {
+          
+        })
+      },
+      chatMenu(row) {
+        const menu = [];
+        if (row.data.file !== 'new') {
+          menu.push({
+            text: bbn._("Rename"),
+            action: () => this.renameChat(row.data.file)
+          }, {
+            text: bbn._("Delete"),
+            action: () => this.deleteChat(row)
+          })
+        }
+
+        return menu;
+      },
+      renameChat() {
+        bbn.fn.log("renameChat");
+      },
+      deleteChat(node, force) {
+        this.confirm(bbn._("Are you sure you want to delete this chat?"), () => {
+          bbn.fn.log("deleteChat", node);
+          this.post(
+            appui.plugins['appui-ai'] + '/chat/delete',
+            {file: node.data.file},
+            d => {
+              if (d.error) {
+                appui.error(d.error);
+              }
+              else if (d.success) {
+                appui.success(bbn._("Chat deleted"));
+                const tree = this.getRef('chatList');
+                if (tree) {
+                  tree.updateData();
+                }
+              }
+            }
+          )
+        })
+      },
+      addNewChat() {
+        const chats = this.getRef('chatList');
+        if (chats) {
+          chats.currentData.unshift({
+            index: 0,
+            key: 'new',
+            _bbn: true,
+            data: {
+              title: bbn._("New chat"),
+              file: 'new'
+            }
+          });
+          chats.updateIndexes();
+        }
+      },
       addEndpoint() {
         this.getPopup({
           title: false,
@@ -112,36 +161,6 @@
             this.updatePromptsList();
           })
         })
-      },
-      getConversationList() {
-        if (!this.selectedYear) {
-          return;
-        }
-
-        let res = [];
-        bbn.fn.post(this.root + 'conversations', {
-          year: this.selectedYear
-        }, (d) => {
-          if(d.success) {
-            for (let i in d.data) {
-              res.push({
-                date: d.data[i].name === 'Current' ? '99999999999999' : bbn.fn.fdate(d.data[i].name),
-                text: d.data[i].name === 'Current' ? d.data[i].name : bbn.fn.fdate(d.data[i].name),
-                value: d.data[i].path,
-                editable: d.data[i].editable
-              })
-            }
-            this.conversationList = bbn.fn.order(res, [{field: 'date', dir: 'desc'}]);
-            if (this.conversationList.length && this.selectedChatPath === null) {
-              this.$nextTick(() => {
-                this.chatSelectItem(this.conversationList[0]);
-              });
-            }
-          }
-        })
-      },
-      conversationYearsSource() {
-        return this.source.years ? this.source.years.map(a => {return {text: a, value: a}}) : [];
       },
       createPrompt() {
         this.conversationChange = true;
@@ -170,17 +189,24 @@
         bbn.fn.log(this.source.prompts[e.value]);
       },
       chatSelectItem(item) {
-        if (item.value) {
+        if (item.data.file) {
           this.conversationChange = true;
-          this.selectedChatPath = item.value;
-          bbn.fn.post(this.root + 'conversation', {
-            path: item.value
-          }, (d) => {
-            for (let message of d.conversation) {
-              message.id = message.id || bbn.fn.randomString();
-            }
-            this.currentChat = d.conversation;
-          })
+          this.selectedChatPath = item.data.file;
+          if (item.data.file === 'new') {
+            this.addNewChat();
+            this.currentChat = [];
+          }
+          else {
+            bbn.fn.post(this.root + 'conversation', {
+              path: this.selectedChatPath
+            }, (d) => {
+              for (let message of d.conversation) {
+                message.id = message.id || bbn.fn.randomString();
+              }
+              this.currentChat = d.conversation;
+            })
+          }
+  
           setTimeout(() => {
             this.conversationChange = false;
           }, 500);
@@ -201,7 +227,7 @@
       },
       clear() {
         bbn.fn.log("CLEAR", this.mode, this.selectedPromptId);
-        if (this.mode === 'prompt' && this.selectedPromptId) {
+        if ((this.mode === 'prompt') && this.selectedPromptId) {
           appui.confirm(bbn._('Do you want to delete all the conversation ?'), () => {
             bbn.fn.post(this.source.root + '/prompt/conversation/clear' , {
               id: this.selectedPromptId
@@ -229,7 +255,7 @@
       },
       updatePromptsList() {
         this.listChange = true;
-        bbn.fn.post(this.source.root + '/prompts' , {}, (d) => {
+        bbn.fn.post(this.source.root + '/prompts' , {list: true}, (d) => {
           if (d.success) {
             this.source.prompts.splice(0, this.source.prompts.length, ...d.data);
 
@@ -242,18 +268,8 @@
       }
     },
     mounted() {
-      this.getConversationList();
       if (this.source.prompts.length) {
         this.currentPrompt = this.promptList[0];
-      }
-    },
-    watch: {
-      selectedYear() {
-        this.listChange = true;
-        this.getConversationList();
-        setTimeout(() => {
-          this.listChange = false;
-        }, 300)
       }
     },
     components: {

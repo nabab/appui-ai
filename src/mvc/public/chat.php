@@ -5,7 +5,12 @@ use bbn\Str;
 /** @var bbn\Mvc\Controller $ctrl */
 
 if (!empty($ctrl->post)) {
-  $ctrl->action();
+  if ($ctrl->hasArguments() && $ctrl->controllerExists($ctrl->pluginUrl('appui-ai') . '/chat/' . X::join($ctrl->arguments, '/'), true)) {
+    $ctrl->addToObj('./chat/' . X::join($ctrl->arguments, '/'), $ctrl->post, true);
+  }
+  else {
+    $ctrl->action();
+  }
 }
 else {
   $ctrl->addData(['root' => $ctrl->pluginUrl('appui-ai')])

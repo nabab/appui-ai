@@ -1,34 +1,40 @@
 // Javascript Document
 
 (() => {
+  const newConfig = () => {
+    return {
+      model: null,
+      temperature: 0.7,
+      presence: 0.9,
+      frequency: 0.1,
+      top_p: 0.95,
+    }
+  };
+
+  const newConversation = text => {
+    return [{
+      text,
+      ai: 1,
+      id: bbn.fn.randomString(),
+      creation_date: bbn.fn.timestamp(),
+      title: '',
+    }];
+  };
 
   return {
-    statics() {
-      const introSentences = [
-        bbn._("Hi! I'm an AI language model here to chat with you. How can I be of assistance?"),
-        bbn._("Welcome to my chat page! I'm an intelligent chatbot designed to answer your questions and have meaningful conversations with you."),
-        bbn._("Hey there! I'm an AI assistant that's always here to listen and help. What can I do for you today?"),
-        bbn._("Greetings! I'm an advanced AI model here to converse with you. What's on your mind?"),
-        bbn._("Hello! I'm an AI language model trained to understand natural language and assist you with anything you need."),
-        bbn._("Salutations! I'm a highly-intelligent chatbot here to chat with you and provide any information you need."),
-        bbn._("Good day! I'm an AI language model designed to have engaging conversations and answer your questions. How can I help you today?"),
-        bbn._("Hello there! I'm an AI chatbot that's always eager to learn and have conversations with humans. What brings you to my chat page?"),
-        bbn._("Hi! I'm an intelligent language model here to have meaningful conversations with you. Ask me anything!"),
-        bbn._("Welcome! I'm an AI assistant designed to make your life easier. What can I do for you today?"),
-        bbn._("Hello! I'm a language model powered by artificial intelligence. Let's have a conversation!"),
-        bbn._("Good to see you! I'm an intelligent chatbot here to help you with anything you need."),
-        bbn._("Hey, I'm a smart AI model that's always here to listen and chat. How can I assist you today?"),
-        bbn._("Hi there! I'm a sophisticated chatbot trained to converse with humans. What's on your mind?"),
-        bbn._("Greetings! I'm an AI language model designed to answer your questions and have engaging conversations."),
-        bbn._("Hello! I'm an intelligent chatbot that's always ready to assist you. What can I do for you today?"),
-        bbn._("Hi! I'm a cutting-edge AI model capable of understanding natural language. Let's chat!"),
-        bbn._("Welcome to my chat page! I'm an AI assistant here to help you out. Feel free to ask me anything!"),
-        bbn._("Hey there! I'm a chatbot that's always eager to have conversations and provide useful information. What can I do for you today?"),
-        bbn._("Greetings! I'm a language model powered by artificial intelligence. How can I be of assistance to you?"),
-      ];
-      return {introSentences};
-    },
+    mixins: [bbn.cp.mixins.basic, bbn.cp.mixins.localStorage],
     props: {
+      endpoints: {
+        type: Array,
+        required: true
+      },
+      intro: {
+        type: Array
+      },
+      formats: {
+        type: Array,
+        required: true
+      },
       source: {
         type: Array,
         required: true,
@@ -52,78 +58,49 @@
     },
     data() {
       return {
-        formats: [
-          {
-            value: "rte",
-            text: "Rich Text Editor",
-            prompt: "Your response needs to be in rich text format",
-            component: "bbn-rte"
-          },
-          {
-            value: "markdown",
-            text: "Markdown",
-            prompt: "Your response needs to be in Markdown format",
-            component: "bbn-markdown"
-          },
-          {
-            value: "textarea",
-            text: "Text Multiline",
-            prompt: "Your response needs to be entered as multiple lines of text",
-            component: "bbn-textarea"
-          },
-          {
-            value: "code-php",
-            text: "Code PHP",
-            prompt: "Your response needs to be a code snippet",
-            component: "bbn-code"
-          },
-          {
-            value: "code-js",
-            text: "Code JS",
-            prompt: "Your response needs to be a code snippet",
-            component: "bbn-code"
-          },
-          {
-            value: "single-line",
-            text: "Single Line",
-            prompt: "Your response needs to be entered as a single line of text",
-            component: "bbn-input"
-          },
-          {
-            value: "json-editor",
-            text: "JSON",
-            prompt: "Your response needs to be a valid JSON object",
-            component: "bbn-json-editor"
-          }
-        ],
         languages: [
           {text: bbn._('Italian'), value: 'it'},
           {text: bbn._('French'), value: 'fr'},
           {text: bbn._('English'), value: 'en'},
         ],
+        cfg: newConfig(),
+        currentEndpointId: this.endpoints?.length ? this.endpoints[0].id : null,
+        currentModelId: this.endpoints?.length ? this.endpoints[0].models?.[0]?.id : null,
+        currentModels: this.endpoints[0]?.models || [],
+        conversationChange: false,
         input: "",
         root: appui.plugins['appui-ai'] + '/',
         prompt: this.configuration?.title || null,
-        conversation: (this.source?.length || this.mode === 'prompt') ? this.source :  [{
-          text: this.getRandomIntroSentence(),
-          ai: 1,
-          id: bbn.fn.randomString(),
-          creation_date: (new Date()).getTime()
-        }],
+        conversation: this.source?.length || (this.mode === 'prompt') ? this.source : [],
         editMode: false,
         userFormat: this.configuration?.input || "textarea",
         aiFormat: this.configuration?.output || "textarea",
-        isLoadingResponse: false
+        isLoadingResponse: false,
+        currentChat: [],
       }
     },
-    mounted() {
-      setTimeout(() => {
-        bbn.fn.log("TIMEOUT");
-        this.updateScroll();
-
-      }, 500)
-    },
     computed: {
+      currentEndpoint() {
+        if (this.currentEndpointId) {
+          return bbn.fn.getRow(this.endpoints, {id: this.currentEndpointId})
+        }
+
+        return null;
+      },
+      currentModel() {
+        if (this.currentEndpoint && this.currentModelId) {
+          return bbn.fn.getRow(this.currentEndpoint.models, {id: this.currentModelId});
+        }
+
+        return null;
+      },
+      lastModelsUsed() {
+        if (this.currentEndpoint) {
+          return bbn.fn.order(this.currentEndpoint.models.filter(a => !!a.lastUsed), 'lastUsed', 'DESC');
+        }
+
+        return [];
+      },
       aiFormatComponent() {
         return bbn.fn.getRow(this.formats, {value: this.aiFormat}).component;
       },
@@ -152,11 +129,26 @@
       }
     },
     methods: {
-
+      deleteChat(item) {
+        bbn.fn.log("deleteChat", item);
+        this.post(appui.plugins['appui-ai'] + '/chat/actions/delete', item, d => {
+          bbn.fn.log("SUCCESS DELETE", d);
+        })
+      },
+      clear() {
+        bbn.fn.log("CLEAR", this.mode, this.selectedPromptId);
+      },
+      createChat() {
+        this.isLoadingResponse = true;
+        this.$nextTick(() => {
+          this.conversation = newConversation(this.getRandomIntroSentence());
+          setTimeout(() => this.isLoadingResponse = false, 250);
+        })
+      },
       fdate: bbn.fn.fdate,
       getRandomIntroSentence() {
-        const randomIndex = Math.floor(Math.random() * this.constructor.introSentences.length);
-        return this.constructor.introSentences[randomIndex];
+        const randomIndex = Math.floor(Math.random() * this.intro.length);
+        return this.intro[randomIndex].text;
       },
       updateScroll() {
         const scroll = this.getRef('scroll');
@@ -222,9 +214,9 @@
             date: inputDate,
             aiFormat: this.aiFormat,
             userFormat: 'textarea',
-            model: this.model,
+            model: this.currentModelId,
             endpoint: this.endpoint
-          }, (d) => {
+          }, d => {
             this.conversation.at(-1).creation_date = d.date;
             if (d.success) {
               this.$set(this.conversation.at(-1), 'text', d.text);
@@ -238,6 +230,21 @@
           });
         }
       }
-    }
+    },
+    watch: {
+      currentModelId() {
+        bbn.fn.log("CHANGIN currentModelId");
+      }
+    },
+    mounted() {
+      if (!this.conversation.length) {
+        this.conversation = newConversation(this.getRandomIntroSentence());
+      }
+
+      setTimeout(() => {
+        bbn.fn.log("TIMEOUT");
+        this.updateScroll();
+      }, 500)
+    },
   }
 })();
