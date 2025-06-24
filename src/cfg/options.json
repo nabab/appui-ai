@@ -2,7 +2,6 @@
     {
         "cfg": {
             "show_code": 1,
-            "allow_children": 1,
             "schema": [
                 {
                     "title": "URL",
@@ -17,81 +16,273 @@
         "code": "endpoints"
     }, {
         "cfg": {
-            "show_code": 1,
-            "allow_children": 1
+            "show_code": 1
         },
         "text": "Models",
         "code": "models"
     }, {
-        "cfg": {
-            "show_code": 1,
-            "allow_children": 1,
-            "schema": [
-                {
-                    "title": "",
-                    "field": "helper",
-                    "type": "textarea",
-                    "label": "Helper text",
-                    "editable": true,
-                    "required": true
-                }
-            ]
-        },
-        "text": "Helpers",
-        "code": "helpers"
-    }, {
-        "cfg": {
-            "show_code": 1,
-            "schema": [
-                {
-                    "title": "",
-                    "field": "preprompt",
-                    "type": "textarea",
-                    "label": "Prompt text",
-                    "editable": true,
-                    "required": true
-                }
-            ]
-        },
-        "text": "Outputs",
-        "code": "outputs",
+        "text": "Formats",
+        "code": "formats",
         "items": [
+            {
+                "text": "CSS code",
+                "code": "code-css",
+                "prompt": "Your response needs to be a CSS code snippet; you can use the Less syntax.",
+                "component": "bbn-code"
+            },
+            {
+                "text": "HTML code",
+                "code": "code-html",
+                "prompt": "Your response needs to be a HTML code snippet",
+                "component": "bbn-code"
+            },
             {
                 "text": "Javascript code",
                 "code": "code-js",
-                "preprompt": "Your response needs to be pure Javascript code, it shouldn't have anything else than code, and it shouldn't be surrounded by markdown quotes."
+                "prompt": "Your response needs to be a javascript code snippet",
+                "component": "bbn-code"
             },
             {
-                "text": "JSON",
+                "text": "JSON object",
                 "code": "json-editor",
-                "preprompt": "Your response needs to use this grammar : root   ::= object\n\nobject ::= \"{\" ws ( string \":\" ws value (\",\" ws string \":\" ws value)* )? \"}\"\n\nvalue  ::= object | array | string | number | (\"true\" | \"false\" | \"null\") ws\n\narray  ::= \"[\" ws ( value (\",\" ws value)* )? \"]\" ws\n\nstring ::= \"\\\"\" ( [a-zA-Z0-9] )* \"\\\"\" ws\n\nnumber ::= (\"-\"? ([0-9] | [1-9] [0-9]*)) (\".\" [0-9]+)? ([eE] [-+]? [0-9]+)? ws\n\nws ::= ([ \\t\\n] ws)?"
+                "prompt": "Your response needs to be a valid JSON object",
+                "component": "bbn-json-editor"
             },
             {
                 "text": "Markdown",
                 "code": "markdown",
-                "preprompt": "Your response needs to be in Markdown format"
+                "prompt": "Your response needs to be in Markdown format",
+                "component": "bbn-markdown"
             },
             {
-                "text": "Multilines text",
-                "code": "textarea",
-                "preprompt": "Your response needs to be in simple text (not markdown formatted) with the possibility to use new lines."
+                "text": "Multiline text",
+                "code": "multilines",
+                "prompt": "Your response needs to be entered as simple text and can be on multiple lines",
+                "component": "bbn-textarea"
             },
             {
                 "text": "PHP code",
                 "code": "code-php",
-                "preprompt": "Your response needs to be pure PHP code, it shouldn't have anything else than code, and it shouldn't be surrounded by markdown quotes."
+                "prompt": "Your response needs to be a code snippet",
+                "component": "bbn-code"
             },
             {
-                "text": "Rich text",
+                "text": "Rich Text Editor",
                 "code": "rte",
-                "desc": "Your response needs to a be a HTML string, without any markdown quotes",
-                "preprompt": "Your response needs to a be a HTML string, without any markdown quotes"
+                "prompt": "Your response needs to be in HTML",
+                "component": "bbn-rte"
             },
             {
-                "text": "Single line text",
+                "text": "Single line",
                 "code": "single-line",
-                "preprompt": "Your response must be brief and hold on a single line of text"
+                "prompt": "Your response needs to be entered as a single line of text",
+                "component": "bbn-input"
+            }
+        ],
+        "cfg": {
+            "show_code": 1,
+            "schema": [
+                {
+                    "label": "Prompt",
+                    "field": "prompt",
+                    "type": "string",
+                    "editable": true,
+                    "required": true,
+                    "filterable": true
+                },
+                {
+                    "label": "Component",
+                    "field": "component",
+                    "type": "string",
+                    "editable": true,
+                    "required": true,
+                    "filterable": true
+                }
+            ]
+        }
+    }, {
+        "text": "Intro Sentences",
+        "code": "intro",
+        "items": [
+            {
+                "text": "\"Hello! I'm a language model powered by artificial intelligence. Let's have a conversation!"
+            },
+            {
+                "text": "Good day! I'm an AI language model designed to have engaging conversations and answer your questions. How can I help you today?"
+            },
+            {
+                "text": "Good to see you! I'm an intelligent chatbot here to help you with anything you need."
+            },
+            {
+                "text": "Greetings! I'm a language model powered by artificial intelligence. How can I be of assistance to you?"
+            },
+            {
+                "text": "Greetings! I'm an advanced AI model here to converse with you. What's on your mind?"
+            },
+            {
+                "text": "Greetings! I'm an AI language model designed to answer your questions and have engaging conversations."
+            },
+            {
+                "text": "Hello there! I'm an AI chatbot that's always eager to learn and have conversations with humans. What brings you to my chat page?"
+            },
+            {
+                "text": "Hello! I'm an AI language model trained to understand natural language and assist you with anything you need."
+            },
+            {
+                "text": "Hello! I'm an intelligent chatbot that's always ready to assist you. What can I do for you today?"
+            },
+            {
+                "text": "Hey there! I'm a chatbot that's always eager to have conversations and provide useful information. What can I do for you today?"
+            },
+            {
+                "text": "Hey there! I'm an AI assistant that's always here to listen and help. What can I do for you today?"
+            },
+            {
+                "text": "Hey, I'm a smart AI model that's always here to listen and chat. How can I assist you today?"
+            },
+            {
+                "text": "Hi there! I'm a sophisticated chatbot trained to converse with humans. What's on your mind?"
+            },
+            {
+                "text": "Hi! I'm a cutting-edge AI model capable of understanding natural language. Let's chat!"
+            },
+            {
+                "text": "Hi! I'm an AI language model here to chat with you. How can I be of assistance?"
+            },
+            {
+                "text": "Hi! I'm an intelligent language model here to have meaningful conversations with you. Ask me anything!"
+            },
+            {
+                "text": "Salutations! I'm a highly-intelligent chatbot here to chat with you and provide any information you need."
+            },
+            {
+                "text": "Welcome to my chat page! I'm an AI assistant here to help you out. Feel free to ask me anything!"
+            },
+            {
+                "text": "Welcome to my chat page! I'm an intelligent chatbot designed to answer your questions and have meaningful conversations with you."
+            },
+            {
+                "text": "Welcome! I'm an AI assistant designed to make your life easier. What can I do for you today?"
             }
         ]
+    }, {
+        "text": "Languages",
+        "code": "languages",
+        "items": [
+            {
+                "id_alias": [
+                    "de",
+                    "languages",
+                    "options",
+                    "i18n",
+                    "appui",
+                    "plugins",
+                    "apst-app"
+                ]
+            },
+            {
+                "id_alias": [
+                    "zh",
+                    "languages",
+                    "options",
+                    "i18n",
+                    "appui",
+                    "plugins",
+                    "apst-app"
+                ]
+            },
+            {
+                "id_alias": [
+                    "ko",
+                    "languages",
+                    "options",
+                    "i18n",
+                    "appui",
+                    "plugins",
+                    "apst-app"
+                ]
+            },
+            {
+                "id_alias": [
+                    "ja",
+                    "languages",
+                    "options",
+                    "i18n",
+                    "appui",
+                    "plugins",
+                    "apst-app"
+                ]
+            },
+            {
+                "id_alias": [
+                    "en",
+                    "languages",
+                    "options",
+                    "i18n",
+                    "appui",
+                    "plugins",
+                    "apst-app"
+                ]
+            },
+            {
+                "id_alias": [
+                    "fr",
+                    "languages",
+                    "options",
+                    "i18n",
+                    "appui",
+                    "plugins",
+                    "apst-app"
+                ]
+            },
+            {
+                "id_alias": [
+                    "it",
+                    "languages",
+                    "options",
+                    "i18n",
+                    "appui",
+                    "plugins",
+                    "apst-app"
+                ]
+            },
+            {
+                "id_alias": [
+                    "es",
+                    "languages",
+                    "options",
+                    "i18n",
+                    "appui",
+                    "plugins",
+                    "apst-app"
+                ]
+            },
+            {
+                "id_alias": [
+                    "nl",
+                    "languages",
+                    "options",
+                    "i18n",
+                    "appui",
+                    "plugins",
+                    "apst-app"
+                ]
+            }
+        ],
+        "cfg": {
+            "allow_children": 1,
+            "inheritance": "children",
+            "relations": "alias",
+            "id_root_alias": [
+                "languages",
+                "options",
+                "i18n",
+                "appui",
+                "plugins",
+                "apst-app"
+            ],
+            "alias_name": "Language",
+            "notext": 1
+        }
     }
 ]

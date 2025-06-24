@@ -8,13 +8,19 @@
         type: Object,
         required: true
       },
-      aiFormat: {
+      ai: {
+        type: Boolean
+      },
+      format: {
         type: String,
         required: true
       },
-      userFormat: {
-        type: String,
+      date: {
+        type: Number,
         required: true
+      },
+      cfg: {
+        type: Object
       }
     },
     data() {
@@ -24,7 +30,7 @@
             value: "rte",
             text: "Rich Text Editor",
             prompt: "Your response needs to be in rich text format",
-            component: "bbn-rte"
+            component: "div",
           },
           {
             value: "markdown",
@@ -54,7 +60,7 @@
             value: "single-line",
             text: "Single Line",
             prompt: "Your response needs to be entered as a single line of text",
-            component: "bbn-input"
+            component: "div",
           },
           {
             value: "text",
@@ -73,22 +79,19 @@
       }
     },
     computed: {
-      aiFormatComponent() {
-        return bbn.fn.getRow(this.formats, {value: this.aiFormat}).component;
-      },
-      userFormatComponent() {
-        return bbn.fn.getRow(this.formats, {value: this.userFormat}).component;
+      formatComponent() {
+        return bbn.fn.getRow(this.formats, {value: this.format}).component;
       },
       fdate() {
-        return bbn.fn.fdate(this.source.creation_date, true)
+        return bbn.fn.fdate(this.date, true)
       }
     },
     methods: {
       seeRequest() {
-        if (this.source.cfg) {
+        if (this.cfg) {
           this.closest('bbn-container').getPopup({
             label: false,
-            content: '<pre class="bbn-padding">' + JSON.stringify(this.source.cfg, null, 2) + '</pre>'
+            content: '<pre class="bbn-padding">' + JSON.stringify(this.cfg, null, 2) + '</pre>'
           })
         }
       },
@@ -118,7 +121,7 @@
         return o;
       },
       copy() {
-        bbn.fn.copy(this.source.text);
+        bbn.fn.copy(this.source.content);
         appui.success(bbn._("Copied"));
       }
     },

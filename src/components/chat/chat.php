@@ -1,19 +1,53 @@
 <div class="bbn-overlay bbn-flex-height appui-ai-chat">
   <appui-ai-config :source="cfg"
                    :endpoints="endpoints"
-                   mode="chat"/>
+                   :formats="formats"
+                   :languages="languages"
+                   mode="chat">
+    <bbn-button bbn-if="source?.conversation.length > 2"
+                icon="nf nf-md-cursor_default_outline"
+                :label="_('Selection mode')"
+                :notext="true"
+                @click="isSelecting = !isSelecting"/>
+    <bbn-button icon="nf nf-cod-trash"
+                :disabled="!mode"
+                :label="_('Delete the conversation')"
+                :notext="true"
+                @click="deleteChat"/>
+    
+  </appui-ai-config>
   <div class="bbn-flex-fill">
     <bbn-loader bbn-if="conversationChange"
                 class="bbn-overlay"/>
     <div bbn-else
          class="bbn-overlay">
-      <bbn-scroll ref="scroll" >
-        <div class="bbn-w-100 overflow-auto bbn-flex-column bbn-vpadding">
-          <appui-ai-chat-item bbn-for="item in conversation"
-                              :key="item.id"
-                              :source="item"
-                              :ai-format="mode === 'prompt' ? aiFormat : (item.format || 'textarea')"
-                              :user-format="mode === 'prompt' ? userFormat : (item.format || 'textarea')"/>
+      <bbn-scroll ref="scroll">
+        <div class="bbn-w-100 bbn-vpadding">
+          <div class="bbn-w-100 overflow-auto bbn-flex-column">
+            <appui-ai-chat-item bbn-if="itemIntro"
+                                :source="itemIntro"
+                                format="textarea"
+                                :ai="true"
+                                :date="tst"
+                                user-format="textarea"/>
+          </div>
+          <div class="bbn-w-100 bbn-ai-chat-selector overflow-auto bbn-flex-column"
+               bbn-for="item in source?.conversation">
+            <appui-ai-chat-item bbn-if="item.messages[0]"
+                                :source="item.messages[0]"
+                                :date="item.asked"
+                                :format="item.userFormat || 'textarea'"/>
+            <appui-ai-chat-item bbn-if="item.messages[1]"
+                                :source="item.messages[1]"
+                                :date="item.responded"
+                                :ai="true"
+                                :format="item.aiFormat || 'textarea'"/>
+            <appui-ai-chat-item bbn-elseif="item.messages[0]"
+                                :source="{loading: true}"
+                                :ai="true"
+                                :date="0"
+                                :format="item.aiFormat || 'textarea'"/>
+          </div>
         </div>
         <hr class="bbn-hr">
         <div bbn-if="configuration?.title"
@@ -22,7 +56,7 @@
              >{{configuration.content}}</div>
         <div bbn-if="(mode !== 'chat') || !configuration || configuration?.editable"
              class="bbn-flex-hcentered">
-          <div class="bbn-card bbn-widest bbn-padding">
+          <div class="bbn-card bbn-widest bbn-padding bbn-bottom-margin">
             <div class="bbn-w-100">
               <component bbn-if="userFormatComponent"
                          :is="userFormatComponent"
@@ -40,16 +74,13 @@
                             :autosize="true"/>
             </div>
             <div class="bbn-w-100 bbn-vmiddle bbn-vspadding">
-              <span bbn-text="_('AI response format')"
-                    class="bbn-s"/>
-              <bbn-dropdown bbn-model="aiFormat"
-                            :source="formats"
-                            source-value="code"
-                            class="bbn-left-space bbn-s"/>
-              <bbn-button @click="send"
-                          :disabled="isLoadingResponse"
-                          :label="_('send')"
-                          class="bbn-left-space"/>
+              <bbn-button bbn-if="input.length || (conversation.length <= 1)"
+                          @click="send"
+                          :disabled="!input.length || isLoadingResponse"
+                          :label="_('Send')"/>
+              <bbn-button bbn-else
+                          @click="resend"
+                          :label="_('Resend')"/>
             </div>
           </div>
         </div>

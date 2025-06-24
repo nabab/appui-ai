@@ -1,24 +1,30 @@
 // Javascript Document
 
 (() => {
-  const newConfig = () => {
+  const defaultConfig = cp => {
     return {
-      model: null,
+      endpoint: cp.endpoints[0].id,
+      model: cp.currentEndpoint.models[0].id,
       temperature: 0.7,
       presence: 0.9,
       frequency: 0.1,
       top_p: 0.95,
+      language: bbn.env.lang,
+      aiFormat: 'multilines'
     }
   };
 
   const newConversation = text => {
-    return [{
-      text,
-      ai: 1,
-      id: bbn.fn.randomString(),
-      creation_date: bbn.fn.timestamp(),
-      title: '',
-    }];
+    const tst = bbn.fn.timestamp();
+    return {
+      id: null,
+      title: "",
+      num: 0,
+      tags: [],
+      creation: tst,
+      last: tst,
+      conversation: []
+    };
   };
 
   return {
@@ -28,15 +34,18 @@
         type: Array,
         required: true
       },
-      intro: {
+      intros: {
         type: Array
       },
       formats: {
         type: Array,
         required: true
       },
+      languages: {
+        type: Array
+      },
       source: {
-        type: Array,
+        type: Object,
         required: true,
       },
       mode: {
@@ -58,12 +67,7 @@
     },
     data() {
       return {
-        languages: [
-          {text: bbn._('Italian'), value: 'it'},
-          {text: bbn._('French'), value: 'fr'},
-          {text: bbn._('English'), value: 'en'},
-        ],
-        cfg: newConfig(),
+        cfg: null,
         currentEndpointId: this.endpoints?.length ? this.endpoints[0].id : null,
         currentModelId: this.endpoints?.length ? this.endpoints[0].models?.[0]?.id : null,
         currentModels: this.endpoints[0]?.models || [],
@@ -71,35 +75,41 @@
         input: "",
         root: appui.plugins['appui-ai'] + '/',
         prompt: this.configuration?.title || null,
-        conversation: this.source?.length || (this.mode === 'prompt') ? this.source : [],
+        conversation: this.source.conversation,
         editMode: false,
         userFormat: this.configuration?.input || "textarea",
         aiFormat: this.configuration?.output || "textarea",
         isLoadingResponse: false,
-        currentChat: [],
+        currentChat: this.source || null,
+        itemIntro: null,
+        currentIntro: '',
+        isLoading: false,
+        isSelecting: false,
+        selected: [],
+        tst: bbn.fn.timestamp()
       }
     },
     computed: {
+      itemCurrent() {
+        return {
+          text: this.input,
+          ai: 0
+        }
+      },
       currentEndpoint() {
-        if (this.currentEndpointId) {
-          return bbn.fn.getRow(this.endpoints, {id: this.currentEndpointId})
+        
+        if (this.cfg?.endpoint) {
+          return bbn.fn.getRow(this.endpoints, {id: this.cfg.endpoint})
         }
 
         return null;
       },
       currentModel() {
-        if (this.currentEndpoint && this.currentModelId) {
-          return bbn.fn.getRow(this.currentEndpoint.models, {id: this.currentModelId});
+        if (this.currentEndpoint && this.cfg.model) {
+          return bbn.fn.getRow(this.currentEndpoint.models, {id: this.cfg.model});
         }
 
         return null;
-      },
-      lastModelsUsed() {
-        if (this.currentEndpoint) {
-          return bbn.fn.order(this.currentEndpoint.models.filter(a => !!a.lastUsed), 'lastUsed', 'DESC');
-        }
-
-        return [];
       },
       aiFormatComponent() {
         return bbn.fn.getRow(this.formats, {value: this.aiFormat}).component;
@@ -146,9 +156,12 @@
         })
       },
       fdate: bbn.fn.fdate,
+      updateCurrentIntro() {
+        this.currentIntro = this.getRandomIntroSentence();
+      },
       getRandomIntroSentence() {
-        const randomIndex = Math.floor(Math.random() * this.intro.length);
-        return this.intro[randomIndex].text;
+        const randomIndex = Math.floor(Math.random() * this.intros.length);
+        return this.intros[randomIndex].text;
       },
       updateScroll() {
         const scroll = this.getRef('scroll');
@@ -160,9 +173,14 @@
           });
         }
       },
+      resend() {
+        if (this.conversation.length > 1) {
+          this.input = this.conversation.at(-2).text;
+          this.$nextTick(this.send);
+        }
+      },
       send() {
-        bbn.fn.log("SEND", this.configuration);
-
+        bbn.fn.log("SEND", this.configuration, this.cfg);
         if (this.configuration?.id) {
           let request_object = {
             id_prompt: this.configuration.id,
@@ -185,6 +203,7 @@
           this.$nextTick(this.updateScroll);
           this.getRef('chatPrompt').focus();
 
+          this.isLoading = true;
           bbn.fn.post(this.root + 'chat', request_object, (d) => {
             if (d.success) {
               let inputDate = (new Date()).getTime();
@@ -198,6 +217,7 @@
             else {
               this.$set(this.conversation.at(-1), 'error', true);
             }
+            this.isLoading = false;
           })
         }
         else {
@@ -209,17 +229,34 @@
           this.input = '';
           this.$nextTick(this.updateScroll);
           this.getRef('chatPrompt').focus();
-          bbn.fn.post(this.root + 'chat', {
+          const cfg = bbn.fn.extend({}, this.cfg);
+          delete cfg.endpoint;
+          cfg.model = this.currentModel.text;
+          const data = {
             prompt: input,
             date: inputDate,
-            aiFormat: this.aiFormat,
             userFormat: 'textarea',
-            model: this.currentModelId,
-            endpoint: this.endpoint
-          }, d => {
-            this.conversation.at(-1).creation_date = d.date;
-            if (d.success) {
-              this.$set(this.conversation.at(-1), 'text', d.text);
+            endpoint: this.cfg.endpoint,
+            cfg,
+            id: this.currentChat?.id || ''
+          };
+          this.isLoading = true;
+          bbn.fn.log(["SENDING", data]);
+          bbn.fn.post(this.root + 'chat', data, d => {
+            if (d.success&& d.conversation) {
+              const conv = d.conversation;
+              if (this.currentChat?.id !== conv.id) {
+                this.currentChat = conv;
+              }
+              else {
+                this.currentChat.last = conv.last;
+                this.currentChat.num = conv.num;
+                if (conv.title !== this.currentChat.title) {
+                  this.currentChat.title = conv.title;
+                }
+
+                this.currentChat.conversation.push(conv);
+              }
             }
             else {
               this.$set(this.conversation.at(-1), 'error', true);
@@ -227,18 +264,44 @@
             this.conversation.at(-1).loading = false;
             this.isLoadingResponse = false;
             this.$nextTick(this.updateScroll);
+            this.isLoading = false;
           });
         }
       }
     },
     watch: {
+      itemIntro() {
+        this.tst = bbn.fn.timestamp();
+      },
       currentModelId() {
         bbn.fn.log("CHANGIN currentModelId");
+      },
+      isSelecting() {
+        this.selected.splice(0);
+      },
+      cfg() {
+        if (this.$isMounted) {
+          this.setStorage(this.cfg);
+        }
+      },
+      source(v) {
+        if (v) {
+          this.currentChat = v;
+        }
       }
     },
+    created() {
+      let cfg = this.getStorage();
+      if (!cfg) {
+        cfg = defaultConfig(this);
+      }
+
+      this.cfg = cfg;
+    },
     mounted() {
+      this.updateCurrentIntro();
       if (!this.conversation.length) {
-        this.conversation = newConversation(this.getRandomIntroSentence());
+        this.itemIntro = newConversation(this.currentIntro)[0];
       }
 
       setTimeout(() => {

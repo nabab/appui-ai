@@ -121,7 +121,8 @@
                          :endpoint="currentEndpointId"
                          :endpoints="source.endpoints"
                          :formats="source.formats"
-                         :intro="source.intro"
+                         :intros="source.intros"
+                         :languages="source.languages"
                          :configuration="chatSelected"
                          :storage="true"
                          storage-full-name="appui-ai-chat-model"/>

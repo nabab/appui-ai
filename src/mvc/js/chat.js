@@ -1,6 +1,19 @@
 // Javascript Document
 
 (() => {
+  const newConversation = text => {
+    const tst = bbn.fn.timestamp();
+    return {
+      id: null,
+      title: "",
+      num: 0,
+      tags: [],
+      creation: tst,
+      last: tst,
+      conversation: []
+    };
+  };
+
   return {
     mixins: [
       bbn.cp.mixins.basic,
@@ -22,7 +35,7 @@
         // prompt mode
         currentPrompt: null,
         // chat mode
-        currentChat: [],
+        currentChat: newConversation(),
         selectedChatPath: this.listSource?.length ? this.listSource[0].value : null,
           
       }
@@ -194,16 +207,20 @@
           this.selectedChatPath = item.data.file;
           if (item.data.file === 'new') {
             this.addNewChat();
+            alert("NEW CHAT")
             this.currentChat = [];
           }
           else {
             bbn.fn.post(this.root + 'conversation', {
               path: this.selectedChatPath
             }, (d) => {
-              for (let message of d.conversation) {
-                message.id = message.id || bbn.fn.randomString();
+              if (d.success) {
+                delete d.success;
+                this.currentChat = d;
               }
-              this.currentChat = d.conversation;
+              else {
+                appui.error(d);
+              }
             })
           }
   
