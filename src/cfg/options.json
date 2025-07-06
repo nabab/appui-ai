@@ -176,8 +176,7 @@
                     "options",
                     "i18n",
                     "appui",
-                    "plugins",
-                    "apst-app"
+                    "plugins"
                 ]
             },
             {
@@ -187,8 +186,7 @@
                     "options",
                     "i18n",
                     "appui",
-                    "plugins",
-                    "apst-app"
+                    "plugins"
                 ]
             },
             {
@@ -198,8 +196,7 @@
                     "options",
                     "i18n",
                     "appui",
-                    "plugins",
-                    "apst-app"
+                    "plugins"
                 ]
             },
             {
@@ -209,8 +206,7 @@
                     "options",
                     "i18n",
                     "appui",
-                    "plugins",
-                    "apst-app"
+                    "plugins"
                 ]
             },
             {
@@ -220,8 +216,7 @@
                     "options",
                     "i18n",
                     "appui",
-                    "plugins",
-                    "apst-app"
+                    "plugins"
                 ]
             },
             {
@@ -231,8 +226,7 @@
                     "options",
                     "i18n",
                     "appui",
-                    "plugins",
-                    "apst-app"
+                    "plugins"
                 ]
             },
             {
@@ -242,8 +236,7 @@
                     "options",
                     "i18n",
                     "appui",
-                    "plugins",
-                    "apst-app"
+                    "plugins"
                 ]
             },
             {
@@ -253,8 +246,7 @@
                     "options",
                     "i18n",
                     "appui",
-                    "plugins",
-                    "apst-app"
+                    "plugins"
                 ]
             },
             {
@@ -264,8 +256,7 @@
                     "options",
                     "i18n",
                     "appui",
-                    "plugins",
-                    "apst-app"
+                    "plugins"
                 ]
             }
         ],
@@ -278,8 +269,7 @@
                 "options",
                 "i18n",
                 "appui",
-                "plugins",
-                "apst-app"
+                "plugins"
             ],
             "alias_name": "Language",
             "notext": 1
