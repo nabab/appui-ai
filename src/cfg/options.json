@@ -4,7 +4,7 @@
             "show_code": 1,
             "schema": [
                 {
-                    "title": "URL",
+                    "label": "URL",
                     "field": "url",
                     "type": "url",
                     "editable": true,
