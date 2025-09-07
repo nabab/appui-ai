@@ -189,7 +189,7 @@
                     "de",
                     "languages",
                     "options",
-                    "i18n",
+                    "core",
                     "appui",
                     "plugins"
                 ]
@@ -199,7 +199,7 @@
                     "zh",
                     "languages",
                     "options",
-                    "i18n",
+                    "core",
                     "appui",
                     "plugins"
                 ]
@@ -209,7 +209,7 @@
                     "ko",
                     "languages",
                     "options",
-                    "i18n",
+                    "core",
                     "appui",
                     "plugins"
                 ]
@@ -219,7 +219,7 @@
                     "ja",
                     "languages",
                     "options",
-                    "i18n",
+                    "core",
                     "appui",
                     "plugins"
                 ]
@@ -229,7 +229,7 @@
                     "en",
                     "languages",
                     "options",
-                    "i18n",
+                    "core",
                     "appui",
                     "plugins"
                 ]
@@ -239,7 +239,7 @@
                     "fr",
                     "languages",
                     "options",
-                    "i18n",
+                    "core",
                     "appui",
                     "plugins"
                 ]
@@ -249,7 +249,7 @@
                     "it",
                     "languages",
                     "options",
-                    "i18n",
+                    "core",
                     "appui",
                     "plugins"
                 ]
@@ -259,7 +259,7 @@
                     "es",
                     "languages",
                     "options",
-                    "i18n",
+                    "core",
                     "appui",
                     "plugins"
                 ]
@@ -269,7 +269,7 @@
                     "nl",
                     "languages",
                     "options",
-                    "i18n",
+                    "core",
                     "appui",
                     "plugins"
                 ]
@@ -282,7 +282,7 @@
             "id_root_alias": [
                 "languages",
                 "options",
-                "i18n",
+                "core",
                 "appui",
                 "plugins"
             ],
