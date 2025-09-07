@@ -55,15 +55,24 @@ else {
     }
   }
 
-  return [
+  $types = ['intro', 'promptBits', 'chatModes', 'formats'];
+  $r = [];
+  foreach ($types as $t) {
+    if ($idType = Ai::getOptionId(Str::fromCamel($t))) {
+      $r[$t] = $model->inc->options->option($idType);
+      $r[$t]['cfg'] = $model->inc->options->getCfg($idType);
+      $r[$t]['cfg']['noparent'] = true;
+      $r[$t]['cfg']['write'] = true;
+      $r[$t]['options'] = $model->inc->options->fullOptions($idType);
+    }
+  }
+  return array_merge([
     "root" => $model->data['root'],
-    "intros" => Ai::getOptionsTextValue('intro'),
     "languages" => Ai::getOptionsTextValue('languages', 'text', 'value', 'code'),
-    "formats" => Ai::getOptions('formats'),
     "prompts" => $prompts,
     "endpoints" => $endpoints,
     "years" => $years,
-    "outputs" => $model->inc->options->fullOptions('outputs', 'ai', 'appui')
-  ];
+    "outputs" => $model->inc->options->fullOptions('outputs', 'ai', 'appui'),
+  ], $r);
 }
 

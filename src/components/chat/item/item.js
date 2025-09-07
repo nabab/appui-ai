@@ -25,62 +25,19 @@
     },
     data() {
       return {
-        formats: [
-          {
-            value: "rte",
-            text: "Rich Text Editor",
-            prompt: "Your response needs to be in rich text format",
-            component: "div",
-          },
-          {
-            value: "markdown",
-            text: "Markdown",
-            prompt: "Your response needs to be in Markdown format",
-            component: "bbn-markdown"
-          },
-          {
-            value: "textarea",
-            text: "Text Multiline",
-            prompt: "Your response needs to be entered as multiple lines of text",
-            component: "div"
-          },
-          {
-            value: "code-php",
-            text: "Code PHP",
-            prompt: "Your response needs to be a code snippet",
-            component: "bbn-code"
-          },
-          {
-            value: "code-js",
-            text: "Code JS",
-            prompt: "Your response needs to be a code snippet",
-            component: "bbn-code"
-          },
-          {
-            value: "single-line",
-            text: "Single Line",
-            prompt: "Your response needs to be entered as a single line of text",
-            component: "div",
-          },
-          {
-            value: "text",
-            text: "Simple text format",
-            prompt: "Your response needs to be entered as simple text format",
-            component: "div"
-          },
-          {
-            value: "json-editor",
-            text: "JSON",
-            prompt: "Your response needs to be a valid JSON object",
-            component: "bbn-json-editor"
-          }
-        ],
+        formats: appui.getRegistered('appui-ai-ui').source.formats.options,
         cp: null
       }
     },
     computed: {
+      content() {
+        return this.source.content.replaceAll(/<think.*?<\/think>/gis, '').trim();
+      },
       formatComponent() {
-        return bbn.fn.getRow(this.formats, {value: this.format}).component;
+        return bbn.fn.getRow(this.formats, {code: this.format}).component;
+      },
+      formatReader() {
+        return bbn.fn.getRow(this.formats, {code: this.format}).reader;
       },
       fdate() {
         return bbn.fn.fdate(this.date, true)

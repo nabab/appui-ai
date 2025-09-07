@@ -1,9 +1,9 @@
 <!-- HTML Document -->
 <div>
   <bbn-toolbar :class="['bbn-spadding', 'appui-ai-config-topbar', {'appui-ai-config-withbar2': showBar2}]">
-    <div class="bbn-xspadding bbn-border bbn-radius bbn-reactive">
+    <div class="bbn-border bbn-radius bbn-right-smargin bbn-reactive">
       <span bbn-text="_('Endpoint')"
-            class="bbn-link bbn-right-smargin"
+            class="bbn-link bbn-iblock bbn-right-xsmargin bbn-xspadding"
             bbn-if="endpoints"
             @click="getRef('endpointEditor').edit()"/>
       <bbn-editable bbn-model="source.endpoint"
@@ -17,15 +17,15 @@
                     }"/>
     </div>
 
-    <div class="bbn-xspadding bbn-border bbn-radius bbn-reactive">
+    <div :class="['bbn-border', 'bbn-radius', 'bbn-right-smargin', {'bbn-reactive': !!source.endpoint}]">
       <span bbn-text="_('Model')"
-            class="bbn-link bbn-right-smargin"
+            class="bbn-link bbn-iblock bbn-right-xsmargin bbn-xspadding"
             bbn-if="endpoints"
             @click="getRef('modelEditor').edit()"/>
       <bbn-editable bbn-model="source.model"
                     component="bbn-dropdown"
                     ref="modelEditor"
-                    :disabled="!currentEndpoint"
+                    :disabled="!source.endpoint"
                     bbn-if="endpoints"
                     :component-options="{
                       source: currentEndpoint ? currentEndpoint.models : [],
@@ -33,17 +33,15 @@
                     }"/>
     </div>
 
-    <div class="bbn-xspadding bbn-border bbn-radius bbn-reactive"
-         bbn-if="languages">
+    <div :class="['bbn-border', 'bbn-radius', 'bbn-right-smargin', {'bbn-reactive': !!source.model}]"
+         bbn-if="languages && endpoints">
       <span bbn-text="_('Language')"
-            class="bbn-link bbn-right-smargin"
-            bbn-if="source.model"
+            class="bbn-link bbn-iblock bbn-xspadding bbn-right-xsmargin"
             @click="getRef('languageEditor').edit()"/>
       <bbn-editable bbn-model="source.language"
                     component="bbn-dropdown"
                     ref="languageEditor"
                     :disabled="!source.model"
-                    bbn-if="endpoints"
                     :component-options="{
                       source: languages,
                       sourceValue: 'code'
@@ -62,9 +60,9 @@
   </bbn-toolbar>
 
   <bbn-toolbar :class="['bbn-bottom-spadding', 'bbn-hspadding', 'appui-ai-config-bottombar', {'appui-ai-config-shownbar': showBar2}]">
-    <div class="bbn-xspadding bbn-border bbn-radius bbn-reactive">
+    <div :class="['bbn-border', 'bbn-radius', 'bbn-right-smargin', {'bbn-reactive': !!source.model}]">
       <span bbn-text="_('Format')"
-            class="bbn-link bbn-right-smargin"
+            class="bbn-link bbn-iblock bbn-xspadding bbn-right-xsmargin"
             bbn-if="endpoints"
             @click="getRef('formatEditor').edit()"/>
       <bbn-editable bbn-model="source.aiFormat"
@@ -78,9 +76,11 @@
                     }"/>
     </div>
 
-    <div class="bbn-xspadding bbn-border bbn-radius bbn-reactive bbn-c bbn-iblock">
+    <div :class="['bbn-border', 'bbn-radius', 'bbn-right-smargin', {'bbn-reactive': !!source.model}]">
+      <bbn-tooltip icon="nf nf-oct-info"
+                   :source="() => getTooltip('infoTemperature')"/>
       <span bbn-text="_('Temperature')"
-            class="bbn-link bbn-right-smargin"
+            class="bbn-link bbn-iblock bbn-xspadding bbn-right-xsmargin"
             @click="getRef('temperatureEditor').edit()"/>
       <bbn-editable bbn-model="source.temperature"
                     component="bbn-numeric"
@@ -95,9 +95,11 @@
                     }"/>
     </div>
 
-    <div class="bbn-xspadding bbn-border bbn-radius bbn-reactive bbn-c bbn-iblock">
+    <div :class="['bbn-border', 'bbn-radius', 'bbn-right-smargin', {'bbn-reactive': !!source.model}]">
+      <bbn-tooltip icon="nf nf-oct-info"
+                   :source="() => getTooltip('infoPresence')"/>
       <span bbn-text="_('Presence')"
-            class="bbn-link bbn-right-smargin"
+            class="bbn-link bbn-iblock bbn-xspadding bbn-right-xsmargin"
             @click="getRef('presenceEditor').edit()"/>
       <bbn-editable bbn-model="source.presence"
                     component="bbn-numeric"
@@ -112,9 +114,11 @@
                     }"/>
     </div>
 
-    <div class="bbn-xspadding bbn-border bbn-radius bbn-reactive bbn-c">
+    <div :class="['bbn-border', 'bbn-radius', 'bbn-right-smargin', {'bbn-reactive': !!source.model}]">
+      <bbn-tooltip icon="nf nf-oct-info"
+                   :source="() => getTooltip('infoFrequency')"/>
       <span bbn-text="_('Frequency')"
-            class="bbn-link bbn-right-smargin"
+            class="bbn-link bbn-iblock bbn-xspadding bbn-right-xsmargin"
             @click="getRef('frequencyEditor').edit()"/>
       <bbn-editable bbn-model="source.frequency"
                     component="bbn-numeric"
@@ -129,9 +133,11 @@
                     }"/>
     </div>
 
-    <div class="bbn-xspadding bbn-border bbn-radius bbn-reactive bbn-c">
+    <div :class="['bbn-border', 'bbn-radius', 'bbn-right-smargin', {'bbn-reactive': !!source.model}]">
+      <bbn-tooltip icon="nf nf-oct-info"
+                   :source="() => getTooltip('infoTopP')"/>
       <span bbn-text="_('Top P')"
-            class="bbn-link bbn-right-smargin"
+            class="bbn-link bbn-iblock bbn-xspadding bbn-right-xsmargin"
             @click="getRef('topPEditor').edit()"/>
       <bbn-editable bbn-model="source.top_p"
                     component="bbn-numeric"

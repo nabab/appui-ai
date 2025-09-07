@@ -14,66 +14,24 @@
       endpoint: {
         type: String,
         required: true
-      }
+      },
+      endpoints: {
+        type: Array,
+        required: true
+      },
+      intros: {
+        type: Array
+      },
+      formats: {
+        type: Array,
+        required: true
+      },
+      languages: {
+        type: Array
+      },
     },
     data() {
       return {
-        formats: [
-          {
-            value: "rte",
-            text: "Rich Text Editor",
-            prompt: "Your response needs to be in rich text format",
-            component: "bbn-rte"
-          },
-          {
-            value: "markdown",
-            text: "Markdown",
-            prompt: "Your response needs to be in Markdown format",
-            component: "bbn-markdown"
-          },
-          {
-            value: "textarea",
-            text: "Text Multiline",
-            prompt: "Your response needs to be entered as multiple lines of text",
-            component: "bbn-textarea"
-          },
-          {
-            value: "text",
-            text: "Text Multiline",
-            prompt: "Your response needs to be entered as multiple lines of text",
-            component: "bbn-textarea"
-          },
-          {
-            value: "code-php",
-            text: "Code PHP",
-            prompt: "Your response needs to be a code snippet",
-            component: "bbn-code"
-          },
-          {
-            value: "code-js",
-            text: "Code JS",
-            prompt: "Your response needs to be a code snippet",
-            component: "bbn-code"
-          },
-          {
-            value: "single-line",
-            text: "Single Line",
-            prompt: "Your response needs to be entered as a single line of text",
-            component: "bbn-input"
-          },
-          {
-            value: "json-editor",
-            text: "JSON",
-            prompt: "Your response needs to be a valid JSON object",
-            component: "bbn-json-editor"
-          }
-        ],
-        languages: [
-          {text: bbn._('Same as input'), value: null},
-          {text: bbn._('Italian'), value: 'it'},
-          {text: bbn._('French'), value: 'fr'},
-          {text: bbn._('English'), value: 'en'},
-        ],
         root: appui.plugins['appui-ai'] + '/',
         formData: {
           id: this.source?.id || null,

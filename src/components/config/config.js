@@ -43,6 +43,9 @@
       },
     },
     methods: {
+      getTooltip(name) {
+        return appui.getRegistered('appui-ai-ui').getRef(name)?.innerHTML;
+      },
       saveCfg() {
         this.getPopup({
           component: 'appui-ai-config-saver',

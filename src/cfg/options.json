@@ -58,6 +58,13 @@
                 "text": "Multiline text",
                 "code": "multilines",
                 "prompt": "Your response needs to be entered as simple text and can be on multiple lines",
+                "component": "bbn-textarea",
+                "reader": "bbn-markdown"
+            },
+            {
+                "text": "Textarea",
+                "code": "textarea",
+                "prompt": "Your response needs to be entered as simple text and can be on multiple lines",
                 "component": "bbn-textarea"
             },
             {
@@ -93,6 +100,14 @@
                 {
                     "label": "Component",
                     "field": "component",
+                    "type": "string",
+                    "editable": true,
+                    "required": true,
+                    "filterable": true
+                },
+                {
+                    "label": "Reader",
+                    "field": "reader",
                     "type": "string",
                     "editable": true,
                     "required": true,
@@ -273,6 +288,68 @@
             ],
             "alias_name": "Language",
             "notext": 1
+        }
+    }, {
+        "text": "Chat modes",
+        "code": "chat-modes",
+        "items": [
+            {
+                "text": "Original",
+                "code": "original",
+                "root": "options\/",
+                "intro": "Here is my request:\n",
+                "active": 1
+            }
+        ],
+        "cfg": {
+            "show_code": 1,
+            "schema": [
+                {
+                    "label": "Introduction",
+                    "field": "intro",
+                    "type": "textarea",
+                    "componentOptions": [],
+                    "editorOptions": [],
+                    "editable": true,
+                    "required": true
+                },
+                {
+                    "label": "Active",
+                    "field": "active",
+                    "type": "boolean",
+                    "componentOptions": [],
+                    "editorOptions": [],
+                    "editable": true,
+                    "width": 50,
+                    "required": null
+                }
+            ]
+        }
+    }, {
+        "text": "Prompt bits",
+        "code": "prompt-bits",
+        "items": [
+            {
+                "text": "Concise answer",
+                "root": "options\/",
+                "res": {
+                    "success": false
+                },
+                "content": "You should answer only what you are asked for and in a concise manner."
+            }
+        ],
+        "cfg": {
+            "schema": [
+                {
+                    "label": "Content",
+                    "field": "content",
+                    "type": "textarea",
+                    "componentOptions": [],
+                    "editorOptions": [],
+                    "editable": true,
+                    "required": true
+                }
+            ]
         }
     }
 ]

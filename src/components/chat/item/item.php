@@ -12,22 +12,23 @@
     <div bbn-else-if="source.error"
          class="bbn-state-error bbn-m"
          bbn-text="_('There was an error while getting the response')"/>
-    <component bbn-else-if="formatComponent !== 'div'"
-               :is="formatComponent"
+    <component bbn-else-if="formatReader !== 'div'"
+               :is="formatReader"
                class="bbn-xspadding bbn-background bbn-text bbn-w-100 bbn-radius"
                style="max-width: 100%; white-space: break-spaces"
+               :readonly="true"
                bbn-bind="componentOptions(format, true)"
-               bbn-model="source.content"/>
+               bbn-model="content"/>
     <div bbn-else
          class="bbn-xspadding bbn-background bbn-text bbn-w-100 bbn-radius"
          style="max-width: 100%; white-space: break-spaces"
-         bbn-html="source.content"/>
+         bbn-html="content"/>
   </div>
 
   <div class="bbn-flex bbn-w-100 bbn-vxspadding  bbn-hspadding"
        style="margin-top: auto">
     <span class="bbn-small bbn-grey bbn-w-50 bbn-left">
-      <span bbn-if="source.cfg"
+      <span bbn-if="cfg"
             class="bbn-right-smargin bbn-p"
             @click="seeRequest">
         <i class="nf nf-fa-cog"

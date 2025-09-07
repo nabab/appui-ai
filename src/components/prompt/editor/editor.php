@@ -1,7 +1,24 @@
 <!-- HTML Document -->
 
-<div class="appui-ai-prompt-editor bbn-overlay">
-  <bbn-scroll class="bbn-overlay">
+<div class="appui-ai-prompt-editor bbn-flex-height">
+  <appui-ai-config :source="formData"
+                   :endpoints="endpoints"
+                   :formats="formats"
+                   :languages="languages"
+                   mode="prompt">
+    <!--bbn-button bbn-if="source?.conversation.length > 2"
+                icon="nf nf-md-cursor_default_outline"
+                :label="_('Selection mode')"
+                :notext="true"
+                @click="isSelecting = !isSelecting"/>
+    <bbn-button icon="nf nf-cod-trash"
+                :disabled="!mode"
+                :label="_('Delete the conversation')"
+                :notext="true"
+                @click="deleteChat"/-->
+    
+  </appui-ai-config>
+  <bbn-scroll class="bbn-flex-fill">
     <div class="bbn-margin bbn-spadding bbn-radius bbn-border bbn-dotted">
       <bbn-form :action="root + 'prompt/save'"
                 :source="formData"
@@ -53,62 +70,6 @@
           <div>
             <bbn-input v-model="formData.shortcode"
                       :nullable="true"/>
-          </div>
-
-          <label>
-            <?= _("Temperature") ?> 
-            <bbn-tooltip icon="nf nf-oct-info"
-                         :source="getRef('infoTemperature')?.innerHTML"
-                         bbn-if="ready"/>
-          </label>
-          <div>
-            <bbn-numeric bbn-model="formData.temperature"
-                     :min="0"
-                     :max="2"
-                     :decimals="2"
-                     :step="0.01"/>
-          </div>
-
-          <label>
-            <?= _("Top_P (Nucleus Sampling") ?> 
-            <bbn-tooltip icon="nf nf-oct-info"
-                         :source="getRef('infoTopP')?.innerHTML"
-                         bbn-if="ready"/>
-          </label>
-          <div>
-            <bbn-numeric bbn-model="formData.top_p"
-                     :min="0"
-                     :max="1"
-                     :decimals="2"
-                     :step="0.01"/>
-          </div>
-
-          <label>
-            <?= _("Frequency penalty") ?> 
-            <bbn-tooltip icon="nf nf-oct-info"
-                         :source="getRef('infoFrequency')?.innerHTML"
-                         bbn-if="ready"/>
-          </label>
-          <div>
-            <bbn-numeric bbn-model="formData.frequency_penalty"
-                     :min="0"
-                     :max="1"
-                     :decimals="2"
-                     :step="0.01"/>
-          </div>
-
-          <label>
-            <?= _("Presence penalty") ?> 
-            <bbn-tooltip icon="nf nf-oct-info"
-                         :source="getRef('infoPresence')?.innerHTML"
-                         bbn-if="ready"/>
-          </label>
-          <div>
-            <bbn-numeric bbn-model="formData.presence_penalty"
-                     :min="0"
-                     :max="1"
-                     :decimals="2"
-                     :step="0.01"/>
           </div>
 
         </div>

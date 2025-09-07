@@ -20,7 +20,20 @@
       bbn.cp.mixins.localStorage
     ],
     data() {
+      const routerSettings = [];
+      const types = ['formats', 'promptBits', 'chatModes', 'intro'];
+      bbn.fn.each(types, t => {
+        routerSettings.push({
+          url: bbn.fn.camelToCss(t),
+          label: this.source[t].text,
+          fixed: true,
+          scrollable: false,
+          component: 'appui-option-list',
+          source: this.source[t]
+        })
+      })
       return {
+        routerSettings,
         root: appui.plugins['appui-ai'] + '/',
         options: this.source.options,
         isLoading: false,
@@ -37,7 +50,6 @@
         // chat mode
         currentChat: newConversation(),
         selectedChatPath: this.listSource?.length ? this.listSource[0].value : null,
-          
       }
     },
     computed: {
@@ -285,9 +297,13 @@
       }
     },
     mounted() {
+      appui.register('appui-ai-ui', this)
       if (this.source.prompts.length) {
         this.currentPrompt = this.promptList[0];
       }
+    },
+    beforeDestroy() {
+      appui.unregister('appui-ai-ui')
     },
     components: {
       newEndpoint: {

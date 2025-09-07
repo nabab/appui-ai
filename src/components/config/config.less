@@ -3,6 +3,15 @@ appui-ai-config {
   .bbn-editable.bbn-narrow:not(.bbn-editable-editing) {
     width: auto !important;
   }
+  .bbn-editable.bbn-textbox, .bbn-editable > .bbn-textbox {
+    border-top-width: 0px !important;
+    border-bottom-width: 0px !important;
+    border-right-width: 0px !important;
+  }
+  .bbn-editable .bbn-editable-viewer {
+    line-height: var(--line-height);
+    margin-right: var(--sspace);
+  }
   .appui-ai-config-topbar {
     z-index: 2;
     &.appui-ai-config-withbar2 {

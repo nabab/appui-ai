@@ -10,7 +10,7 @@
       frequency: 0.1,
       top_p: 0.95,
       language: bbn.env.lang,
-      aiFormat: 'multilines'
+      aiFormat: 'textarea'
     }
   };
 
@@ -102,7 +102,7 @@
           return bbn.fn.getRow(this.endpoints, {id: this.cfg.endpoint})
         }
 
-        return null;
+        return this.endpoints[0] || null;
       },
       currentModel() {
         if (this.currentEndpoint && this.cfg.model) {
