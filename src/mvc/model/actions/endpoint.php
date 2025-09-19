@@ -13,7 +13,10 @@ $res = ['success' => false];if ($model->hasData('action')) {
   switch ($d['action']) {
     case 'insert':
       if ($model->hasData(['text', 'url', 'pass'], true)) {
-        $res['success'] = $model->inc->ai->addEndpoint($d['text'], $d['url'], $d['pass']);
+        if ($data = $model->inc->ai->addEndpoint($d['text'], $d['url'], $d['pass'])) {
+          $res['success'] = true;
+          $res['data'] = $data;
+        }
       }
 
     break;

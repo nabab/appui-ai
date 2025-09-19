@@ -12,7 +12,7 @@
     <div bbn-else-if="source.error"
          class="bbn-state-error bbn-m"
          bbn-text="_('There was an error while getting the response')"/>
-    <component bbn-else-if="formatReader !== 'div'"
+    <component bbn-else-if="formatReader && (formatReader !== 'div')"
                :is="formatReader"
                class="bbn-xspadding bbn-background bbn-text bbn-w-100 bbn-radius"
                style="max-width: 100%; white-space: break-spaces"

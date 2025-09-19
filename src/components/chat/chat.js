@@ -57,12 +57,10 @@
         required: false
       },
       model: {
-        type: String,
-        required: true
+        type: String
       },
       endpoint: {
-        type: String,
-        required: true
+        type: String
       }
     },
     data() {

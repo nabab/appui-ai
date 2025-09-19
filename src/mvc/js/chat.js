@@ -53,6 +53,9 @@
       }
     },
     computed: {
+      formats() {
+        return this.source.formats.options.map(a => ({text: a.text, value: a.id}));
+      },
       lastModelsUsed() {
         if (this.currentEndpoint) {
           return bbn.fn.order(this.currentEndpoint.models.filter(a => !!a.lastUsed), 'lastUsed', 'DESC');
@@ -103,6 +106,13 @@
       }
     },
     methods: {
+      getPromptButtons(row) {
+        return [{
+          icon: 'nf nf-md-arrow_right_bold',
+          notext: true,
+          action: () => bbn.fn.link(this.root + 'chat/prompts/' + row.id)
+        }]
+      },
       createChat() {
         this.addNewChat();
         setTimeout(() => {
@@ -170,6 +180,18 @@
             text: '',
             url: '',
             pass: ''
+          },
+          componentEvents: {
+            success: d => {
+              if (d.success && d.data.data) {
+                const data = d.data.data;
+                data.models = d.data.models;
+                this.source.endpoints.push(data);
+              }
+              else {
+                appui.error(d.error || bbn._('An error occurred'));
+              }
+            }
           }
         })
       },
@@ -275,6 +297,16 @@
           })
         }
       },
+      onPromptNewSuccess(d) {
+        bbn.fn.log('onPromptNewSuccess', arguments);
+        if (d.success && d.data) {
+          if (this.getRef('promptTable')?.ready) {
+            this.getRef('promptTable').updateData();
+          }
+
+          bbn.fn.link(this.root + 'chat/prompts/' + d.data.id);
+        }
+      },
       onPromptEditSuccess(o) {
         if (o.id) {
           bbn.fn.log('onPromptEditSuccess', arguments);
@@ -315,8 +347,8 @@
 </div>
         `,
         methods: {
-          addEndpoint() {
-            bbn.fn.log("CREATE")
+          addEndpoint(...args) {
+            return appui.getRegistered('appui-ai-ui').addEndpoint(...args);
           }
         }
       },
@@ -330,7 +362,7 @@
         `,
         methods: {
           createPrompt() {
-            bbn.fn.log("CREATE")
+            return appui.getRegistered('appui-ai-ui').createPrompt(...args);
           }
         }
       },

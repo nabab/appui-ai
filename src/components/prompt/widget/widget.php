@@ -6,5 +6,5 @@
               icon="nf nf-md-sync_circle"
               class="bbn-left-xsmargin"
               :notext="true"/>
-  <span bbn-text="source.text"/>
+  <span bbn-text="source.title"/>
 </div>

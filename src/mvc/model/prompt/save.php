@@ -10,17 +10,23 @@ use bbn\Appui\Note;
 use bbn\Appui\Ai;
 /** @var bbn\Mvc\Model $model */
 
-if ($model->hasData(['prompt', 'title', 'output', 'input'])) {
+if ($model->hasData(['content', 'title', 'output', 'input'])) {
   $ai = new Ai($model->db);
-  $model->data['content'] = $model->data['prompt'];
   if ($model->hasData('id', true)) {
     return [
       'success' => $ai->updatePrompt($model->data['id'], $model->data)
     ];
   }
   else {
+    if ($id = $ai->insertPrompt($model->data)) {
+      return [
+        'success' => true,
+        'data' => $ai->getPromptById($id)
+      ];
+    }
+
     return [
-      'success' => $ai->insertPrompt($model->data)
+      'success' => false
     ];
   }
 }
