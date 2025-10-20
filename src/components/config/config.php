@@ -28,8 +28,7 @@
                     :disabled="!source.endpoint"
                     bbn-if="endpoints"
                     :component-options="{
-                      source: currentEndpoint ? currentEndpoint.models : [],
-                      sourceValue: 'id'
+                      source: currentEndpoint ? currentEndpoint.models : []
                     }"/>
     </div>
 
@@ -38,7 +37,7 @@
       <span bbn-text="_('Language')"
             class="bbn-link bbn-iblock bbn-xspadding bbn-right-xsmargin"
             @click="getRef('languageEditor').edit()"/>
-      <bbn-editable bbn-model="source.language"
+      <bbn-editable bbn-model="source.cfg.language"
                     component="bbn-dropdown"
                     ref="languageEditor"
                     :disabled="!source.model"
@@ -65,7 +64,7 @@
             class="bbn-link bbn-iblock bbn-xspadding bbn-right-xsmargin"
             bbn-if="endpoints"
             @click="getRef('formatEditor').edit()"/>
-      <bbn-editable bbn-model="source.aiFormat"
+      <bbn-editable bbn-model="source.cfg.aiFormat"
                     component="bbn-dropdown"
                     ref="formatEditor"
                     :disabled="!source.model"
@@ -82,7 +81,7 @@
       <span bbn-text="_('Temperature')"
             class="bbn-link bbn-iblock bbn-xspadding bbn-right-xsmargin"
             @click="getRef('temperatureEditor').edit()"/>
-      <bbn-editable bbn-model="source.temperature"
+      <bbn-editable bbn-model="source.cfg.temperature"
                     component="bbn-numeric"
                     ref="temperatureEditor"
                     :disabled="!source.model"
@@ -101,7 +100,7 @@
       <span bbn-text="_('Presence')"
             class="bbn-link bbn-iblock bbn-xspadding bbn-right-xsmargin"
             @click="getRef('presenceEditor').edit()"/>
-      <bbn-editable bbn-model="source.presence"
+      <bbn-editable bbn-model="source.cfg.presence"
                     component="bbn-numeric"
                     :disabled="!source.model"
                     ref="presenceEditor"
@@ -120,7 +119,7 @@
       <span bbn-text="_('Frequency')"
             class="bbn-link bbn-iblock bbn-xspadding bbn-right-xsmargin"
             @click="getRef('frequencyEditor').edit()"/>
-      <bbn-editable bbn-model="source.frequency"
+      <bbn-editable bbn-model="source.cfg.frequency"
                     component="bbn-numeric"
                     :disabled="!source.model"
                     ref="frequencyEditor"
@@ -139,7 +138,7 @@
       <span bbn-text="_('Top P')"
             class="bbn-link bbn-iblock bbn-xspadding bbn-right-xsmargin"
             @click="getRef('topPEditor').edit()"/>
-      <bbn-editable bbn-model="source.top_p"
+      <bbn-editable bbn-model="source.cfg.top_p"
                     component="bbn-numeric"
                     :disabled="!source.model"
                     ref="topPEditor"

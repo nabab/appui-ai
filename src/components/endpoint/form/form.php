@@ -1,7 +1,8 @@
 <!-- HTML Document -->
 
 <bbn-form :action="root + 'actions/endpoint/insert'"
-          :source="source">
+          :source="source"
+          @success="success">
   <div class="bbn-grid-fields bbn-padding">
     
     <div><?= _("Nom du service") ?></div>

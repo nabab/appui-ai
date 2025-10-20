@@ -5,7 +5,8 @@
                    :endpoints="endpoints"
                    :formats="formats"
                    :languages="languages"
-                   mode="prompt">
+                   mode="prompt"
+                   bbn-if="formData">
     <!--bbn-button bbn-if="source?.conversation.length > 2"
                 icon="nf nf-md-cursor_default_outline"
                 :label="_('Selection mode')"
@@ -18,7 +19,8 @@
                 @click="deleteChat"/-->
     
   </appui-ai-config>
-  <bbn-scroll class="bbn-flex-fill">
+  <bbn-scroll class="bbn-flex-fill"
+              bbn-if="formData">
     <div class="bbn-margin bbn-spadding bbn-radius bbn-border bbn-dotted">
       <bbn-form :action="root + 'prompt/save'"
                 :source="formData"
@@ -34,10 +36,9 @@
                         :required="true"
                         :resizable="false"
                         :required="true"/>
-          <label class="bbn-m"><?= _("Title of the prompt") ?></label>
+          <label><?= _("Title of the prompt") ?></label>
           <div class="bbn-flex">
-            <bbn-input class="bbn-m bbn-w-90"
-                      bbn-model="formData.title"
+            <bbn-input bbn-model="formData.title"
                       :required="true"/>
             <bbn-button :label="_('Generate title for me')"
                         @click="generateTitle"

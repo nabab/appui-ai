@@ -14,11 +14,76 @@
     };
   };
 
+  const defaultModels = [
+    'mistralai/mistral-small-3.2',
+    'bartowski/deepseek-r1-distill-llama-8b',
+    'llama-3.2-3b-instruct'
+  ];
+
+  const mix = {
+    data() {
+      return {
+        ui: null
+      }
+    },
+    computed: {
+      currentEndpoint() {
+        return this.ui?.currentEndpoint
+      },
+      currentEndpointId() {
+        return this.ui?.currentEndpointId
+      }
+    },
+    methods: {
+      getDefaultSettings() {
+        if (this.currentEndpoint) {
+          let model = '';
+          bbn.fn.each(defaultModels, m => {
+            if (this.currentEndpoint.models.includes(m)) {
+              model = m;
+              return false;
+            }
+          });
+
+          return {
+            endpoint: this.currentEndpointId, 
+            model,
+            cfg: {
+              language: bbn.env.lang,
+              aiFormat: 'multilines',
+              temperature: '1',
+              presence: '0.2',
+              frequency: '0.7',
+              top_p: '0.5'
+            }
+          };
+        }
+
+        return null;
+      },
+    },
+    created() {
+      this.ui = appui.getRegistered('appui-ai-ui');
+    },
+  };
+  bbn.cp.addPrefix('appui-ai-', null, [mix]);
+
   return {
     mixins: [
-      bbn.cp.mixins.basic,
-      bbn.cp.mixins.localStorage
-    ],
+      bbn.cp.mixins.basic
+    ], 
+    props: {
+      storage: {
+        default: true,
+        type: Boolean
+      },
+      storageFullName: {
+        type: String,
+        default() { 
+          return 'appui-ai-ui-' + this.$node.uid;
+        }
+      }
+    },
     data() {
       const routerSettings = [];
       const types = ['formats', 'promptBits', 'chatModes', 'intro'];
@@ -33,6 +98,7 @@
         })
       })
       return {
+        intros: this.source.intro.options,
         routerSettings,
         root: appui.plugins['appui-ai'] + '/',
         options: this.source.options,
@@ -53,6 +119,13 @@
       }
     },
     computed: {
+      currentEndpoint() {
+        if (!this.currentEndpointId) {
+          return null;
+        }
+
+        return bbn.fn.getRow(this.source.endpoints, {id: this.currentEndpointId});
+      },
       formats() {
         return this.source.formats.options.map(a => ({text: a.text, value: a.id}));
       },
@@ -64,6 +137,9 @@
         return [];
       },
       lastChats() {
+        return [];
+      },
+      lastConfigs() {
         return [];
       },
       promptList() {
@@ -106,6 +182,16 @@
       }
     },
     methods: {
+      onSetFile(fileName) {
+        const lst = this.getRef('chatList').currentData;
+        if (lst[0]?.data?.file === 'new') {
+          lst[0].data.file = fileName;
+        }
+      },
+      getRandomIntroSentence() {
+        const randomIndex = Math.floor(Math.random() * this.intros.length);
+        return this.intros[randomIndex].text;
+      },
       getPromptButtons(row) {
         return [{
           icon: 'nf nf-md-arrow_right_bold',
@@ -113,18 +199,12 @@
           action: () => bbn.fn.link(this.root + 'chat/prompts/' + row.id)
         }]
       },
-      createChat() {
-        this.addNewChat();
-        setTimeout(() => {
-          
-        })
-      },
       chatMenu(row) {
         const menu = [];
-        if (row.data.file !== 'new') {
+        if (row.file !== 'new') {
           menu.push({
             text: bbn._("Rename"),
-            action: () => this.renameChat(row.data.file)
+            action: () => this.renameChat(row)
           }, {
             text: bbn._("Delete"),
             action: () => this.deleteChat(row)
@@ -133,15 +213,22 @@
 
         return menu;
       },
-      renameChat() {
-        bbn.fn.log("renameChat");
+      renameChat(row) {
+        bbn.fn.log("renameChat", row);
+        this.getPopup({
+          label: false,
+          component: 'appui-ai-chat-renamer',
+          source: row,
+          scrollable: false,
+          closable: true
+        });
       },
       deleteChat(node, force) {
         this.confirm(bbn._("Are you sure you want to delete this chat?"), () => {
           bbn.fn.log("deleteChat", node);
           this.post(
             appui.plugins['appui-ai'] + '/chat/delete',
-            {file: node.data.file},
+            {file: node.file},
             d => {
               if (d.error) {
                 appui.error(d.error);
@@ -160,21 +247,21 @@
       addNewChat() {
         const chats = this.getRef('chatList');
         if (chats) {
-          chats.currentData.unshift({
-            index: 0,
-            key: 'new',
-            _bbn: true,
-            data: {
-              title: bbn._("New chat"),
-              file: 'new'
-            }
-          });
-          chats.updateIndexes();
+          const now = bbn.fn.timestamp();
+          chats.addToData({
+            title: bbn._("New chat"),
+            file: 'new',
+            id: bbn.fn.randomString(),
+            creation: now,
+            last: now,
+            num: 1
+          }, true);
+          setTimeout(() => chats.select(0), 250)
         }
       },
       addEndpoint() {
         this.getPopup({
-          title: false,
+          label: false,
           component: 'appui-ai-endpoint-form',
           source: {
             text: '',
@@ -236,13 +323,26 @@
         bbn.fn.log(this.source.prompts[e.value]);
       },
       chatSelectItem(item) {
-        if (item.data.file) {
+        if (item.file) {
           this.conversationChange = true;
-          this.selectedChatPath = item.data.file;
-          if (item.data.file === 'new') {
-            this.addNewChat();
-            alert("NEW CHAT")
-            this.currentChat = [];
+          this.selectedChatPath = item.file;
+          if (item.file === 'new') {
+            const now = bbn.fn.timestamp();
+            this.currentChat = {
+              conversation: [{
+                asked: now,
+                responded: now,
+                messages: [{
+                  role: 'assistant',
+                  content: this.getRandomIntroSentence()
+                }]
+              }],
+              creation: now,
+              id: bbn.fn.randomString(),
+              num: 0,
+              tags: [],
+              title: bbn._("New chat"),
+            };
           }
           else {
             bbn.fn.post(this.root + 'conversation', {
@@ -326,6 +426,23 @@
             }, 300)
           }
         })
+      },
+      syncModels(endpointId) {
+        bbn.fn.post(appui.plugins['appui-ai'] + '/actions/sync', {
+          id: endpointId
+        }, d => {
+          if (d.success) {
+            appui.success(bbn._('Sync successful'));
+            const idx = bbn.fn.search(this.source.endpoints, {id: endpointId});
+            if (this.source.endpoints[idx]) {
+              this.source.endpoints[idx].models = d.models;
+            }
+          }
+          else {
+            appui.error(d.error || bbn._('Error during sync'));
+          }
+        });
+        
       }
     },
     mounted() {
@@ -362,7 +479,7 @@
         `,
         methods: {
           createPrompt() {
-            return appui.getRegistered('appui-ai-ui').createPrompt(...args);
+            return bbn.fn.link(appui.plugins['appui-ai'] + '/chat/prompts/new')
           }
         }
       },

@@ -1,41 +1,12 @@
 // Javascript Document
 
 (() => {
-  const defaultConfig = cp => {
-    return {
-      endpoint: cp.endpoints[0].id,
-      model: cp.currentEndpoint.models[0].id,
-      temperature: 0.7,
-      presence: 0.9,
-      frequency: 0.1,
-      top_p: 0.95,
-      language: bbn.env.lang,
-      aiFormat: 'textarea'
-    }
-  };
-
-  const newConversation = text => {
-    const tst = bbn.fn.timestamp();
-    return {
-      id: null,
-      title: "",
-      num: 0,
-      tags: [],
-      creation: tst,
-      last: tst,
-      conversation: []
-    };
-  };
-
   return {
     mixins: [bbn.cp.mixins.basic, bbn.cp.mixins.localStorage],
     props: {
       endpoints: {
         type: Array,
         required: true
-      },
-      intros: {
-        type: Array
       },
       formats: {
         type: Array,
@@ -61,6 +32,14 @@
       },
       endpoint: {
         type: String
+      },
+      storage: {
+        type: Boolean,
+        default: true
+      },
+      storageName: {
+        type: String,
+        default: 'appui-ai-chat'
       }
     },
     data() {
@@ -79,8 +58,6 @@
         aiFormat: this.configuration?.output || "textarea",
         isLoadingResponse: false,
         currentChat: this.source || null,
-        itemIntro: null,
-        currentIntro: '',
         isLoading: false,
         isSelecting: false,
         selected: [],
@@ -143,24 +120,23 @@
           bbn.fn.log("SUCCESS DELETE", d);
         })
       },
+      checkSend(e) {
+        bbn.fn.log(e);
+        if (e.ctrlKey && (e.key === 'Enter')) {
+          e.preventDefault();
+          e.stopImmediatePropagation();
+          this.send();
+        }
+        if (e.metaKey && (e.key === 'Enter')) {
+          e.preventDefault();
+          e.stopImmediatePropagation();
+          this.send();
+        }
+      },
       clear() {
         bbn.fn.log("CLEAR", this.mode, this.selectedPromptId);
       },
-      createChat() {
-        this.isLoadingResponse = true;
-        this.$nextTick(() => {
-          this.conversation = newConversation(this.getRandomIntroSentence());
-          setTimeout(() => this.isLoadingResponse = false, 250);
-        })
-      },
       fdate: bbn.fn.fdate,
-      updateCurrentIntro() {
-        this.currentIntro = this.getRandomIntroSentence();
-      },
-      getRandomIntroSentence() {
-        const randomIndex = Math.floor(Math.random() * this.intros.length);
-        return this.intros[randomIndex].text;
-      },
       updateScroll() {
         const scroll = this.getRef('scroll');
         if (scroll?.onResize) {
@@ -179,6 +155,10 @@
       },
       send() {
         bbn.fn.log("SEND", this.configuration, this.cfg);
+        if (!this.input) {
+          return;
+        }
+
         if (this.configuration?.id) {
           let request_object = {
             id_prompt: this.configuration.id,
@@ -227,21 +207,19 @@
           this.input = '';
           this.$nextTick(this.updateScroll);
           this.getRef('chatPrompt').focus();
-          const cfg = bbn.fn.extend({}, this.cfg);
-          delete cfg.endpoint;
-          cfg.model = this.currentModel.text;
-          const data = {
+          const data = bbn.fn.extend({
             prompt: input,
             date: inputDate,
             userFormat: 'textarea',
             endpoint: this.cfg.endpoint,
-            cfg,
             id: this.currentChat?.id || ''
-          };
+          }, this.cfg);
           this.isLoading = true;
-          bbn.fn.log(["SENDING", data]);
           bbn.fn.post(this.root + 'chat', data, d => {
-            if (d.success&& d.conversation) {
+            if (d.success && d.conversation) {
+              if (d.file) {
+                this.$emit('setfile', d.file);
+              }
               const conv = d.conversation;
               if (this.currentChat?.id !== conv.id) {
                 this.currentChat = conv;
@@ -268,9 +246,6 @@
       }
     },
     watch: {
-      itemIntro() {
-        this.tst = bbn.fn.timestamp();
-      },
       currentModelId() {
         bbn.fn.log("CHANGIN currentModelId");
       },
@@ -291,21 +266,13 @@
     created() {
       let cfg = this.getStorage();
       if (!cfg) {
-        cfg = defaultConfig(this);
+        cfg = this.getDefaultSettings();
+        this.setStorage(cfg);
       }
 
       this.cfg = cfg;
     },
     mounted() {
-      this.updateCurrentIntro();
-      if (!this.conversation.length) {
-        this.itemIntro = newConversation(this.currentIntro)[0];
-      }
-
-      setTimeout(() => {
-        bbn.fn.log("TIMEOUT");
-        this.updateScroll();
-      }, 500)
     },
   }
 })();

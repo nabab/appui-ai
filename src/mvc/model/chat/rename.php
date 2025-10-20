@@ -16,9 +16,9 @@ if ($model->hasData(['title', 'file'], true)) {
     $summary = $fs->decodeContents($summaryFile, 'json', true);
     $idx = X::search($summary, ['file' => $model->data['file']]);
     if (isset($summary[$idx]) && $fs->exists($file)) {
-      $res['success'] = $fs->delete($file);
-      array_splice($summary, $idx, 1);
-      $fs->encodeContents($summaryFile, $summary, 'json');
+      $summary[$idx]['title'] = $model->data['title'];
+      $fs->encodeContents($summary, $summaryFile, 'json');
+      $res['success'] = true;
     }
     else {
       $res['error'] = "No discussion file";

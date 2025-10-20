@@ -14,7 +14,6 @@
                 :label="_('Delete the conversation')"
                 :notext="true"
                 @click="deleteChat"/>
-    
   </appui-ai-config>
   <div class="bbn-flex-fill"
        bbn-if="conversationChange">
@@ -25,26 +24,14 @@
     <div class="bbn-overlay">
       <bbn-scroll ref="scroll">
         <div class="bbn-w-100 bbn-vpadding">
-          <div class="bbn-w-100 overflow-auto bbn-flex-column">
-            <appui-ai-chat-item bbn-if="itemIntro"
-                                :source="itemIntro"
-                                format="textarea"
-                                :ai="true"
-                                :date="tst"
-                                user-format="textarea"/>
-          </div>
           <div class="bbn-w-100 bbn-ai-chat-selector overflow-auto bbn-flex-column"
                bbn-for="item in source?.conversation">
-            <appui-ai-chat-item bbn-if="item.messages?.[0]"
-                                :source="item.messages?.[0]"
-                                :date="item.asked"
-                                :format="item.userFormat || 'textarea'"/>
-            <appui-ai-chat-item bbn-if="item.messages?.[1]"
-                                :source="item.messages[1] || {loading: true}"
-                                :date="item.responded"
+            <appui-ai-chat-item bbn-for="msg in item.messages"
+                                :source="msg"
                                 :cfg="item.cfg"
-                                :ai="true"
-                                :format="item.aiFormat || 'textarea'"/>
+                                :ai="msg.role === 'assistant'"
+                                :date="item.asked"
+                                :format="msg.role === 'assistant' ? (item.userFormat || 'textarea') : (item.aiFormat || 'textarea')"/>
           </div>
         </div>
       </bbn-scroll>
@@ -55,7 +42,7 @@
     <div bbn-if="configuration?.title"
          class="bbn-lpadding bbn-bottom-xsmargin bbn-background bbn-text bbn-w-100 bbn-radius"
          style="maxWidth: 100%; white-space: break-spaces"
-         >{{configuration.content}}</div>
+         bbn-html="configuration.content"/>
     <div bbn-if="(mode !== 'chat') || !configuration || configuration?.editable"
          class="bbn-flex-hcentered">
       <div class="bbn-card bbn-widest bbn-padding bbn-bottom-margin">
@@ -66,14 +53,16 @@
                      bbn-model="input"
                      ref="chatPrompt"
                      bbn-focused
-                     style="width: 100%"/>
+                     style="width: 100%"
+                     @keyup="checkSend"/>
           <bbn-textarea bbn-else
                         bbn-model="input"
                         ref="chatPrompt"
                         style="width: 100%"
                         bbn-focused
                         :resizable="false"
-                        :autosize="true"/>
+                        :autosize="true"
+                        @keyup="checkSend"/>
         </div>
         <div class="bbn-w-100 bbn-vmiddle bbn-vspadding">
           <bbn-button bbn-if="input.length || (conversation.length <= 1)"

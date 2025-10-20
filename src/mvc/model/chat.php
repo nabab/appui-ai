@@ -12,8 +12,8 @@ use bbn\Appui\Ai;
 /** @var bbn\Mvc\Model $model */
 
 $ai =& $model->inc->ai;
-if ($model->hasData(['endpoint', 'cfg'], true) 
-    && X::hasProps($model->data['cfg'], ['model', 'temperature', 'top_p', 'presence', 'frequency', 'language', 'aiFormat'])
+if ($model->hasData(['model', 'endpoint', 'cfg'], true) 
+    && X::hasProps($model->data['cfg'], ['temperature', 'top_p', 'presence', 'frequency', 'language', 'aiFormat'])
     && ($model->hasData(['id_prompt'], true) || $model->hasData('prompt', true))
 ) {
   $res = ['success' => false];
@@ -38,7 +38,7 @@ else {
   $endpoints = $ai->getEndpoints() ?: [];
   foreach ($endpoints as &$e) {
     $endpoint = $ai->getEndpoint($e['id']);
-    $e['models'] = $endpoint['models'];
+    $e['models'] = array_map(fn($a) => $a['text'], $endpoint['models']);
   }
 
   $prompts = $ai->getPrompts();

@@ -16,9 +16,16 @@ if ($model->hasData('id', true)) {
   if ($o = $model->inc->pref->get($model->data['id'])) {
     $ai = new Ai($model->db);
     $ai->setEndpoint($o['id']);
-    if ($res['success'] = $ai->syncModels()) {
+    try {
+      $res['success'] = $ai->syncModels();
+    }
+    catch (Exception $e) {
+      $res['error'] = $e->getMessage();
+    }
+
+    if ($res['success']) {
       $endpoint = $ai->getEndpoint($o['id']);
-      $res['models'] = $endpoint['models'];
+      $res['models'] = array_map(fn($a) => $a['text'], $endpoint['models']);
     }
 
   }

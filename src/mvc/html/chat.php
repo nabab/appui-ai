@@ -1,9 +1,10 @@
 <!-- HTML Document -->
 
 <div class="bbn-overlay appui-ai-chat-page">
+  <bbn-debugger/>
   <bbn-router :url-navigation="true"
               :autoload="false"
-              :nav="true">
+              mode="tabs">
     <!-- DROPDOWNS IN TABS BAR -->
     <div class="bbn-block bbn-nowrap bbn-border-bottom"
          slot="tabs">
@@ -24,7 +25,7 @@
           </h2>
           <h3 class="bbn-top-nomargin bbn-c">
             <?= _("From this page you can") ?>:
-          </h2>
+          </h3>
           <h4 class="bbn-top-nomargin bbn-flex-vcentered">
             <ul class="bbn-list">
               <li><?= _("Set up any AI service, including local LLM") ?></li>
@@ -48,35 +49,37 @@
                           icon: 'nf nf-fa-plus',
                           title: '<?= _('New endpoint') ?>'
                        }]"/>
-          <bbns-widget :closable="false"
+          <bbns-widget bbn-if="lastModelsUsed?.length"
+                       :closable="false"
                        item-component="appui-ai-model-widget"
                        :items="lastModelsUsed"
-                       label="<?= _("Last models used") ?>"
-                       :buttons-right="[{
-                          action: addEndpoint,
-                          icon: 'nf nf-fa-plus',
-                          title: '<?= _('New endpoint') ?>'
-                       }]"/>
+                       label="<?= _("Models used") ?>"
+                       nodata="<?= _("You haven't used AI yet") ?>"/>
           <bbns-widget :closable="false"
                        item-component="appui-ai-prompt-widget"
                        :items="source.prompts"
-                       label="<?= _("Last prompts") ?>"
+                       label="<?= _("Prompts") ?>"
                        :no-data-component="$options.components.newPrompt"
                        :buttons-right="[{
-                          action: addEndpoint,
+                          action: () => bbn.fn.link(root + 'chat/prompts/new'),
                           icon: 'nf nf-fa-plus',
-                          title: '<?= _('New endpoint') ?>'
+                          title: '<?= _('New prompt') ?>'
                        }]"/>
           <bbns-widget :closable="false"
                        item-component="appui-ai-chat-widget"
                        :items="lastChats"
-                       label="<?= _("Last chats") ?>"
+                       label="<?= _("Chats") ?>"
                        :no-data-component="$options.components.newChat"
                        :buttons-right="[{
-                          action: addEndpoint,
+                          action: addNewChat,
                           icon: 'nf nf-fa-plus',
                           title: '<?= _('New chat') ?>'
                        }]"/>
+          <bbns-widget :closable="false"
+                       item-component="appui-ai-chat-widget"
+                       bbn-if="lastConfigs.length"
+                       :items="lastConfigs"
+                       label="<?= _("Settings") ?>"/>
         </bbn-dashboard>
       </div>
     </bbn-container>
@@ -95,20 +98,32 @@
             <bbn-toolbar class="bbn-spadding">
               <bbn-button icon="nf nf-md-forum_plus"
                           :label="_('New chat')"
-                          @click="createChat"
+                          @click="addNewChat"
                           class="bbn-left-xsmargin"/>
             </bbn-toolbar>
             <div class="bbn-flex-fill bbn-padding">
-              <bbn-tree :source="root + 'conversations'"
+              <bbn-list :source="root + 'conversations'"
                         class="appui-ai-chat-list-items"
-                        :alternateBackground="true"
+                        :alternate-background="true"
                         source-text="title"
-                        source-value="file"
+                        source-value="id"
+                        uid="id"
                         ref="chatList"
                         @select="chatSelectItem"
                         :menu="chatMenu"
                         :selected="selectedListItem"
-                        no-data="<?= _("You will see the list of your conversations here") ?>"/>
+                        no-data="<?= _("You will see the list of your conversations here") ?>">
+                <template bbn-pre>
+                  <bbn-context :source="appui.getRegistered('appui-ai-ui').chatMenu(source)"
+                               tag="div"
+                               :context="true"
+                               class="bbn-w-100">
+                    <span bbn-text="source.title"/>
+                    <span bbn-text="bbn.fn.fdate(source.last, true)"
+                          class="bbn-light bbn-i bbn-s"/>
+                  </bbn-context>
+                </template>
+              </bbn-list>
             </div>
           </div>
         </bbn-pane>
@@ -124,6 +139,7 @@
                          :languages="source.languages"
                          :configuration="chatSelected"
                          :storage="true"
+                         @setfile="onSetFile"
                          storage-full-name="appui-ai-chat-model"/>
         </bbn-pane>
       </bbn-splitter>
@@ -137,7 +153,7 @@
                    :fcolor="$origin.fcolor"
                    :scrollable="false">
       <bbn-router :autoload="true"
-                  :nav="true"
+                  mode="tabs"
                   ref="promptRouter"
                   :storage="true"
                   storage-full-name="appui-ai-prompt-router">
@@ -154,7 +170,7 @@
                      :toolbar="[{
                        icon:'nf nf-md-forum_plus',
                        label: _('New prompt'),
-                       action: createPrompt
+                       url: root + 'chat/prompts/new'
                      }]">
             <bbns-column field="title"
                          :sortable="true"
@@ -208,7 +224,7 @@
                    :scrollable="false">
       <bbn-router class="bbn-overlay"
                   :source="routerSettings"
-                  :nav="true"
+                  mode="tabs"
                   :autoload="false"/>
     </bbn-container>
   </bbn-router>

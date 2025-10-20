@@ -21,7 +21,7 @@
             }
           }
           else {
-            appui.error(bbn._('Error during sync'));
+            appui.error(d.error || bbn._('Error during sync'));
           }
         });
         bbn.fn.log(this.source)

@@ -1,21 +1,16 @@
 // Javascript Document
 
 (() => {
-  const getBlankData = (data) => {
-    return {
+  const getBlankData = (data, cp) => {
+    return bbn.fn.extend({}, cp.getDefaultSettings(), {
       id: data?.id || null,
       id_note: data?.id_note || null,
       title: data?.title || "",
       content: data?.content || "",
       output: data?.output || "textarea",
       input: data?.input || "textarea",
-      lang: data?.lang || null,
       shortcode: data?.shortcode || null,
-      temperature: data?.temperature || 0.7,
-      presence: data?.presence || 0.1,
-      frequency: data?.frequency || 0.1,
-      top_p: data?.top_p || 0.95,
-    }
+    })
   };
 
   return {
@@ -66,8 +61,9 @@
     },
     data() {
       return {
+        cfg: null,
         root: appui.plugins['appui-ai'] + '/',
-        formData: this.source?.id ? this.source : getBlankData(),
+        formData: null,
         input: "",
         response: null,
         loading: false,
@@ -79,18 +75,18 @@
     },
     computed: {
       aiFormatComponent() {
-        let res = bbn.fn.getRow(this.formats, {id: this.formData.output}).component;
+        let res = bbn.fn.getRow(this.formats, {id: this.formData?.output}).component;
         if (res === 'bbn-textarea') {
           return "div";
         }
         return res;
       },
       userFormatComponent() {
-        return bbn.fn.getRow(this.formats, {id: this.formData.input}).component;
+        return bbn.fn.getRow(this.formats, {id: this.formData?.input}).component;
       },
       userComponentOptions() {
         const o = {};
-        if (this.formData.input) {
+        if (this.formData?.input) {
           switch (this.formData.input) {
             case 'textarea':
               o.autosize = true;
@@ -109,10 +105,6 @@
         }
         return o;
       }
-    },
-    mounted() {
-      this.cp = this.closest('bbn-container').getComponent();
-      this.ready = true;
     },
     methods: {
       componentOptions(type, readonly) {
@@ -198,6 +190,18 @@
           }, 300);
         })
       }
+    },
+    mounted() {
+      this.cp = this.closest('bbn-container').getComponent();
+      if (this.source?.id) {
+        this.formData = this.source;
+      }
+      else {
+        this.formData = getBlankData({}, this);
+        bbn.fn.log('formData', this.formData, this.getDefaultSettings())
+      }
+
+      this.ready = true;
     },
   }
 })();
