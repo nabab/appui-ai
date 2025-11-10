@@ -142,14 +142,10 @@
           content: this.formData.content + '\n' + bbn.fn.getRow(this.formats, {value: this.formData.output}).prompt + ' and the language must be in ' +  bbn.fn.getRow(this.languages, {value: this.formData.lang}).text,
           input: this.input,
           test: true,
-          model: this.model,
-          endpoint: this.endpoint,
-          cfg: {
-            temperature: this.formData.temperature,
-            top_p: this.formData.top_p,
-            frequency_penalty: this.formData.frequency_penalty,
-            presence_penalty: this.formData.presence_penalty,
-          }
+          model: this.formData.model,
+          endpoint: this.formData.endpoint,
+          cfg: this.formData.cfg,
+          id_prompt: this.formData.id || null
         }, (d) => {
           if (d.success) {
             this.response = this.formData.output === 'bbn-json-editor' ? JSON.parse(d.text) : d.text
@@ -193,13 +189,8 @@
     },
     mounted() {
       this.cp = this.closest('bbn-container').getComponent();
-      if (this.source?.id) {
-        this.formData = this.source;
-      }
-      else {
-        this.formData = getBlankData({}, this);
-        bbn.fn.log('formData', this.formData, this.getDefaultSettings())
-      }
+      this.formData = getBlankData(this.source?.id ? this.source : {}, this);
+      bbn.fn.log('formData', this.formData);
 
       this.ready = true;
     },

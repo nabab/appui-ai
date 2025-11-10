@@ -19,30 +19,7 @@
        bbn-if="conversationChange">
     <bbn-loader class="bbn-overlay"/>
   </div>
-  <div class="bbn-flex-fill"
-       bbn-else>
-    <div class="bbn-overlay">
-      <bbn-scroll ref="scroll">
-        <div class="bbn-w-100 bbn-vpadding">
-          <div class="bbn-w-100 bbn-ai-chat-selector overflow-auto bbn-flex-column"
-               bbn-for="item in source?.conversation">
-            <appui-ai-chat-item bbn-for="msg in item.messages"
-                                :source="msg"
-                                :cfg="item.cfg"
-                                :ai="msg.role === 'assistant'"
-                                :date="item.asked"
-                                :format="msg.role === 'assistant' ? (item.userFormat || 'textarea') : (item.aiFormat || 'textarea')"/>
-          </div>
-        </div>
-      </bbn-scroll>
-    </div>
-  </div>
   <div class="bbn-w-100 bbn-bottom-padding">
-    <hr class="bbn-hr">
-    <div bbn-if="configuration?.title"
-         class="bbn-lpadding bbn-bottom-xsmargin bbn-background bbn-text bbn-w-100 bbn-radius"
-         style="maxWidth: 100%; white-space: break-spaces"
-         bbn-html="configuration.content"/>
     <div bbn-if="(mode !== 'chat') || !configuration || configuration?.editable"
          class="bbn-flex-hcentered">
       <div class="bbn-card bbn-widest bbn-padding bbn-bottom-margin">
@@ -74,6 +51,29 @@
                       :label="_('Resend')"/>
         </div>
       </div>
+    </div>
+    <div bbn-if="configuration?.title"
+         class="bbn-lpadding bbn-bottom-xsmargin bbn-background bbn-text bbn-w-100 bbn-radius"
+         style="maxWidth: 100%; white-space: break-spaces"
+         bbn-html="configuration.content"/>
+    <hr class="bbn-hr">
+  </div>
+  <div class="bbn-flex-fill"
+       bbn-else>
+    <div class="bbn-overlay">
+      <bbn-scroll ref="scroll">
+        <div class="bbn-w-100 bbn-vpadding">
+          <div class="bbn-w-100 bbn-ai-chat-selector overflow-auto bbn-flex-column"
+               bbn-for="item in source?.conversation">
+            <appui-ai-chat-item bbn-for="msg in item.messages"
+                                :source="msg"
+                                :cfg="item.cfg"
+                                :ai="msg.role === 'assistant'"
+                                :date="item.asked"
+                                :format="msg.role === 'assistant' ? (item.userFormat || 'textarea') : (item.aiFormat || 'textarea')"/>
+          </div>
+        </div>
+      </bbn-scroll>
     </div>
   </div>
 </div>

@@ -119,6 +119,16 @@
             "delete": "RESTRICT",
             "unique": 0
         },
+        "id_setting": {
+            "columns": [
+                "id_setting"
+            ],
+            "ref_table": "bbn_ai_prompt_settings",
+            "ref_column": "id",
+            "update": "RESTRICT",
+            "delete": "RESTRICT",
+            "unique": 0
+        },
         "author": {
             "columns": [
                 "author"
@@ -137,6 +147,9 @@
         "id_prompt": [
             "id_prompt"
         ],
+        "id_setting": [
+            "id_setting"
+        ],
         "author": [
             "author"
         ]
@@ -149,6 +162,12 @@
             "maxlength": 16
         },
         "id_prompt": {
+            "type": "binary",
+            "null": 0,
+            "key": "MUL",
+            "maxlength": 16
+        },
+        "id_setting": {
             "type": "binary",
             "null": 0,
             "key": "MUL",

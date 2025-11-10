@@ -177,7 +177,7 @@
                          :filterable="true"
                          :label="_('Title')"
                          :min-width="250"/>
-            <bbns-column field="text"
+            <bbns-column field="content"
                          :sortable="true"
                          :filterable="true"
                          :label="_('Text')"/>

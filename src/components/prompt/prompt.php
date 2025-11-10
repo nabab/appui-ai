@@ -10,9 +10,16 @@
                                 @success="onSuccess"/>
       </div>
     </bbn-pane>
-    <bbn-pane>
-      <div class="bbn-w-100 bbn-padding">
-        <p>Messages</p>
+    <bbn-pane :scrollable="true">
+      <div class="bbn-w-100 bbn-vpadding">
+        <div class="bbn-w-100 bbn-ai-chat-selector overflow-auto bbn-flex-column"
+              bbn-for="item in source?.items">
+          <appui-ai-prompt-item :source="item"
+                                :cfg="item.cfg"
+                                :ai="item.ai"
+                                :date="bbn.fn.timestamp(item.creation_date)"
+                                :format="item.ai ? (item.userFormat || 'textarea') : (item.aiFormat || 'textarea')"/>
+        </div>
       </div>
     </bbn-pane>
   </bbn-splitter>

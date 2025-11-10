@@ -14,22 +14,29 @@ use bbn\Appui\Ai;
 $ai =& $model->inc->ai;
 if ($model->hasData(['model', 'endpoint', 'cfg'], true) 
     && X::hasProps($model->data['cfg'], ['temperature', 'top_p', 'presence', 'frequency', 'language', 'aiFormat'])
-    && ($model->hasData(['id_prompt'], true) || $model->hasData('prompt', true))
+    && ($model->hasData(['id_prompt'], true) || $model->hasData(['prompt'], true))
 ) {
   $res = ['success' => false];
   $ai->setEndpoint($model->data['endpoint'], $model->data['cfg']['model']);
 
     // Saved prompt
   if ($model->hasData('id_prompt', true)) {
-    $result = $ai->getPromptResponseFromId($model->data['id_prompt'], $model->data['input']);
+    $result = $ai->getPromptResponseFromId($model->data['id_prompt'], $model->data['input'], true, ['model' => $model->data['model'], 'cfg' => $model->data['cfg']]);
   }
   // Unsaved prompt
   elseif ($model->hasData('input')) {
-    $result = $ai->getPromptResponse($model->data['prompt'], $model->data['input'], $model->data['cfg']);
+    $result = $ai->getPromptResponse(
+      [
+        'content' => $model->data['content'],
+        'output' => $model->data['cfg']['aiFormat']
+      ],
+      $model->data['input'],
+      $model->data['cfg']
+    );
   }
   // Chat
   else {
-    $result = $ai->chat($model->data['prompt'], $model->data['cfg'], $model->data['id'] ?? '');
+    $result = $ai->chat($model->data['prompt'], ['model' => $model->data['model'], 'cfg' => $model->data['cfg']], $model->data['id'] ?? '');
   }
 
   return $result;
