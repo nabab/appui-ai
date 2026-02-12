@@ -32,21 +32,6 @@
                     }"/>
     </div>
 
-    <div :class="['bbn-border', 'bbn-radius', 'bbn-right-smargin', {'bbn-reactive': !!source.model}]"
-         bbn-if="languages && endpoints">
-      <span bbn-text="_('Language')"
-            class="bbn-link bbn-iblock bbn-xspadding bbn-right-xsmargin"
-            @click="getRef('languageEditor').edit()"/>
-      <bbn-editable bbn-model="source.cfg.language"
-                    component="bbn-dropdown"
-                    ref="languageEditor"
-                    :disabled="!source.model"
-                    :component-options="{
-                      source: languages,
-                      sourceValue: 'code'
-                    }"/>
-    </div>
-
     <div slot="right"
          class="bbn-nowrap bbn-m">
       <slot/>
@@ -59,22 +44,6 @@
   </bbn-toolbar>
 
   <bbn-toolbar :class="['bbn-bottom-spadding', 'bbn-hspadding', 'appui-ai-config-bottombar', {'appui-ai-config-shownbar': showBar2}]">
-    <div :class="['bbn-border', 'bbn-radius', 'bbn-right-smargin', {'bbn-reactive': !!source.model}]">
-      <span bbn-text="_('Format')"
-            class="bbn-link bbn-iblock bbn-xspadding bbn-right-xsmargin"
-            bbn-if="endpoints"
-            @click="getRef('formatEditor').edit()"/>
-      <bbn-editable bbn-model="source.cfg.aiFormat"
-                    component="bbn-dropdown"
-                    ref="formatEditor"
-                    :disabled="!source.model"
-                    bbn-if="endpoints"
-                    :component-options="{
-                      source: formats,
-                      sourceValue: 'code'
-                    }"/>
-    </div>
-
     <div :class="['bbn-border', 'bbn-radius', 'bbn-right-smargin', {'bbn-reactive': !!source.model}]">
       <bbn-tooltip icon="nf nf-oct-info"
                    :source="() => getTooltip('infoTemperature')"/>

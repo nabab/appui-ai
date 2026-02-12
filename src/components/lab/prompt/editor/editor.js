@@ -138,7 +138,7 @@
       send() {
         this.loading = true;
         this.response = '';
-        bbn.fn.post(this.root + 'chat', {
+        bbn.fn.post(this.root + 'lab', {
           content: this.formData.content + '\n' + bbn.fn.getRow(this.formats, {value: this.formData.output}).prompt + ' and the language must be in ' +  bbn.fn.getRow(this.languages, {value: this.formData.lang}).text,
           input: this.input,
           test: true,
@@ -170,7 +170,7 @@
       },
       generateTitle() {
         this.generating = true;
-        bbn.fn.post(this.root + 'chat', {
+        bbn.fn.post(this.root + 'lab', {
           content: "The given text is a prompt for which you need to provide (only) a short clear and descriptive title for this prompt.",
           input: this.formData.content,
           test: true,

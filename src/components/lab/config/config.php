@@ -13,7 +13,8 @@
                     :component-options="{
                       source: endpoints,
                       sourceUrl: false,
-                      sourceValue: 'id'
+                      sourceValue: 'id',
+                      class: 'bbn-narrow'
                     }"/>
     </div>
 
@@ -28,7 +29,8 @@
                     :disabled="!source.endpoint"
                     bbn-if="endpoints"
                     :component-options="{
-                      source: currentEndpoint ? currentEndpoint.models : []
+                      source: currentEndpoint ? currentEndpoint.models : [],
+                      class: 'bbn-narrow'
                     }"/>
     </div>
 
@@ -43,7 +45,8 @@
                     :disabled="!source.model"
                     :component-options="{
                       source: languages,
-                      sourceValue: 'code'
+                      sourceValue: 'code',
+                      class: 'bbn-narrow'
                     }"/>
     </div>
 

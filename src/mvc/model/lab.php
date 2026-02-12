@@ -8,7 +8,11 @@ use bbn\X;
 use bbn\Str;
 use Orhanerday\OpenAi\OpenAi;
 use bbn\File\System;
-use bbn\Appui\Ai;
+use bbn\Ai\Lab;
+use bbn\Ai\Lab\Experiment;
+use bbn\Ai\Lab\Model as AiModel;
+use bbn\Ai\Lab\Runs;
+use bbn\Ai\Lab\Prompt;
 /** @var bbn\Mvc\Model $model */
 
 $ai =& $model->inc->ai;
@@ -19,7 +23,7 @@ if ($model->hasData(['model', 'endpoint', 'cfg'], true)
   $res = ['success' => false];
   $ai->setEndpoint($model->data['endpoint'], $model->data['cfg']['model']);
 
-    // Saved prompt
+  // Saved prompt
   if ($model->hasData('id_prompt', true)) {
     $result = $ai->getPromptResponseFromId($model->data['id_prompt'], $model->data['input'], true, ['model' => $model->data['model'], 'cfg' => $model->data['cfg']]);
   }
@@ -48,38 +52,15 @@ else {
     $e['models'] = array_map(fn($a) => $a['text'], $endpoint['models']);
   }
 
-  $prompts = $ai->getPrompts();
-  $path = $model->userDataPath($model->inc->user->getId(), 'appui-ai') . 'chat/';
-  $years = [];
-  $fs = new System();
-  if ($fs->exists($path) && $fs->isDir($path)) {
-    $dirs = $fs->getDirs($path);
-
-    foreach ($dirs as $dir) {
-      // date('Y-m-d')
-      $year = basename($dir);
-      $years[] = $year;
-    }
-  }
-
-  $types = ['intro', 'promptBits', 'chatModes', 'formats'];
-  $r = [];
-  foreach ($types as $t) {
-    if ($idType = Ai::getOptionId(Str::fromCamel($t))) {
-      $r[$t] = $model->inc->options->option($idType);
-      $r[$t]['cfg'] = $model->inc->options->getCfg($idType);
-      $r[$t]['cfg']['noparent'] = true;
-      $r[$t]['cfg']['write'] = true;
-      $r[$t]['options'] = $model->inc->options->fullOptions($idType);
-    }
-  }
-  return array_merge([
+  $prompt = new Prompt($model->db);
+  $prompts = $prompt->list();
+  $experiment = new Experiment($model->db);
+  $experiments = $experiment->list();
+  return [
     "root" => $model->data['root'],
-    "languages" => Ai::getOptionsTextValue('languages', 'text', 'value', 'code'),
     "prompts" => $prompts,
-    "endpoints" => $endpoints,
-    "years" => $years,
-    "outputs" => $model->inc->options->fullOptions('outputs', 'ai', 'appui'),
-  ], $r);
+    "experiments" => $experiments,
+    "endpoints" => $endpoints
+  ];
 }
 

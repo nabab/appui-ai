@@ -66,7 +66,12 @@
       this.ui = appui.getRegistered('appui-ai-lab');
     },
   };
-  bbn.cp.addPrefix('appui-ai-', null, [mix]);
+  //bbn.cp.addPrefix('appui-ai-lab-', null, [mix]);
+  bbn.cp.addUrlAsPrefix(
+    'appui-ai-lab-',
+    appui.plugins['appui-component'] + '/',
+    [mix]
+  );
 
   return {
     mixins: [
@@ -86,19 +91,7 @@
     },
     data() {
       const routerSettings = [];
-      const types = ['formats', 'promptBits', 'chatModes', 'intro'];
-      bbn.fn.each(types, t => {
-        routerSettings.push({
-          url: bbn.fn.camelToCss(t),
-          label: this.source[t].text,
-          fixed: true,
-          scrollable: false,
-          component: 'appui-option-list',
-          source: this.source[t]
-        })
-      })
       return {
-        intros: this.source.intro.options,
         routerSettings,
         root: appui.plugins['appui-ai'] + '/',
         options: this.source.options,
@@ -182,6 +175,16 @@
       }
     },
     methods: {
+      experimentCreate() {
+        this.getPopup({
+          label: bbn._("New experiment"),
+          component: 'appui-ai-lab-experiment-editor',
+          source: {
+            name: '',
+            description: ''
+          }
+        })
+      },
       onSetFile(fileName) {
         const lst = this.getRef('chatList').currentData;
         if (lst[0]?.data?.file === 'new') {
@@ -414,6 +417,11 @@
           this.selectedPromptId = o.id;
         }
       },
+      onExperimentEditSuccess(o) {
+        if (o.id) {
+          bbn.fn.log('onExperimentEditSuccess', arguments);
+        }
+      },
       updatePromptsList() {
         this.listChange = true;
         bbn.fn.post(this.source.root + '/prompts' , {list: true}, (d) => {
@@ -447,9 +455,6 @@
     },
     mounted() {
       appui.register('appui-ai-lab', this)
-      if (this.source.prompts.length) {
-        this.currentPrompt = this.promptList[0];
-      }
     },
     beforeDestroy() {
       appui.unregister('appui-ai-lab')
