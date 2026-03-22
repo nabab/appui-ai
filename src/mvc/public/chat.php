@@ -10,7 +10,7 @@ if ($ctrl->hasArguments() && $ctrl->controllerExists($ctrl->pluginUrl('appui-ai'
 elseif (!empty($ctrl->post)) {
   $ctrl->action();
 }
-elseif (constant('BBN_BASEURL')
+elseif ($ctrl->getConstant('baseURL')
   && $ctrl->hasArguments(2)
   && $ctrl->controllerExists($ctrl->pluginUrl('appui-ai') . '/chat/' . $ctrl->arguments[0], true)
   && Str::isUid($ctrl->arguments[1])

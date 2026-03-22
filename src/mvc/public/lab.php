@@ -13,7 +13,7 @@ elseif ($ctrl->hasArguments() && $ctrl->controllerExists($ctrl->pluginUrl('appui
 elseif (!empty($ctrl->post)) {
   $ctrl->action();
 }
-elseif (constant('BBN_BASEURL')
+elseif ($ctrl->getConstant('baseURL')
   && $ctrl->hasArguments(2)
   && $ctrl->controllerExists($ctrl->pluginUrl('appui-ai') . '/lab/' . $ctrl->arguments[0], true)
   && Str::isUid($ctrl->arguments[1])
