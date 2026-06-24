@@ -1,7 +1,7 @@
 <!-- HTML Document -->
 
 <div class="bbn-overlay appui-ai-chat-page">
-  <bbn-debugger/>
+  <bbn-debugger style="left: unset; right: 20px"/>
   <bbn-router :url-navigation="true"
               :autoload="false"
               mode="tabs">
@@ -41,7 +41,7 @@
         <bbn-dashboard :scrollable="false">
           <bbns-widget :closable="false"
                        item-component="appui-ai-endpoint-widget"
-                       :items="source.endpoints"
+                       :source="source.endpoints"
                        label="<?= _("API endpoints") ?>"
                        :no-data-component="$options.components.newEndpoint"
                        :buttons-right="[{
@@ -52,12 +52,12 @@
           <bbns-widget bbn-if="lastModelsUsed?.length"
                        :closable="false"
                        item-component="appui-ai-model-widget"
-                       :items="lastModelsUsed"
+                       :source="lastModelsUsed"
                        label="<?= _("Models used") ?>"
                        nodata="<?= _("You haven't used AI yet") ?>"/>
           <bbns-widget :closable="false"
                        item-component="appui-ai-prompt-widget"
-                       :items="source.prompts"
+                       :source="source.prompts"
                        label="<?= _("Prompts") ?>"
                        :no-data-component="$options.components.newPrompt"
                        :buttons-right="[{
@@ -67,7 +67,7 @@
                        }]"/>
           <bbns-widget :closable="false"
                        item-component="appui-ai-chat-widget"
-                       :items="lastChats"
+                       :source="lastChats"
                        label="<?= _("Chats") ?>"
                        :no-data-component="$options.components.newChat"
                        :buttons-right="[{
@@ -78,7 +78,7 @@
           <bbns-widget :closable="false"
                        item-component="appui-ai-chat-widget"
                        bbn-if="lastConfigs.length"
-                       :items="lastConfigs"
+                       :source="lastConfigs"
                        label="<?= _("Settings") ?>"/>
         </bbn-dashboard>
       </div>
@@ -195,8 +195,8 @@
                          :width="120"/>
             <bbns-column :sortable="false"
                          :buttons="getPromptButtons"
-                         :label="_('Actions')"
-                         :width="120"/>
+                         :width="80"
+                         cls="bbn-c"/>
           </bbn-table>
         </bbn-container>
         <bbn-container url="new"
@@ -214,7 +214,7 @@
     </bbn-container>
 
     <!-- SETTINGS -->
-    <bbn-container url="settings"
+    <!--<bbn-container url="settings"
                    :notext="true"
                    icon="nf nf-fa-cogs"
                    :fixed="true"
@@ -226,6 +226,6 @@
                   :source="routerSettings"
                   mode="tabs"
                   :autoload="false"/>
-    </bbn-container>
+    </bbn-container>-->
   </bbn-router>
 </div>

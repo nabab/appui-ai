@@ -1,7 +1,28 @@
 <!-- HTML Document -->
 <div>
-  <bbn-toolbar :class="['bbn-spadding', 'appui-ai-config-topbar', {'appui-ai-config-withbar2': showBar2}]">
-    <div class="bbn-border bbn-radius bbn-right-smargin bbn-reactive">
+  <bbn-toolbar :class="['bbn-spadding', 'appui-ai-config-topbar', {'appui-ai-config-withbar2': showBottomBar}]">
+    <div bbn-if="endpoints"
+         class="bbn-flex bbn-nowrap">
+      <span class="bbn-leftlabel"
+            bbn-text="_('Endpoint')"/>
+      <bbn-dropdown bbn-model="source.endpoint"
+                    :source="endpoints"
+                    source-value="id"
+                    :source-url="false"/>
+    </div>
+    <div bbn-if="endpoints"
+         class="bbn-flex bbn-nowrap">
+      <span class="bbn-leftlabel"
+            bbn-text="_('Model')"/>
+      <bbn-dropdown bbn-model="source.model"
+                    :source="currentEndpoint?.models || []"
+                    source-value="id"
+                    source-text="name"
+                    :disabled="!source.endpoint"/>
+    </div>
+
+    <!--<div class="bbn-border bbn-radius bbn-right-smargin bbn-reactive bbn-vmiddle bbn-nowrap"
+         style="align-items: stretch">
       <span bbn-text="_('Endpoint')"
             class="bbn-link bbn-iblock bbn-right-xsmargin bbn-xspadding"
             bbn-if="endpoints"
@@ -17,7 +38,8 @@
                     }"/>
     </div>
 
-    <div :class="['bbn-border', 'bbn-radius', 'bbn-right-smargin', {'bbn-reactive': !!source.endpoint}]">
+    <div :class="['bbn-border', 'bbn-radius', 'bbn-right-smargin',  'bbn-vmiddle', 'bbn-nowrap', {'bbn-reactive': !!source.endpoint}]"
+         style="align-items: stretch">
       <span bbn-text="_('Model')"
             class="bbn-link bbn-iblock bbn-right-xsmargin bbn-xspadding"
             bbn-if="endpoints"
@@ -28,9 +50,11 @@
                     :disabled="!source.endpoint"
                     bbn-if="endpoints"
                     :component-options="{
-                      source: currentEndpoint ? currentEndpoint.models : []
+                      source: currentEndpoint ? currentEndpoint.models : [],
+                      sourceText: 'name',
+                      sourceValue: 'id'
                     }"/>
-    </div>
+    </div>-->
 
     <div slot="right"
          class="bbn-nowrap bbn-m">
@@ -38,12 +62,12 @@
       <bbn-button icon="nf nf-md-cog_outline"
                   :label="_('Advanced settings')"
                   :notext="true"
-                  @click="showBar2 = !showBar2"/>
+                  @click="showBottomBar = !showBottomBar"/>
     </div>
 
   </bbn-toolbar>
 
-  <bbn-toolbar :class="['bbn-bottom-spadding', 'bbn-hspadding', 'appui-ai-config-bottombar', {'appui-ai-config-shownbar': showBar2}]">
+  <!--<bbn-toolbar :class="['bbn-bottom-spadding', 'bbn-hspadding', 'appui-ai-config-bottombar', {'appui-ai-config-shownbar': showBottomBar}]">
     <div :class="['bbn-border', 'bbn-radius', 'bbn-right-smargin', {'bbn-reactive': !!source.model}]">
       <bbn-tooltip icon="nf nf-oct-info"
                    :source="() => getTooltip('infoTemperature')"/>
@@ -129,5 +153,5 @@
                   @click="saveCfg"/>
     </div>
 
-  </bbn-toolbar>
+  </bbn-toolbar>-->
 </div>

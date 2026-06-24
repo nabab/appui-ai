@@ -23,7 +23,8 @@
   const mix = {
     data() {
       return {
-        ui: null
+        ui: null,
+        root: appui.plugins['appui-ai'] + '/'
       }
     },
     computed: {
@@ -39,22 +40,23 @@
         if (this.currentEndpoint) {
           let model = '';
           bbn.fn.each(defaultModels, m => {
-            if (this.currentEndpoint.models.includes(m)) {
-              model = m;
+            const idModel = bbn.fn.getField(this.currentEndpoint.models, 'id', 'name', m);
+            if (idModel) {
+              model = idModel;
               return false;
             }
           });
 
           return {
-            endpoint: this.currentEndpointId, 
+            endpoint: this.currentEndpointId,
             model,
             cfg: {
               language: bbn.env.lang,
               aiFormat: 'multilines',
-              temperature: '1',
+              /* temperature: '1',
               presence: '0.2',
               frequency: '0.7',
-              top_p: '0.5'
+              top_p: '0.5' */
             }
           };
         }
@@ -71,7 +73,7 @@
   return {
     mixins: [
       bbn.cp.mixins.basic
-    ], 
+    ],
     props: {
       storage: {
         default: true,
@@ -79,7 +81,7 @@
       },
       storageFullName: {
         type: String,
-        default() { 
+        default() {
           return 'appui-ai-ui-' + this.$node.uid;
         }
       }
@@ -197,6 +199,10 @@
           icon: 'nf nf-md-arrow_right_bold',
           notext: true,
           action: () => bbn.fn.link(this.root + 'chat/prompts/' + row.id)
+        }, {
+          icon: 'nf nf-fa-trash bbn-red',
+          notext: true,
+          action: () => this.deletePrompt(row.id)
         }]
       },
       chatMenu(row) {
@@ -227,7 +233,7 @@
         this.confirm(bbn._("Are you sure you want to delete this chat?"), () => {
           bbn.fn.log("deleteChat", node);
           this.post(
-            appui.plugins['appui-ai'] + '/chat/delete',
+            this.root + 'chat/delete',
             {file: node.file},
             d => {
               if (d.error) {
@@ -282,17 +288,25 @@
           }
         })
       },
-      deletePrompt() {
-        appui.confirm(bbn._('Do you want to delete this prompt ?'), () => {
-          bbn.fn.post(this.root + 'prompt/delete', {
-            id: this.selectedPromptId
-          }, (d) => {
+      deletePrompt(idPrompt) {
+        if (!bbn.fn.isUid(idPrompt)) {
+          idPrompt = this.selectedPromptId;
+        }
+
+        this.confirm(bbn._('Do you want to delete this prompt?'), () => {
+          this.post(this.root + 'prompt/delete', {
+            id: idPrompt
+          }, d => {
             if (d.success) {
-              appui.success(bbn._('Success'))
-            } else {
-              appui.success(bbn._('Error'))
+              appui.success(bbn._('Success'));
             }
+            else {
+              appui.error(d.error || bbn._('Error'));
+            }
+
             this.updatePromptsList();
+          }, () => {
+            appui.error(bbn._('Error'));
           })
         })
       },
@@ -304,7 +318,7 @@
         }, 250);
       },
       getPromptConversation() {
-        bbn.fn.post(this.source.root + '/prompt/conversation/get', {
+        this.post(this.root + 'prompt/conversation/get', {
           id: this.selectedPromptId
         }, (d) => {
           if (d.success) {
@@ -380,7 +394,7 @@
         bbn.fn.log("CLEAR", this.mode, this.selectedPromptId);
         if ((this.mode === 'prompt') && this.selectedPromptId) {
           appui.confirm(bbn._('Do you want to delete all the conversation ?'), () => {
-            bbn.fn.post(this.source.root + '/prompt/conversation/clear' , {
+            this.post(this.root + 'prompt/conversation/clear' , {
               id: this.selectedPromptId
             }, (d) => {
               if (d.success) {
@@ -416,7 +430,7 @@
       },
       updatePromptsList() {
         this.listChange = true;
-        bbn.fn.post(this.source.root + '/prompts' , {list: true}, (d) => {
+        this.post(this.root + 'prompts' , {list: true}, (d) => {
           if (d.success) {
             this.source.prompts.splice(0, this.source.prompts.length, ...d.data);
 
@@ -428,7 +442,7 @@
         })
       },
       syncModels(endpointId) {
-        bbn.fn.post(appui.plugins['appui-ai'] + '/actions/sync', {
+        this.post(this.root + 'actions/sync', {
           id: endpointId
         }, d => {
           if (d.success) {
@@ -442,7 +456,6 @@
             appui.error(d.error || bbn._('Error during sync'));
           }
         });
-        
       }
     },
     mounted() {

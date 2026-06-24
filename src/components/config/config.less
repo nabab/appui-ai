@@ -8,9 +8,15 @@ appui-ai-config {
     border-bottom-width: 0px !important;
     border-right-width: 0px !important;
   }
-  .bbn-editable .bbn-editable-viewer {
+  .bbn-editable .bbn-editable-viewer:not(.bbn-editable-editor) {
     line-height: var(--line-height);
     margin-right: var(--sspace);
+  }
+  .bbn-editable .bbn-dropdown {
+    height: 100%;
+    > div {
+      height: 100%;
+    }
   }
   .appui-ai-config-topbar {
     z-index: 2;
@@ -26,5 +32,8 @@ appui-ai-config {
     &.appui-ai-config-shownbar {
       transform: translateY(0);
     }
+  }
+  .bbn-leftlabel {
+    line-height: normal;
   }
 }

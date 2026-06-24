@@ -21,11 +21,21 @@
             "delete": "RESTRICT",
             "unique": 0
         },
-        "default_setting": {
+        "input": {
             "columns": [
-                "default_setting"
+                "input"
             ],
-            "ref_table": "bbn_ai_prompt_settings",
+            "ref_table": "bbn_options",
+            "ref_column": "id",
+            "update": "CASCADE",
+            "delete": "RESTRICT",
+            "unique": 0
+        },
+        "output": {
+            "columns": [
+                "output"
+            ],
+            "ref_table": "bbn_options",
             "ref_column": "id",
             "update": "CASCADE",
             "delete": "RESTRICT",
@@ -39,8 +49,11 @@
         "id_note": [
             "id_note"
         ],
-        "default_setting": [
-            "default_setting"
+        "input": [
+            "input"
+        ],
+        "output": [
+            "output"
         ]
     },
     "fields": {
@@ -56,23 +69,17 @@
             "key": "MUL",
             "maxlength": 16
         },
-        "default_setting": {
+        "input": {
             "type": "binary",
             "null": 0,
             "key": "MUL",
             "maxlength": 16
         },
-        "input": {
-            "type": "longtext",
-            "null": 1,
-            "default": "NULL",
-            "defaultExpression": true
-        },
         "output": {
-            "type": "longtext",
-            "null": 1,
-            "default": "NULL",
-            "defaultExpression": true
+            "type": "binary",
+            "null": 0,
+            "key": "MUL",
+            "maxlength": 16
         },
         "creation_date": {
             "type": "datetime",
@@ -113,7 +120,7 @@
             "columns": [
                 "id_prompt"
             ],
-            "ref_table": "bbn_ia_prompt",
+            "ref_table": "bbn_ai_prompt",
             "ref_column": "id",
             "update": "RESTRICT",
             "delete": "RESTRICT",
@@ -220,10 +227,20 @@
             "columns": [
                 "id_prompt"
             ],
-            "ref_table": "bbn_ia_prompt",
+            "ref_table": "bbn_ai_prompt",
             "ref_column": "id",
             "update": "RESTRICT",
             "delete": "RESTRICT",
+            "unique": 0
+        },
+        "id_model": {
+            "columns": [
+                "id_model"
+            ],
+            "ref_table": "bbn_users_options_bits",
+            "ref_column": "id",
+            "update": "CASCADE",
+            "delete": "CASCADE",
             "unique": 0
         }
     },
@@ -233,6 +250,9 @@
         ],
         "id_prompt": [
             "id_prompt"
+        ],
+        "id_model": [
+            "id_model"
         ]
     },
     "fields": {
@@ -248,10 +268,11 @@
             "key": "MUL",
             "maxlength": 16
         },
-        "model": {
-            "type": "varchar",
+        "id_model": {
+            "type": "binary",
             "null": 0,
-            "maxlength": 64
+            "key": "MUL",
+            "maxlength": 16
         },
         "def": {
             "type": "tinyint",

@@ -131,7 +131,7 @@
     },
     data() {
       return {
-        showBar2: false,
+        showBottomBar: false,
       }
     },
     computed: {

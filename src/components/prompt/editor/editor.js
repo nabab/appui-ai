@@ -2,13 +2,14 @@
 
 (() => {
   const getBlankData = (data, cp) => {
+    const defFormat = bbn.fn.getField(cp.formats, 'id', 'code', 'textarea');
     return bbn.fn.extend({}, cp.getDefaultSettings(), {
       id: data?.id || null,
       id_note: data?.id_note || null,
       title: data?.title || "",
       content: data?.content || "",
-      output: data?.output || "textarea",
-      input: data?.input || "textarea",
+      output: data?.output || defFormat || "",
+      input: data?.input || defFormat || "",
       shortcode: data?.shortcode || null,
     })
   };
@@ -62,7 +63,6 @@
     data() {
       return {
         cfg: null,
-        root: appui.plugins['appui-ai'] + '/',
         formData: null,
         input: "",
         response: null,
@@ -71,18 +71,20 @@
         generating: false,
         isValid: false,
         ready: false,
+        changingUserFormatComponent: false,
       }
     },
     computed: {
       aiFormatComponent() {
-        let res = bbn.fn.getRow(this.formats, {id: this.formData?.output}).component;
+        let res = this.formData?.output ? bbn.fn.getField(this.formats, 'component', 'id', this.formData.output) : null;
         if (res === 'bbn-textarea') {
           return "div";
         }
+
         return res;
       },
       userFormatComponent() {
-        return bbn.fn.getRow(this.formats, {id: this.formData?.input}).component;
+        return this.formData?.input ? bbn.fn.getField(this.formats, 'component', 'id', this.formData.input) : null;
       },
       userComponentOptions() {
         const o = {};
@@ -138,26 +140,53 @@
       send() {
         this.loading = true;
         this.response = '';
-        bbn.fn.post(this.root + 'chat', {
-          content: this.formData.content + '\n' + bbn.fn.getRow(this.formats, {value: this.formData.output}).prompt + ' and the language must be in ' +  bbn.fn.getRow(this.languages, {value: this.formData.lang}).text,
-          input: this.input,
-          test: true,
-          model: this.formData.model,
-          endpoint: this.formData.endpoint,
-          cfg: this.formData.cfg,
-          id_prompt: this.formData.id || null
-        }, (d) => {
-          if (d.success) {
-            this.response = this.formData.output === 'bbn-json-editor' ? JSON.parse(d.text) : d.text
-            setTimeout(() =>  {
-              this.loading = false;
-            }, 300);
-          } else {
-            setTimeout(() =>  {
-              this.loading = false;
-            }, 300);
+        let content = '';
+        let addNewLine = false;
+        if (this.formData?.content?.length) {
+          if (this.formData?.output) {
+            const formatPrompt = bbn.fn.getField(this.formats, 'prompt', 'id', this.formData.output);
+            if (formatPrompt?.length) {
+              content += formatPrompt;
+              addNewLine = true;
+            }
           }
-        })
+
+          if (this.formData?.lang) {
+            const langPrompt = bbn.fn.getField(this.languages, 'text', 'value', this.formData.lang);
+            if (langPrompt?.length) {
+              content += `\n The language must be in ${langPrompt}.`;
+              addNewLine = true;
+            }
+          }
+
+          content += (addNewLine ? '\n' : '') + this.formData.content;
+          this.post(this.root + 'chat', {
+            content,
+            input: this.input,
+            test: true,
+            model: this.formData.model,
+            endpoint: this.formData.endpoint,
+            cfg: this.formData.cfg,
+            id_prompt: this.formData.id || null
+          }, d => {
+            if (d.success) {
+              if (d.result?.content) {
+                this.response = this.formData.output === 'bbn-json-editor' ? JSON.parse(d.result.content) : d.result.content;
+              }
+
+              this.$nextTick(() => {
+                this.loading = false;
+              })
+            }
+            else {
+              appui.error(bbn._("An error occurred while processing the request: %s", d.error || bbn._("Unknown error")));
+              this.loading = false;
+            }
+          }, () => {
+            appui.error(bbn._("An error occurred while processing the request: %s", d.error || bbn._("Unknown error")));
+            this.loading = false;
+          })
+        }
       },
       componentOptions(type, readonly) {
         let res = {
@@ -170,11 +199,11 @@
       },
       generateTitle() {
         this.generating = true;
-        bbn.fn.post(this.root + 'chat', {
+        this.post(this.root + 'chat', {
           content: "The given text is a prompt for which you need to provide (only) a short clear and descriptive title for this prompt.",
           input: this.formData.content,
           test: true,
-          model: this.model,
+          model: this.formData.model,
           endpoint: this.endpoint
         }, (d) => {
           this.isLoading = false;
@@ -194,5 +223,13 @@
 
       this.ready = true;
     },
+    watch: {
+      userFormatComponent(newVal, oldVal) {
+        this.changingUserFormatComponent = true;
+        this.$nextTick(() => {
+          this.changingUserFormatComponent = false;
+        })
+      }
+    }
   }
 })();
