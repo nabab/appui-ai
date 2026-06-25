@@ -4,7 +4,7 @@
   <span class="bbn-right-margin">
     <bbn-button :title="_('Synchronize models')"
                 @click="sync"
-                icon="nf nf-oct-sync"
+                icon="nf nf-fa-refresh"
                 :notext="true"/>
     <bbn-button :title="_('Remove endpoint')"
                 @click="remove"

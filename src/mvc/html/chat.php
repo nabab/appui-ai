@@ -1,7 +1,7 @@
 <!-- HTML Document -->
 
 <div class="bbn-overlay appui-ai-chat-page">
-  <bbn-debugger style="left: unset; right: 20px"/>
+  <!--<bbn-debugger/>-->
   <bbn-router :url-navigation="true"
               :autoload="false"
               mode="tabs">
@@ -101,7 +101,7 @@
                           @click="addNewChat"
                           class="bbn-left-xsmargin"/>
             </bbn-toolbar>
-            <div class="bbn-flex-fill bbn-padding">
+            <div class="bbn-flex-fill">
               <bbn-list :source="root + 'conversations'"
                         class="appui-ai-chat-list-items"
                         :alternate-background="true"
@@ -171,7 +171,8 @@
                        icon:'nf nf-md-forum_plus',
                        label: _('New prompt'),
                        url: root + 'chat/prompts/new'
-                     }]">
+                     }]"
+                     :map="promptsMap">
             <bbns-column field="title"
                          :sortable="true"
                          :filterable="true"
@@ -180,7 +181,18 @@
             <bbns-column field="content"
                          :sortable="true"
                          :filterable="true"
-                         :label="_('Text')"/>
+                         :label="_('Text')"
+                         :min-width="350"/>
+            <bbns-column field="endpoint"
+                         :sortable="true"
+                         :filterable="true"
+                         :label="_('Endpoint')"
+                         :min-width="200"/>
+            <bbns-column field="model"
+                         :sortable="true"
+                         :filterable="true"
+                         :label="_('Model')"
+                         :min-width="200"/>
             <bbns-column field="input"
                          :sortable="true"
                          :filterable="true"
@@ -193,10 +205,18 @@
                          :filterable="true"
                          :label="_('Output format')"
                          :width="120"/>
+            <bbns-column field="language"
+                         :sortable="true"
+                         :filterable="true"
+                         label="<i class='nf nf-fa-flag'></i>"
+                         :flabel="_('Language')"
+                         cls="bbn-upper bbn-c"
+                         :width="50"/>
             <bbns-column :sortable="false"
                          :buttons="getPromptButtons"
-                         :width="80"
-                         cls="bbn-c"/>
+                         :width="70"
+                         cls="bbn-c"
+                         fixed="right"/>
           </bbn-table>
         </bbn-container>
         <bbn-container url="new"

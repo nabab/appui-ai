@@ -1,16 +1,8 @@
 <?php
-/**
-   * What is my purpose?
-   *
-   **/
-
-use bbn\X;
-use bbn\Str;
-use bbn\Appui\Note;
 use bbn\Appui\Ai;
 /** @var bbn\Mvc\Model $model */
 
-if ($model->hasData(['content', 'title', 'output', 'input'])) {
+if ($model->hasData(['content', 'title', 'output', 'input', 'model'])) {
   $ai = new Ai($model->db);
   if ($model->hasData('id', true)) {
     return [
@@ -25,8 +17,9 @@ if ($model->hasData(['content', 'title', 'output', 'input'])) {
       ];
     }
 
-    return [
-      'success' => false
-    ];
-  }
+    }
 }
+
+return [
+  'success' => false
+];

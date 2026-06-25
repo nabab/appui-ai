@@ -1,10 +1,16 @@
 <!-- HTML Document -->
 
 <div class="bbn-iblock">
-  <bbn-button :title="_('Synchronize models')"
-              @click="sync"
-              icon="nf nf-md-sync_circle"
-              class="bbn-left-xsmargin"
-              :notext="true"/>
+  <span class="bbn-right-margin">
+    <bbn-button :title="_('Edit prompt')"
+                @click="edit"
+                icon="nf nf-fa-edit"
+                :notext="true"/>
+    <bbn-button :title="_('Remove prompt')"
+                @click="remove"
+                icon="nf nf-fa-trash"
+                class="bbn-red"
+                :notext="true"/>
+  </div>
   <span bbn-text="source.title"/>
 </div>

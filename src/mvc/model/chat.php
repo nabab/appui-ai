@@ -12,23 +12,31 @@ use bbn\Appui\Ai;
 /** @var bbn\Mvc\Model $model */
 
 $ai =& $model->inc->ai;
-if ($model->hasData(['model', 'endpoint', 'cfg'], true) 
+if ($model->hasData(['model', 'endpoint', 'cfg'], true)
     //&& X::hasProps($model->data['cfg'], ['temperature', 'top_p', 'presence', 'frequency', 'language', 'aiFormat'])
     && ($model->hasData(['id_prompt'], true) || $model->hasData(['prompt'], true)  || $model->hasData(['test'], true))
 ) {
   $res = ['success' => false];
-  $ai->setEndpoint($model->data['endpoint'], $model->data['cfg']['model']);
+  $ai->setEndpoint($model->data['endpoint'], $model->data['model']);
 
     // Saved prompt
   if (!$model->hasData(['test'], true) && $model->hasData('id_prompt', true)) {
-    $result = $ai->getPromptResponseFromId($model->data['id_prompt'], $model->data['input'], true, ['model' => $model->data['model'], 'cfg' => $model->data['cfg']]);
+    $result = $ai->getPromptResponseFromId(
+      $model->data['id_prompt'],
+      $model->data['input'],
+      true,
+      [
+        'model' => $model->data['model'],
+        'cfg' => $model->data['cfg']
+      ]
+    );
   }
   // Unsaved prompt
   elseif ($model->hasData('input') || $model->hasData(['test'], true)) {
     $result = $ai->getPromptResponse(
       [
         'content' => $model->data['content'],
-        'output' => $model->data['cfg']['aiFormat']
+        'output' => $model->data['output']
       ],
       $model->data['input'],
       $model->data

@@ -4,7 +4,7 @@
                    :formats="formats"
                    :languages="languages"
                    mode="chat">
-    <bbn-button bbn-if="source?.conversation.length > 2"
+    <bbn-button bbn-if="source?.conversation?.length > 2"
                 icon="nf nf-md-cursor_default_outline"
                 :label="_('Selection mode')"
                 :notext="true"
@@ -19,10 +19,30 @@
        bbn-if="conversationChange">
     <bbn-loader class="bbn-overlay"/>
   </div>
-  <div class="bbn-w-100 bbn-bottom-padding">
+  <div class="bbn-flex-fill"
+       bbn-if="!conversationChange">
+    <div class="bbn-overlay">
+      <bbn-scroll ref="scroll">
+        <div class="bbn-w-100 bbn-vpadding">
+          <div class="bbn-w-100 bbn-ai-chat-selector overflow-auto bbn-flex-column"
+               bbn-for="item in source.conversation">
+            <appui-ai-chat-item bbn-for="msg in item.messages"
+                                :source="msg"
+                                :cfg="item.cfg"
+                                :ai="msg.role === 'assistant'"
+                                :date="item.asked"
+                                :format="msg.role === 'assistant' ? (item.userFormat || 'textarea') : (item.aiFormat || 'textarea')"/>
+          </div>
+        </div>
+      </bbn-scroll>
+    </div>
+  </div>
+  <div bbn-if="!conversationChange"
+       class="bbn-w-100 bbn-bottom-padding">
     <div bbn-if="(mode !== 'chat') || !configuration || configuration?.editable"
          class="bbn-flex-hcentered">
-      <div class="bbn-card bbn-widest bbn-padding bbn-bottom-margin">
+      <div class="bbn-card bbn-padding bbn-bottom-margin"
+           style="width: 95%">
         <div class="bbn-w-100">
           <component bbn-if="userFormatComponent"
                      :is="userFormatComponent"
@@ -41,39 +61,23 @@
                         :autosize="true"
                         @keyup="checkSend"/>
         </div>
-        <div class="bbn-w-100 bbn-vmiddle bbn-vspadding">
+        <div class="bbn-vmiddle bbn-top-spadding"
+             style="justify-content: flex-end">
           <bbn-button bbn-if="input.length || (conversation.length <= 1)"
                       @click="send"
                       :disabled="!input.length || isLoadingResponse"
-                      :label="_('Send')"/>
+                      :label="_('Send')"
+                      icon="nf nf-fa-circle_arrow_up"/>
           <bbn-button bbn-else
                       @click="resend"
-                      :label="_('Resend')"/>
+                      :label="_('Resend')"
+                      :disabled="isLoadingResponse"/>
         </div>
       </div>
     </div>
     <div bbn-if="configuration?.title"
          class="bbn-lpadding bbn-bottom-xsmargin bbn-background bbn-text bbn-w-100 bbn-radius"
-         style="maxWidth: 100%; white-space: break-spaces"
+         style="max-width: 100%; white-space: break-spaces"
          bbn-html="configuration.content"/>
-    <hr class="bbn-hr">
-  </div>
-  <div class="bbn-flex-fill"
-       bbn-else>
-    <div class="bbn-overlay">
-      <bbn-scroll ref="scroll">
-        <div class="bbn-w-100 bbn-vpadding">
-          <div class="bbn-w-100 bbn-ai-chat-selector overflow-auto bbn-flex-column"
-               bbn-for="item in source?.conversation">
-            <appui-ai-chat-item bbn-for="msg in item.messages"
-                                :source="msg"
-                                :cfg="item.cfg"
-                                :ai="msg.role === 'assistant'"
-                                :date="item.asked"
-                                :format="msg.role === 'assistant' ? (item.userFormat || 'textarea') : (item.aiFormat || 'textarea')"/>
-          </div>
-        </div>
-      </bbn-scroll>
-    </div>
   </div>
 </div>

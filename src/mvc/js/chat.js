@@ -52,8 +52,8 @@
             model,
             cfg: {
               language: bbn.env.lang,
-              aiFormat: 'multilines',
-              /* temperature: '1',
+              /*aiFormat: 'multilines',
+              temperature: '1',
               presence: '0.2',
               frequency: '0.7',
               top_p: '0.5' */
@@ -63,6 +63,9 @@
 
         return null;
       },
+      getEndpointByModel(idModel){
+        return this.ui.getEndpointByModel(idModel);
+      }
     },
     created() {
       this.ui = appui.getRegistered('appui-ai-ui');
@@ -196,7 +199,7 @@
       },
       getPromptButtons(row) {
         return [{
-          icon: 'nf nf-md-arrow_right_bold',
+          icon: 'nf nf-fa-edit',
           notext: true,
           action: () => bbn.fn.link(this.root + 'chat/prompts/' + row.id)
         }, {
@@ -209,9 +212,11 @@
         const menu = [];
         if (row.file !== 'new') {
           menu.push({
+            icon: 'nf nf-fa-edit',
             text: bbn._("Rename"),
             action: () => this.renameChat(row)
           }, {
+            icon: 'nf nf-fa-trash bbn-red',
             text: bbn._("Delete"),
             action: () => this.deleteChat(row)
           })
@@ -456,6 +461,28 @@
             appui.error(d.error || bbn._('Error during sync'));
           }
         });
+      },
+      getEndpointByModel(idModel){
+        let endpoint = null;
+        bbn.fn.each(this.source.endpoints, e => {
+          if (e.models?.length && bbn.fn.getRow(e.models, 'id', idModel)) {
+            endpoint = e.id;
+            return false;
+          }
+        });
+
+        return endpoint;
+      },
+      promptsMap(row) {
+        let endpoint = row.settings?.id_model ? this.getEndpointByModel(row.settings.id_model) : '';
+        if (endpoint) {
+          endpoint = bbn.fn.getRow(this.source.endpoints, 'id', endpoint);
+        }
+
+        row.endpoint = endpoint?.text || '';
+        row.model = row.settings?.id_model && endpoint?.models?.length ? bbn.fn.getField(endpoint.models, 'name', 'id', row.settings.id_model) : '';
+        row.language = row.settings?.language || bbn.env.lang;
+        return row;
       }
     },
     mounted() {

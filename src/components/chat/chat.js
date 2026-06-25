@@ -45,7 +45,7 @@
     data() {
       return {
         cfg: null,
-        currentEndpointId: this.endpoints?.length ? this.endpoints[0].id : null,
+        currentEndpointId: this.endpoint || (this.endpoints?.length ? this.endpoints[0].id : null),
         currentModelId: this.endpoints?.length ? this.endpoints[0].models?.[0]?.id : null,
         currentModels: this.endpoints[0]?.models || [],
         conversationChange: false,
@@ -72,7 +72,6 @@
         }
       },
       currentEndpoint() {
-        
         if (this.cfg?.endpoint) {
           return bbn.fn.getRow(this.endpoints, {id: this.cfg.endpoint})
         }
@@ -139,6 +138,7 @@
       fdate: bbn.fn.fdate,
       updateScroll() {
         const scroll = this.getRef('scroll');
+        scroll.scrollEndY(true);
         if (scroll?.onResize) {
           scroll.onResize(true).then(() => {
             this.$nextTick(() => {
@@ -169,20 +169,15 @@
 
           let input = this.input;
           let inputDate = (new Date()).getTime();
-
           this.conversation.push({text: input, ai: 0, creation_date: inputDate});
           const lastDialog = {ai: 1, loading: 1, creation_date: inputDate, text: ''};
           this.conversation.push();
-
           this.isLoadingResponse = true;
-
           this.input = '';
-
           this.$nextTick(this.updateScroll);
           this.getRef('chatPrompt').focus();
-
           this.isLoading = true;
-          bbn.fn.post(this.root + 'chat', request_object, (d) => {
+          this.post(this.root + 'chat', request_object, (d) => {
             if (d.success) {
               let inputDate = (new Date()).getTime();
               lastDialog.creation_date = inputDate;
@@ -193,16 +188,24 @@
               this.$nextTick(this.updateScroll);
             }
             else {
-              this.$set(this.conversation.at(-1), 'error', true);
+              this.conversation.at(-1).error = true;
             }
             this.isLoading = false;
           })
         }
         else {
-          let input = this.input;
-          let inputDate = (new Date()).getTime();
-          this.conversation.push({text: input, ai: 0, creation_date: inputDate, id: bbn.fn.randomString()});
-          this.conversation.push({ai: 1, loading: 1, creation_date: inputDate, id: bbn.fn.randomString()});
+          const input = this.input;
+          const inputDate = (new Date()).getTime();
+          this.source.conversation.push({
+            asked: bbn.fn.timestamp(),
+            messages: [{
+              role: 'user',
+              content: input,
+            }, {
+              role: 'assistant',
+              loading: 1
+            }]
+          });
           this.isLoadingResponse = true;
           this.input = '';
           this.$nextTick(this.updateScroll);
@@ -215,11 +218,13 @@
             id: this.currentChat?.id || ''
           }, this.cfg);
           this.isLoading = true;
-          bbn.fn.post(this.root + 'chat', data, d => {
+          this.post(this.root + 'chat', data, d => {
             if (d.success && d.conversation) {
+              this.source.conversation.splice(-1, 1);
               if (d.file) {
                 this.$emit('setfile', d.file);
               }
+
               const conv = d.conversation;
               if (this.currentChat?.id !== conv.id) {
                 this.currentChat = conv;
@@ -235,9 +240,10 @@
               }
             }
             else {
-              this.$set(this.conversation.at(-1), 'error', true);
+              this.source.conversation.at(-1).messages.at(-1).error = true;
+              this.source.conversation.at(-1).messages.at(-1).loading = false;
             }
-            this.conversation.at(-1).loading = false;
+
             this.isLoadingResponse = false;
             this.$nextTick(this.updateScroll);
             this.isLoading = false;

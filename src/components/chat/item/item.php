@@ -1,7 +1,7 @@
 <!-- HTML Document -->
 
-<div style="height: auto; max-width: 70%; width: 100%"
-     :class="'appui-chat-item bbn-xsmargin bbn-flex-column bbn-radius bbn-bottom-smargin ' + (ai ? 'flex-end bbn-secondary' : 'flex-start bbn-primary')">
+<div style="height: auto; max-width: 90%; min-width: 20rem; width: auto;"
+     :class="'appui-chat-item bbn-xsmargin bbn-flex-column bbn-radius bbn-bottom-smargin ' + (ai ? 'flex-start bbn-tertiary' : 'flex-end bbn-secondary')">
   <div class="bbn-w-100 bbn-xspadding"
        style="max-width: 100%">
     <div bbn-if="source.loading"
@@ -14,13 +14,13 @@
          bbn-text="_('There was an error while getting the response')"/>
     <component bbn-else-if="formatReader && (formatReader !== 'div')"
                :is="formatReader"
-               class="bbn-xspadding bbn-background bbn-text bbn-w-100 bbn-radius"
+               class="bbn-spadding bbn-background bbn-text bbn-w-100 bbn-radius"
                style="max-width: 100%; white-space: break-spaces"
                :readonly="true"
                bbn-bind="componentOptions(format, true)"
                bbn-model="content"/>
     <div bbn-else
-         class="bbn-xspadding bbn-background bbn-text bbn-w-100 bbn-radius"
+         class="bbn-spadding bbn-background bbn-text bbn-w-100 bbn-radius"
          style="max-width: 100%; white-space: break-spaces"
          bbn-html="content"/>
   </div>

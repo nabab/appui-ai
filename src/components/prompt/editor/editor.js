@@ -3,6 +3,16 @@
 (() => {
   const getBlankData = (data, cp) => {
     const defFormat = bbn.fn.getField(cp.formats, 'id', 'code', 'textarea');
+    let currentSettings = {};
+    if (data?.settings) {
+      currentSettings = {
+        settings: data.settings,
+        endpoint: cp.getEndpointByModel(data.settings.id_model),
+        model: data.settings.id_model,
+        cfg: data.settings.cfg || {},
+      };
+    }
+
     return bbn.fn.extend({}, cp.getDefaultSettings(), {
       id: data?.id || null,
       id_note: data?.id_note || null,
@@ -11,7 +21,7 @@
       output: data?.output || defFormat || "",
       input: data?.input || defFormat || "",
       shortcode: data?.shortcode || null,
-    })
+    }, currentSettings);
   };
 
   return {
@@ -64,11 +74,13 @@
       return {
         cfg: null,
         formData: null,
-        input: "",
+        testFormData: {
+          input: ""
+        },
         response: null,
         loading: false,
         cp: null,
-        generating: false,
+        generatingTitle: false,
         isValid: false,
         ready: false,
         changingUserFormatComponent: false,
@@ -76,22 +88,50 @@
     },
     computed: {
       aiFormatComponent() {
-        let res = this.formData?.output ? bbn.fn.getField(this.formats, 'component', 'id', this.formData.output) : null;
-        if (res === 'bbn-textarea') {
-          return "div";
+        return this.formData?.output ? bbn.fn.getField(this.formats, 'component', 'id', this.formData.output) : null;
+      },
+      aiComponentOptions() {
+        const o = {
+          readonly: true
+        };
+        if (this.formData?.output) {
+          const outputCode = bbn.fn.getField(this.formats, 'code', 'id', this.formData.output);
+          switch (outputCode) {
+            case 'textarea':
+              o.autosize = true;
+              o.resizable = false;
+              break;
+            case 'code-php':
+              o.autosize = true;
+              o.mode = 'php';
+              o.theme = 'dracula';
+              o.fill = false
+              break;
+            case 'code-js':
+              o.autosize = true;
+              o.mode = 'js'
+              o.theme = 'dracula';
+              o.fill = false
+              break;
+          }
         }
 
-        return res;
+        return o;
       },
       userFormatComponent() {
         return this.formData?.input ? bbn.fn.getField(this.formats, 'component', 'id', this.formData.input) : null;
       },
       userComponentOptions() {
-        const o = {};
+        const o = {
+          required: true
+        };
         if (this.formData?.input) {
-          switch (this.formData.input) {
+          const inputCode = bbn.fn.getField(this.formats, 'code', 'id', this.formData.input);
+          switch (inputCode) {
             case 'textarea':
               o.autosize = true;
+              o.resizable = false;
+              o.rows = 3;
               break;
             case 'code-php':
               o.mode = 'php';
@@ -109,66 +149,25 @@
       }
     },
     methods: {
-      componentOptions(type, readonly) {
-        const o = {
-          readonly: readonly
-        };
-        if (type) {
-          switch (type) {
-            case 'textarea':
-              o.autosize = true;
-              break;
-            case 'code-php':
-              o.autosize = true;
-              o.mode = 'php';
-              o.fill = false
-              break;
-            case 'code-js':
-              o.autosize = true;
-              o.mode = 'js'
-              o.fill = false
-              break;
-          }
-        }
-        return o;
-      },
       success(d) {
         if (d.success) {
           this.$emit('success', d)
+          appui.success(bbn._("Prompt saved successfully"));
         }
       },
-      send() {
+      testPrompt() {
         this.loading = true;
         this.response = '';
-        let content = '';
-        let addNewLine = false;
         if (this.formData?.content?.length) {
-          if (this.formData?.output) {
-            const formatPrompt = bbn.fn.getField(this.formats, 'prompt', 'id', this.formData.output);
-            if (formatPrompt?.length) {
-              content += formatPrompt;
-              addNewLine = true;
-            }
-          }
-
-          if (this.formData?.lang) {
-            const langPrompt = bbn.fn.getField(this.languages, 'text', 'value', this.formData.lang);
-            if (langPrompt?.length) {
-              content += `\n The language must be in ${langPrompt}.`;
-              addNewLine = true;
-            }
-          }
-
-          content += (addNewLine ? '\n' : '') + this.formData.content;
-          this.post(this.root + 'chat', {
-            content,
-            input: this.input,
+          this.post(this.root + 'chat', bbn.fn.extend({}, this.testFormData, {
+            content: this.formData.content,
             test: true,
+            output: this.formData.output,
             model: this.formData.model,
             endpoint: this.formData.endpoint,
             cfg: this.formData.cfg,
             id_prompt: this.formData.id || null
-          }, d => {
+          }), d => {
             if (d.success) {
               if (d.result?.content) {
                 this.response = this.formData.output === 'bbn-json-editor' ? JSON.parse(d.result.content) : d.result.content;
@@ -188,31 +187,24 @@
           })
         }
       },
-      componentOptions(type, readonly) {
-        let res = {
-          readonly: readonly
-        };
-        if (type === 'bbn-code') {
-          res.fill = false;
-        }
-        return res;
-      },
       generateTitle() {
-        this.generating = true;
+        this.generatingTitle = true;
         this.post(this.root + 'chat', {
           content: "The given text is a prompt for which you need to provide (only) a short clear and descriptive title for this prompt.",
           input: this.formData.content,
           test: true,
           model: this.formData.model,
-          endpoint: this.endpoint
-        }, (d) => {
+          endpoint: this.formData.endpoint,
+          cfg: this.formData.cfg
+        }, d => {
           this.isLoading = false;
-          if (d.success) {
-            this.formData.title = d.text.trim().replace(/^\"(.+)\"$/,"$1");
+          if (d.success && d.result?.content) {
+            this.formData.title = d.result.content.trim().replace(/^\"(.+)\"$/,"$1");
           }
-          setTimeout(() => {
-            this.generating = false;
-          }, 300);
+
+          this.generatingTitle = false;
+        }, () => {
+          this.isLoading = false;
         })
       }
     },
@@ -220,7 +212,6 @@
       this.cp = this.closest('bbn-container').getComponent();
       this.formData = getBlankData(this.source?.id ? this.source : {}, this);
       bbn.fn.log('formData', this.formData);
-
       this.ready = true;
     },
     watch: {
