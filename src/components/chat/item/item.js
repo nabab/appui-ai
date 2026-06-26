@@ -41,14 +41,48 @@
       },
       fdate() {
         return bbn.fn.fdate(this.date, true)
+      },
+      modelName() {
+        let name = '';
+        if (this.cfg?.model
+          && bbn.fn.isUid(this.cfg.model)
+          && this.ui?.source?.endpoints?.length
+        ) {
+          bbn.fn.each(this.ui?.source?.endpoints, e => {
+            if (e.models?.length) {
+              const m = bbn.fn.getRow(e.models, {id: this.cfg.model});
+              if (m) {
+                name = m.name;
+                return false;
+              }
+            }
+          });
+        }
+
+        return name;
+      },
+      author() {
+        return this.ai ? (this.modelName || 'bbn-ai') : (appui?.user?.name || bbn._('you'));
       }
     },
     methods: {
       seeRequest() {
         if (this.cfg) {
+          const d = bbn.fn.clone(this.cfg);
+          if (this.modelName) {
+            d.modelName = this.modelName;
+          }
+
+          const jsn = JSON.stringify(
+            Object.fromEntries(
+              Object.entries(d).sort(([a], [b]) => a.localeCompare(b, undefined, {sensitivity: 'base'}))
+            ),
+            null,
+            2
+          );
           this.closest('bbn-container').getPopup({
             label: false,
-            content: '<pre class="bbn-padding">' + JSON.stringify(this.cfg, null, 2) + '</pre>'
+            content: `<pre class="bbn-padding">${jsn}</pre>`
           })
         }
       },

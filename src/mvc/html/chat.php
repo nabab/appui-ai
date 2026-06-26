@@ -98,8 +98,7 @@
             <bbn-toolbar class="bbn-spadding">
               <bbn-button icon="nf nf-md-forum_plus"
                           :label="_('New chat')"
-                          @click="addNewChat"
-                          class="bbn-left-xsmargin"/>
+                          @click="addNewChat"/>
             </bbn-toolbar>
             <div class="bbn-flex-fill">
               <bbn-list :source="root + 'conversations'"
@@ -140,6 +139,7 @@
                          :configuration="chatSelected"
                          :storage="true"
                          @setfile="onSetFile"
+                         @changetitle="onChangeTitle"
                          storage-full-name="appui-ai-chat-model"/>
         </bbn-pane>
       </bbn-splitter>

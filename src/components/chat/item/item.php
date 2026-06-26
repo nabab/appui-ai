@@ -1,11 +1,15 @@
 <!-- HTML Document -->
 
 <div style="height: auto; max-width: 90%; min-width: 20rem; width: auto;"
-     :class="'appui-chat-item bbn-xsmargin bbn-flex-column bbn-radius bbn-bottom-smargin ' + (ai ? 'flex-start bbn-tertiary' : 'flex-end bbn-secondary')">
+     :class="['appui-chat-item', 'bbn-xsmargin', 'bbn-flex-column', 'bbn-radius', 'bbn-bottom-smargin', {
+              'flex-start bbn-background-tertiary': ai,
+              'flex-end bbn-background-secondary': !ai
+            }]">
   <div class="bbn-w-100 bbn-xspadding"
        style="max-width: 100%">
     <div bbn-if="source.loading"
-         class="bbn-xspadding bbn-background bbn-text bbn-w-100 bbn-radius">
+         class="bbn-xspadding bbn-background bbn-text bbn-vmiddle bbn-radius">
+      <bbn-loadicon class="bbn-vmiddle bbn-right-sspace"/>
       <span class="bbn-anim-dots"
             bbn-text="_('Artificially thinking')"/>
     </div>
@@ -25,22 +29,26 @@
          bbn-html="content"/>
   </div>
 
-  <div class="bbn-flex bbn-w-100 bbn-vxspadding  bbn-hspadding"
-       style="margin-top: auto">
-    <span class="bbn-small bbn-grey bbn-w-50 bbn-left">
+  <div :class="['bbn-vmiddle', 'bbn-vxspadding', 'bbn-hspadding', 'bbn-small', {
+                'bbn-tertiary-text': ai,
+                'bbn-secondary-text': !ai
+              }]"
+       style="justify-content: space-between; column-gap: var(--lspace); row-gap: var(--sspace)">
+    <span class="bbn-vmiddle"
+          style="column-gap: var(--sspace)">
       <span bbn-if="cfg"
-            class="bbn-right-smargin bbn-p"
-            @click="seeRequest">
-        <i class="nf nf-fa-cog"
-           :title="_('See whole request and reply')"/>
+            class="bbn-p"
+            @click="seeRequest"
+            :title="_('See whole request and reply')">
+        <i class="nf nf-fa-cog"/>
       </span>
-      <span class="bbn-right-smargin bbn-p"
-            @click="copy">
-        <i class="nf nf-fa-copy"
-           :title="_('Copy to clipboard')"/>
+      <span class="bbn-p"
+            @click="copy"
+            :title="_('Copy to clipboard')">
+        <i class="nf nf-md-content_copy"/>
       </span>
-      {{ai ? (source.model ? source.model : 'bbn-ai') : _('you')}}
+      <span bbn-text="author"/>
     </span>
-    <span class="bbn-small bbn-grey bbn-w-50 bbn-right">{{fdate}}</span>
+    <span bbn-text="fdate"/>
   </div>
 </div>

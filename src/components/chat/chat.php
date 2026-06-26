@@ -31,18 +31,18 @@
                                 :cfg="item.cfg"
                                 :ai="msg.role === 'assistant'"
                                 :date="item.asked"
-                                :format="msg.role === 'assistant' ? (item.userFormat || 'textarea') : (item.aiFormat || 'textarea')"/>
+                                :format="msg.role === 'assistant' ? (item.aiFormat || 'textarea') : (item.userFormat || 'textarea')"/>
           </div>
         </div>
       </bbn-scroll>
     </div>
   </div>
   <div bbn-if="!conversationChange"
-       class="bbn-w-100 bbn-bottom-padding">
+       class="bbn-w-100 bbn-top-padding">
     <div bbn-if="(mode !== 'chat') || !configuration || configuration?.editable"
          class="bbn-flex-hcentered">
       <div class="bbn-card bbn-padding bbn-bottom-margin"
-           style="width: 95%">
+           style="width: calc(100% - calc(var(--space) * 2))">
         <div class="bbn-w-100">
           <component bbn-if="userFormatComponent"
                      :is="userFormatComponent"

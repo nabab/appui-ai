@@ -188,9 +188,24 @@
     },
     methods: {
       onSetFile(fileName) {
-        const lst = this.getRef('chatList').currentData;
-        if (lst[0]?.data?.file === 'new') {
+        const lst = this.getRef('chatList');
+        if (lst?.selected?.length && lst?.currentData?.length) {
+          const d = bbn.fn.getRow(lst.currentData, {key: lst.selected[0]});
+          if (d) {
+            d.data.file = fileName;
+          }
+        }
+        else if (lst?.[0]?.data?.file === 'new') {
           lst[0].data.file = fileName;
+        }
+      },
+      onChangeTitle(title) {
+        const lst = this.getRef('chatList');
+        if (lst?.selected?.length && lst?.currentData?.length) {
+          const d = bbn.fn.getRow(lst.currentData, {key: lst.selected[0]});
+          if (d) {
+            d.data.title = title;
+          }
         }
       },
       getRandomIntroSentence() {
@@ -256,19 +271,25 @@
         })
       },
       addNewChat() {
-        const chats = this.getRef('chatList');
-        if (chats) {
-          const now = bbn.fn.timestamp();
-          chats.addToData({
-            title: bbn._("New chat"),
-            file: 'new',
-            id: bbn.fn.randomString(),
-            creation: now,
-            last: now,
-            num: 1
-          }, true);
-          setTimeout(() => chats.select(0), 250)
-        }
+        return new Promise(resolve => {
+          const chats = this.getRef('chatList');
+          if (chats) {
+            const now = bbn.fn.timestamp();
+            chats.addToData({
+              title: bbn._("New chat"),
+              file: 'new',
+              id: bbn.fn.randomString(),
+              creation: now,
+              last: now,
+              num: 1,
+              isNew: true,
+            }, true);
+            this.$nextTick(() => {
+              chats.select(0);
+              resolve();
+            });
+          }
+        });
       },
       addEndpoint() {
         this.getPopup({
@@ -347,39 +368,48 @@
           this.selectedChatPath = item.file;
           if (item.file === 'new') {
             const now = bbn.fn.timestamp();
-            this.currentChat = {
-              conversation: [{
-                asked: now,
-                responded: now,
-                messages: [{
-                  role: 'assistant',
-                  content: this.getRandomIntroSentence()
-                }]
-              }],
-              creation: now,
-              id: bbn.fn.randomString(),
-              num: 0,
-              tags: [],
-              title: bbn._("New chat"),
-            };
+            item.conversation = [{
+              asked: now,
+              responded: now,
+              messages: [{
+                role: 'assistant',
+                content: this.getRandomIntroSentence()
+              }]
+            }];
+            this.currentChat = item;
           }
           else {
             bbn.fn.post(this.root + 'conversation', {
               path: this.selectedChatPath
-            }, (d) => {
+            }, d => {
               if (d.success) {
                 delete d.success;
                 this.currentChat = d;
+                if (d.conversation?.length
+                  && d.conversation.at(-1)?.cfg
+                ) {
+                  const chatui = this.getRef('chatui');
+                  if (chatui) {
+                    const cfg = bbn.fn.clone(d.conversation.at(-1).cfg);
+                    if (cfg.model && bbn.fn.isUid(cfg.model)) {
+                      const endpoint = this.getEndpointByModel(cfg.model);
+                      if (endpoint) {
+                        cfg.endpoint = endpoint;
+                        chatui.cfg = cfg;
+                      }
+                    }
+                  }
+                }
               }
               else {
                 appui.error(d);
               }
+
+              this.conversationChange = false;
+            }, () => {
+              this.conversationChange = false;
             })
           }
-  
-          setTimeout(() => {
-            this.conversationChange = false;
-          }, 500);
         }
 
       },

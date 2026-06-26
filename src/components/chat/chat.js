@@ -153,7 +153,7 @@
           this.$nextTick(this.send);
         }
       },
-      send() {
+      async send() {
         bbn.fn.log("SEND", this.configuration, this.cfg);
         if (!this.input) {
           return;
@@ -194,59 +194,76 @@
           })
         }
         else {
-          const input = this.input;
-          const inputDate = (new Date()).getTime();
-          this.source.conversation.push({
-            asked: bbn.fn.timestamp(),
-            messages: [{
-              role: 'user',
-              content: input,
-            }, {
-              role: 'assistant',
-              loading: 1
-            }]
-          });
-          this.isLoadingResponse = true;
-          this.input = '';
-          this.$nextTick(this.updateScroll);
-          this.getRef('chatPrompt').focus();
-          const data = bbn.fn.extend({
-            prompt: input,
-            date: inputDate,
-            userFormat: 'textarea',
-            endpoint: this.cfg.endpoint,
-            id: this.currentChat?.id || ''
-          }, this.cfg);
-          this.isLoading = true;
-          this.post(this.root + 'chat', data, d => {
-            if (d.success && d.conversation) {
-              this.source.conversation.splice(-1, 1);
-              if (d.file) {
-                this.$emit('setfile', d.file);
-              }
+          if (!this.currentChat?.id) {
+            await this.ui.addNewChat();
+          }
 
-              const conv = d.conversation;
-              if (this.currentChat?.id !== conv.id) {
-                this.currentChat = conv;
-              }
-              else {
-                this.currentChat.last = conv.last;
-                this.currentChat.num = conv.num;
-                if (conv.title !== this.currentChat.title) {
-                  this.currentChat.title = conv.title;
+          this.$nextTick(() => {
+            const input = this.input;
+            const inputDate = (new Date()).getTime();
+            this.source.conversation.push({
+              asked: bbn.fn.timestamp(),
+              messages: [{
+                role: 'user',
+                content: input,
+              }, {
+                role: 'assistant',
+                loading: 1
+              }]
+            });
+            this.isLoadingResponse = true;
+            this.input = '';
+            this.$nextTick(this.updateScroll);
+            this.getRef('chatPrompt').focus();
+            const data = bbn.fn.extend({
+              prompt: input,
+              date: inputDate,
+              userFormat: 'textarea',
+              endpoint: this.cfg.endpoint,
+              id: this.currentChat?.id || ''
+            }, this.cfg);
+            this.isLoading = true;
+            this.post(this.root + 'chat', data, d => {
+              if (d.success && d.conversation) {
+                if (this.currentChat.isNew) {
+                  delete this.currentChat.isNew;
+                  this.$emit('changetitle', d.title);
                 }
 
-                this.currentChat.conversation.push(conv);
+                this.source.conversation.splice(-1, 1);
+                if (d.file) {
+                  this.$emit('setfile', d.file);
+                }
+
+                const conv = d.conversation;
+                if (this.currentChat?.id !== conv.id) {
+                  this.currentChat = conv;
+                }
+                else {
+                  this.currentChat.last = conv.last;
+                  this.currentChat.num = conv.num;
+                  if (conv.title !== this.currentChat.title) {
+                    this.currentChat.title = conv.title;
+                  }
+
+                  this.currentChat.conversation.push(conv);
+                }
               }
-            }
-            else {
+              else {
+                this.source.conversation.at(-1).messages.at(-1).error = true;
+                this.source.conversation.at(-1).messages.at(-1).loading = false;
+              }
+
+              this.isLoadingResponse = false;
+              this.$nextTick(this.updateScroll);
+              this.isLoading = false;
+            }, () => {
               this.source.conversation.at(-1).messages.at(-1).error = true;
               this.source.conversation.at(-1).messages.at(-1).loading = false;
-            }
-
-            this.isLoadingResponse = false;
-            this.$nextTick(this.updateScroll);
-            this.isLoading = false;
+              this.isLoadingResponse = false;
+              this.$nextTick(this.updateScroll);
+              this.isLoading = false;
+            });
           });
         }
       }
@@ -266,6 +283,7 @@
       source(v) {
         if (v) {
           this.currentChat = v;
+          this.$nextTick(this.updateScroll);
         }
       }
     },
@@ -279,6 +297,7 @@
       this.cfg = cfg;
     },
     mounted() {
+      this.$nextTick(this.updateScroll);
     },
   }
 })();
