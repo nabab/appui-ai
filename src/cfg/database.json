@@ -71,15 +71,17 @@
         },
         "input": {
             "type": "binary",
-            "null": 0,
+            "null": 1,
             "key": "MUL",
-            "maxlength": 16
+            "maxlength": 16,
+            "default": "NULL"
         },
         "output": {
             "type": "binary",
-            "null": 0,
+            "null": 1,
             "key": "MUL",
-            "maxlength": 16
+            "maxlength": 16,
+            "default": "NULL"
         },
         "creation_date": {
             "type": "datetime",
