@@ -36,7 +36,10 @@ if ($model->hasData(['model', 'endpoint', 'cfg'], true)
     $result = $ai->getPromptResponse(
       [
         'content' => $model->data['content'],
-        'output' => $model->data['output']
+        'output' => $model->data['output'],
+        'settings' => [
+          'cfg' => $model->data['cfg'] ?? [],
+        ]
       ],
       $model->data['input'],
       $model->data

@@ -1,0 +1,20 @@
+[
+  {
+    "title": "Correct text on HTML code",
+    "content": "Correct all grammatical errors you find in the text contained in the following HTM code, automatically detect the language and respond only with the adapted HTML code to inject into an existing HTML code, in the same language as the original text and without comments or reasoning: ",
+    "prompt_language": "en",
+    "input": "rte",
+    "output": "rte",
+    "output_language": null,
+    "shortcode": "correct-text-html"
+  },
+  {
+    "title": "Rewrite text on HTML code",
+    "content": "Rewrite the text contained in the following HTM code in \"{{bbn_ai_style}}\" style, automatically detect the language from the text, respond only with the adapted HTML code to inject into an existing HTML code, in the same language as the original text and without comments or reasoning: ",
+    "prompt_language": "en",
+    "input": "rte",
+    "output": "rte",
+    "output_language": null,
+    "shortcode": "rewrite-text-html"
+  }
+]

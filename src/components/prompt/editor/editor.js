@@ -13,13 +13,14 @@
       };
     }
 
-    return bbn.fn.extend({}, cp.getDefaultSettings(), {
+    return bbn.fn.extend(true, {}, cp.getDefaultSettings(), {
       id: data?.id || null,
       id_note: data?.id_note || null,
       title: data?.title || "",
       content: data?.content || "",
       output: data?.output || defFormat || "",
       input: data?.input || defFormat || "",
+      lang: data?.lang || bbn.env.lang,
       shortcode: data?.shortcode || null,
     }, currentSettings);
   };
@@ -165,6 +166,7 @@
             output: this.formData.output,
             model: this.formData.model,
             endpoint: this.formData.endpoint,
+            lang: this.formData.lang,
             cfg: this.formData.cfg,
             id_prompt: this.formData.id || null
           }), d => {

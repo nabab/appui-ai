@@ -5,12 +5,11 @@
                 :collapsible="true"
                 class="bbn-overlay">
     <bbn-pane>
-      <div class="bbn-w-100">
-        <appui-ai-prompt-editor :source="source"
-                                @success="onSuccess"/>
-      </div>
+      <appui-ai-prompt-editor :source="source"
+                              @success="onSuccess"/>
     </bbn-pane>
-    <bbn-pane :scrollable="true">
+    <bbn-pane :scrollable="true"
+              :collapsed="true">
       <div class="bbn-w-100 bbn-vpadding">
         <div class="bbn-w-100 bbn-ai-chat-selector overflow-auto bbn-flex-column"
               bbn-for="item in source?.items">

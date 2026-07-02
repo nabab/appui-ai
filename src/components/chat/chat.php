@@ -23,7 +23,7 @@
        bbn-if="!conversationChange">
     <div class="bbn-overlay">
       <bbn-scroll ref="scroll">
-        <div class="bbn-w-100 bbn-vpadding">
+        <div class="bbn-w-100 bbn-spadding">
           <div class="bbn-w-100 bbn-ai-chat-selector overflow-auto bbn-flex-column"
                bbn-for="item in source.conversation">
             <appui-ai-chat-item bbn-for="msg in item.messages"

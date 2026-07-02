@@ -60,7 +60,12 @@
                         :source="formats"
                         source-value="id"
                         :required="true"/>
-          <label><?= _("Language") ?></label>
+          <label><?= _("Prompt language") ?></label>
+          <bbn-dropdown bbn-model="formData.lang"
+                        :source="languages"
+                        source-value="code"
+                        :required="false"/>
+          <label><?= _("Output language") ?></label>
           <bbn-dropdown bbn-model="formData.cfg.language"
                         :source="languages"
                         source-value="code"

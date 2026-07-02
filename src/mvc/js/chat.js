@@ -37,7 +37,7 @@
     },
     methods: {
       getDefaultSettings() {
-        if (this.currentEndpoint) {
+        if (this.currentEndpoint && this.currentEndpointId) {
           let model = '';
           bbn.fn.each(defaultModels, m => {
             const idModel = bbn.fn.getField(this.currentEndpoint.models, 'id', 'name', m);
@@ -50,8 +50,10 @@
           return {
             endpoint: this.currentEndpointId,
             model,
+            lang: bbn.env.lang,
+            settings: {},
             cfg: {
-              language: bbn.env.lang,
+              language: null,
               /*aiFormat: 'multilines',
               temperature: '1',
               presence: '0.2',
