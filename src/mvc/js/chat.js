@@ -50,10 +50,9 @@
           return {
             endpoint: this.currentEndpointId,
             model,
-            lang: bbn.env.lang,
+            language: bbn.fn.getField(this.ui?.source?.languages || [], 'value', 'code', bbn.env.lang) || null,
             settings: {},
             cfg: {
-              language: null,
               /*aiFormat: 'multilines',
               temperature: '1',
               presence: '0.2',
@@ -513,7 +512,6 @@
 
         row.endpoint = endpoint?.text || '';
         row.model = row.settings?.id_model && endpoint?.models?.length ? bbn.fn.getField(endpoint.models, 'name', 'id', row.settings.id_model) : '';
-        row.language = row.settings?.language || bbn.env.lang;
         return row;
       }
     },

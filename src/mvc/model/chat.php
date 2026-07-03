@@ -12,7 +12,8 @@ use bbn\Appui\Ai;
 /** @var bbn\Mvc\Model $model */
 
 $ai =& $model->inc->ai;
-if ($model->hasData(['model', 'endpoint', 'cfg'], true)
+if ($model->hasData(['model', 'endpoint'], true)
+    && $model->hasData('cfg')
     //&& X::hasProps($model->data['cfg'], ['temperature', 'top_p', 'presence', 'frequency', 'language', 'aiFormat'])
     && ($model->hasData(['id_prompt'], true) || $model->hasData(['prompt'], true)  || $model->hasData(['test'], true))
 ) {
@@ -36,7 +37,8 @@ if ($model->hasData(['model', 'endpoint', 'cfg'], true)
     $result = $ai->getPromptResponse(
       [
         'content' => $model->data['content'],
-        'output' => $model->data['output'],
+        'output_format' => $model->data['output_format'],
+        'output_language' => $model->data['output_language'] ?? null,
         'settings' => [
           'cfg' => $model->data['cfg'] ?? [],
         ]
@@ -47,7 +49,14 @@ if ($model->hasData(['model', 'endpoint', 'cfg'], true)
   }
   // Chat
   else {
-    $result = $ai->chat($model->data['prompt'], ['model' => $model->data['model'], 'cfg' => $model->data['cfg']], $model->data['id'] ?? '');
+    $result = $ai->chat(
+      $model->data['prompt'],
+      [
+        'model' => $model->data['model'],
+        'cfg' => $model->data['cfg']
+      ],
+      $model->data['id'] ?? ''
+    );
   }
 
   return $result;

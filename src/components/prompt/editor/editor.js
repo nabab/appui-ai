@@ -18,9 +18,10 @@
       id_note: data?.id_note || null,
       title: data?.title || "",
       content: data?.content || "",
-      output: data?.output || defFormat || "",
-      input: data?.input || defFormat || "",
-      lang: data?.lang || bbn.env.lang,
+      language: data?.language || bbn.fn.getField(cp?.languages || [], 'value', 'code', bbn.env.lang) || null,
+      input_format: data?.input_format || defFormat || "",
+      output_format: data?.output_format || defFormat || "",
+      output_language: data?.output_language || null,
       shortcode: data?.shortcode || null,
     }, currentSettings);
   };
@@ -89,14 +90,14 @@
     },
     computed: {
       aiFormatComponent() {
-        return this.formData?.output ? bbn.fn.getField(this.formats, 'component', 'id', this.formData.output) : null;
+        return this.formData?.output_format ? bbn.fn.getField(this.formats, 'component', 'id', this.formData.output_format) : null;
       },
       aiComponentOptions() {
         const o = {
           readonly: true
         };
-        if (this.formData?.output) {
-          const outputCode = bbn.fn.getField(this.formats, 'code', 'id', this.formData.output);
+        if (this.formData?.output_format) {
+          const outputCode = bbn.fn.getField(this.formats, 'code', 'id', this.formData.output_format);
           switch (outputCode) {
             case 'textarea':
               o.autosize = true;
@@ -120,14 +121,14 @@
         return o;
       },
       userFormatComponent() {
-        return this.formData?.input ? bbn.fn.getField(this.formats, 'component', 'id', this.formData.input) : null;
+        return this.formData?.input_format ? bbn.fn.getField(this.formats, 'component', 'id', this.formData.input_format) : null;
       },
       userComponentOptions() {
         const o = {
           required: true
         };
-        if (this.formData?.input) {
-          const inputCode = bbn.fn.getField(this.formats, 'code', 'id', this.formData.input);
+        if (this.formData?.input_format) {
+          const inputCode = bbn.fn.getField(this.formats, 'code', 'id', this.formData.input_format);
           switch (inputCode) {
             case 'textarea':
               o.autosize = true;
@@ -163,16 +164,17 @@
           this.post(this.root + 'chat', bbn.fn.extend({}, this.testFormData, {
             content: this.formData.content,
             test: true,
-            output: this.formData.output,
+            output_format: this.formData.output_format,
             model: this.formData.model,
             endpoint: this.formData.endpoint,
-            lang: this.formData.lang,
+            language: this.formData.language,
+            output_language: this.formData.output_language,
             cfg: this.formData.cfg,
             id_prompt: this.formData.id || null
           }), d => {
             if (d.success) {
               if (d.result?.content) {
-                this.response = this.formData.output === 'bbn-json-editor' ? JSON.parse(d.result.content) : d.result.content;
+                this.response = this.formData.output_format === 'bbn-json-editor' ? JSON.parse(d.result.content) : d.result.content;
               }
 
               this.$nextTick(() => {

@@ -1,20 +1,36 @@
 [
   {
     "title": "Correct text on HTML code",
-    "content": "Correct all grammatical errors you find in the text contained in the following HTM code, automatically detect the language and respond only with the adapted HTML code to inject into an existing HTML code, in the same language as the original text and without comments or reasoning: ",
-    "prompt_language": "en",
-    "input": "rte",
-    "output": "rte",
+    "content": "Correct any spelling and grammatical errors you find in the plain text contained in the HTML code of the next message without modifying any HTML code and without adding a HTML code and without deleting any HTML code. Automatically detects the language of the text. The response must be ready to be inserted into an HTML element. Don't change the language in your reply. Do not include comments or reasoning in your response.",
+    "language": "en",
+    "input_format": "rte",
+    "output_format": "rte",
     "output_language": null,
-    "shortcode": "correct-text-html"
+    "shortcode": "correct-text-html",
+    "model": "nvidia/nemotron-3-nano-4b"
   },
   {
     "title": "Rewrite text on HTML code",
-    "content": "Rewrite the text contained in the following HTM code in \"{{bbn_ai_style}}\" style, automatically detect the language from the text, respond only with the adapted HTML code to inject into an existing HTML code, in the same language as the original text and without comments or reasoning: ",
-    "prompt_language": "en",
-    "input": "rte",
-    "output": "rte",
+    "content": "Rewrite the text contained in the HTML code of the next message in \"{{bbn_ai_style}}\" style. Automatically detect the language from the text. The response must be ready to be inserted into an HTML element. Don't change the language in your reply. Do not include comments or reasoning in your response.",
+    "language": "en",
+    "input_format": "rte",
+    "output_format": "rte",
     "output_language": null,
-    "shortcode": "rewrite-text-html"
+    "shortcode": "rewrite-text-html",
+    "model": "nvidia/nemotron-3-nano-4b"
+  }, {
+    "title": "Proposer une réponse à l'e-mail du client",
+    "content": "Proposez-moi une réponse pour un email que j'ai reçu d'un de mes clients, juste le texte de l'email, n'écrivez pas l'objet de l'email, n'écrivez pas le raisonnement suivi, n'écrivez pas la signature. Essayez de vous limiter à répondre uniquement à ce qui est demandé dans l'e-mail de l'expéditeur et au contexte de toute conversation précédente. Je vous fournis un JSON avec les données dont vous avez besoin, structurée comme suit : la propriété \"message\" contient le texte de l'e-mail que j'ai reçu au format HTML ; la propriété \"messages\" contient un tableau d'objets pour toute conversation que j'ai eue avec l'expéditeur avant d'avoir reçu ce dernier e-mail, les objets enfants ont deux propriétés \"type\" pour indiquer s'il s'agit d'un message envoyé par moi ou reçu et \"text\" avec le contenu du message au format HTML ; la propriété \"data\" contient un objet avec toutes les données du client extraites de la base de données. La suggestion doit être rédigée en français. Formater toutes les dates en français.",
+    "language": "fr",
+    "input_format": "rte",
+    "output_format": "rte",
+    "output_language": "fr",
+    "shortcode": "propose-reponse-email",
+    "model": "mistralai/ministral-3-3b",
+    "input": {
+      "message": "",
+      "messages": [],
+      "data": {}
+    }
   }
 ]

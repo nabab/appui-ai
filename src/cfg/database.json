@@ -21,9 +21,9 @@
             "delete": "RESTRICT",
             "unique": 0
         },
-        "input": {
+        "input_format": {
             "columns": [
-                "input"
+                "input_format"
             ],
             "ref_table": "bbn_options",
             "ref_column": "id",
@@ -31,9 +31,19 @@
             "delete": "RESTRICT",
             "unique": 0
         },
-        "output": {
+        "output_format": {
             "columns": [
-                "output"
+                "output_format"
+            ],
+            "ref_table": "bbn_options",
+            "ref_column": "id",
+            "update": "CASCADE",
+            "delete": "RESTRICT",
+            "unique": 0
+        },
+        "output_language": {
+            "columns": [
+                "output_language"
             ],
             "ref_table": "bbn_options",
             "ref_column": "id",
@@ -49,11 +59,14 @@
         "id_note": [
             "id_note"
         ],
-        "input": [
-            "input"
+        "input_format": [
+            "input_format"
         ],
-        "output": [
-            "output"
+        "output_format": [
+            "output_format"
+        ],
+        "output_language": [
+            "output_language"
         ]
     },
     "fields": {
@@ -69,14 +82,21 @@
             "key": "MUL",
             "maxlength": 16
         },
-        "input": {
+        "input_format": {
             "type": "binary",
             "null": 1,
             "key": "MUL",
             "maxlength": 16,
             "default": "NULL"
         },
-        "output": {
+        "output_format": {
+            "type": "binary",
+            "null": 1,
+            "key": "MUL",
+            "maxlength": 16,
+            "default": "NULL"
+        },
+        "output_language": {
             "type": "binary",
             "null": 1,
             "key": "MUL",
@@ -290,7 +310,8 @@
         },
         "cfg":{
             "type": "longtext",
-            "null": 0
+            "null": 1,
+            "default": "NULL"
         }
     }
   }

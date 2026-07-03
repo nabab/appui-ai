@@ -51,25 +51,22 @@
                         icon="nf nf-cod-wand"/>
           </div>
           <label><?= _("User input format") ?></label>
-          <bbn-dropdown bbn-model="formData.input"
+          <bbn-dropdown bbn-model="formData.input_format"
                         :source="formats"
                         source-value="id"
                         :required="true"/>
           <label><?= _("AI output format") ?></label>
-          <bbn-dropdown bbn-model="formData.output"
+          <bbn-dropdown bbn-model="formData.output_format"
                         :source="formats"
                         source-value="id"
                         :required="true"/>
           <label><?= _("Prompt language") ?></label>
-          <bbn-dropdown bbn-model="formData.lang"
+          <bbn-dropdown bbn-model="formData.language"
                         :source="languages"
-                        source-value="code"
-                        :required="false"/>
+                        :required="true"/>
           <label><?= _("Output language") ?></label>
-          <bbn-dropdown bbn-model="formData.cfg.language"
+          <bbn-dropdown bbn-model="formData.output_language"
                         :source="languages"
-                        source-value="code"
-                        :required="false"
                         :nullable="true"/>
           <label><?= _("Shortcode") ?></label>
           <bbn-input bbn-model="formData.shortcode"
@@ -116,7 +113,7 @@
                  bbn-model="response"
                  bbn-bind="aiComponentOptions"
                  class="bbn-w-100">
-        {{formData.output === 'div' ? response :  ''}}
+        {{formData.output_format === 'div' ? response :  ''}}
       </component>
       <div bbn-else-if="loading"
            class="bbn-middle">

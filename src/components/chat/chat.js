@@ -160,13 +160,6 @@
         }
 
         if (this.configuration?.id) {
-          let request_object = {
-            id_prompt: this.configuration.id,
-            input: this.input,
-            model: this.model,
-            endpoint: this.endpoint
-          }
-
           let input = this.input;
           let inputDate = (new Date()).getTime();
           this.conversation.push({text: input, ai: 0, creation_date: inputDate});
@@ -177,7 +170,12 @@
           this.$nextTick(this.updateScroll);
           this.getRef('chatPrompt').focus();
           this.isLoading = true;
-          this.post(this.root + 'chat', request_object, (d) => {
+          this.post(this.root + 'chat', {
+            id_prompt: this.configuration.id,
+            input: this.input,
+            model: this.model,
+            endpoint: this.endpoint
+          }, d => {
             if (d.success) {
               let inputDate = (new Date()).getTime();
               lastDialog.creation_date = inputDate;
