@@ -1,4 +1,4 @@
-src/cfg/key.txt
+cfg/key.txt
 composer.phar
 /vendor/
 .history
