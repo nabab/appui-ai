@@ -300,7 +300,7 @@
             text: '',
             url: '',
             pass: '',
-            filesCapabilities: {
+            fileCapabilities: {
               mode: 'auto',
               images: 1,
               pdf_inline: 1,
