@@ -294,12 +294,19 @@
       },
       addEndpoint() {
         this.getPopup({
-          label: false,
+          label: bbn._("New Endpoint"),
           component: 'appui-ai-endpoint-form',
           source: {
             text: '',
             url: '',
-            pass: ''
+            pass: '',
+            filesCapabilities: {
+              mode: 'auto',
+              images: 1,
+              pdf_inline: 1,
+              file_ids: 1,
+              max_size: 0
+            }
           },
           componentEvents: {
             success: d => {

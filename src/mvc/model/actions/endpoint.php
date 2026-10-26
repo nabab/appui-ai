@@ -1,19 +1,24 @@
 <?php
-/**
- * What is my purpose?
- *
- **/
+/** @var bbn\Mvc\Model $model */
 
-use bbn\X;
-use bbn\Str;
-/** @var $model bbn\Mvc\Model */
-
-$res = ['success' => false];if ($model->hasData('action')) {
+$res = ['success' => false];
+if ($model->hasData('action')) {
   $d =& $model->data;
   switch ($d['action']) {
     case 'insert':
+      if (!$model->hasData('pass', true)) {
+        $model->data['pass'] = 'nopassword';
+      }
+
       if ($model->hasData(['text', 'url', 'pass'], true)) {
-        if ($data = $model->inc->ai->addEndpoint($d['text'], $d['url'], $d['pass'])) {
+        $data = $model->inc->ai->addEndpoint(
+          $d['text'],
+          $d['url'],
+          $d['pass'],
+          $d['public'] ?? false,
+          $d['fileCapabilities'] ?? []
+        );
+        if ($data) {
           $res['success'] = true;
           $res['data'] = $data;
         }
