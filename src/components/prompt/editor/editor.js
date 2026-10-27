@@ -77,7 +77,9 @@
         cfg: null,
         formData: null,
         testFormData: {
-          input: ""
+          input: "",
+          files: [],
+          filesRef: bbn.dt().unix()
         },
         response: null,
         loading: false,
@@ -148,6 +150,14 @@
           }
         }
         return o;
+      },
+      hasFileCapabilities() {
+        if (this.formData?.endpoint) {
+          const endpoint = bbn.fn.getRow(this.endpoints, {id: this.formData.endpoint});
+          return !!endpoint?.fileCapabilities?.mode;
+        }
+
+        return false;
       }
     },
     methods: {
@@ -182,11 +192,11 @@
               })
             }
             else {
-              appui.error(bbn._("An error occurred while processing the request: %s", d.error || bbn._("Unknown error")));
+              appui.error(bbn._("An error occurred while processing the request: %s", d.error?.message || bbn._("Unknown error")));
               this.loading = false;
             }
           }, () => {
-            appui.error(bbn._("An error occurred while processing the request: %s", d.error || bbn._("Unknown error")));
+            appui.error(bbn._("An error occurred while processing the request: %s", d.error?.message || bbn._("Unknown error")));
             this.loading = false;
           })
         }
@@ -213,6 +223,7 @@
       }
     },
     mounted() {
+      this.$nextTick(() => {});
       this.cp = this.closest('bbn-container').getComponent();
       this.formData = getBlankData(this.source?.id ? this.source : {}, this);
       bbn.fn.log('formData', this.formData);
@@ -224,6 +235,11 @@
         this.$nextTick(() => {
           this.changingUserFormatComponent = false;
         })
+      },
+      hasFileCapabilities(newVal) {
+        if (!newVal) {
+          this.testFormData.files = [];
+        }
       }
     }
   }

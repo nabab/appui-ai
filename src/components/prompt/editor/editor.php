@@ -99,6 +99,11 @@
                         bbn-bind="userComponentOptions"
                         class="bbn-w-100"/>
           </div>
+          <div bbn-if="hasFileCapabilities">
+            <bbn-upload bbn-model="testFormData.files"
+                        :save-url="root + 'prompt/file/' + testFormData.filesRef"
+                        :multiple="true"/>
+          </div>
         </div>
       </bbn-form>
     </div>

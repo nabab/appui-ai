@@ -34,6 +34,16 @@ if ($model->hasData(['model', 'endpoint'], true)
   }
   // Unsaved prompt
   elseif ($model->hasData('input') || $model->hasData(['test'], true)) {
+    $files = [];
+    if ($model->hasData(['files', 'filesRef'], true)) {
+      $filesPath = $model->userTmpPath() . $model->data['filesRef'] . '/';
+      foreach ($model->data['files'] as $f) {
+        if (is_file($filesPath . $f['name'])) {
+          $files[] = $filesPath . $f['name'];
+        }
+      }
+    }
+
     $result = $ai->getPromptResponse(
       [
         'content' => $model->data['content'],
@@ -44,7 +54,8 @@ if ($model->hasData(['model', 'endpoint'], true)
         ]
       ],
       $model->data['input'],
-      $model->data
+      $model->data,
+      $files
     );
   }
   // Chat
